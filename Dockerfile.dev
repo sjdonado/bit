@@ -1,0 +1,29 @@
+
+FROM ruby:2.6.6-alpine
+
+ENV APP_PATH /usr/src/app
+ENV BUNDLE_VERSION 2.1.4
+ENV BUNDLE_PATH /usr/local/bundle/gems
+ENV RAILS_LOG_TO_STDOUT true
+ENV RAILS_PORT 3000
+
+WORKDIR $APP_PATH
+
+EXPOSE $RAILS_PORT
+
+RUN apk -U add --no-cache \
+build-base \
+postgresql-dev \
+postgresql-client \
+tzdata \
+yarn
+
+COPY ./entrypoint.dev.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+
+RUN gem install bundler --version "$BUNDLE_VERSION"
+RUN gem install rubocop
+
+COPY . .
+
+ENTRYPOINT ["entrypoint.sh"]

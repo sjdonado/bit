@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:12.5-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user_12345
+      POSTGRES_DB: url_shortener
+    ports:
+      - 5432:5432
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/usr/src/app
+      - gem_cache:/usr/local/bundle/gems
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    stdin_open: true
+    tty: true
+    env_file: .env.dev
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+volumes:
+  gem_cache:
+  db_data:
