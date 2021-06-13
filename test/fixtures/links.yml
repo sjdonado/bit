@@ -1,11 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  slug: MyString
-  url: MyString
+  slug: ktr4ms
+  url: 'https://google.com'
   click_counter: 1
 
 two:
-  slug: MyString
-  url: MyString
+  slug: qwu62l
+  url: 'https://gapfish.com'
   click_counter: 1
