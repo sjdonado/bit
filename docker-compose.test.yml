@@ -4,11 +4,11 @@ services:
   db:
     image: postgres:12.5-alpine
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - test_db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: user_12345
-      POSTGRES_DB: url_shortener
+      POSTGRES_DB: test_url_shortener
     ports:
       - 5432:5432
   app:
@@ -18,14 +18,15 @@ services:
     volumes:
       - .:/usr/src/app
       - gem_cache:/usr/local/bundle/gems
-    command: bundle exec rails s
-    stdin_open: true
+    command: bundle exec rails test
     tty: true
-    env_file: .env.dev
-    ports:
-      - 3000:3000
+    environment:
+       RAILS_ENV: test
+       HOSTNAME: 0.0.0.0
+       PORT: 3000
+       DATABASE_URL: postgres://user:user_12345@db:5432/test_url_shortener
     depends_on:
       - db
 volumes:
   gem_cache:
-  db_data:
+  test_db_data:

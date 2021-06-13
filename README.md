@@ -1,5 +1,34 @@
 # URL shortener
 
+## How to run
+
+### Development
+- Setup
+```bash
+docker-compose up -d
+docker-compose run --rm app bundle exec rails db:migrate
+docker-compose stop
+```
+- Run
+```bash
+docker-compose up
+```
+
+### Testing
+- Run database in background
+```bash
+docker-compose -f docker-compose.test.yml up -d db 
+```
+- Run tests
+```bash
+docker-compose -f docker-compose.test.yml run --rm app bundle exec rails test
+```
+
+### Rubocop
+```bash
+docker-compose run --rm app rubocop 
+```
+
 ## TODO
 - [x] Create link model (make sure to create a index for the slug and click counter)
 - [x] Generate unique slug
