@@ -18,14 +18,22 @@ services:
     volumes:
       - .:/usr/src/app
       - gem_cache:/usr/local/bundle/gems
-    command: bundle exec rails s
-    stdin_open: true
+    command: bundle exec rails s -b '0.0.0.0'
     tty: true
     env_file: .env.dev
     ports:
       - 3000:3000
     depends_on:
       - db
+  webpack:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/usr/src/app
+      - gem_cache:/usr/local/bundle/gems
+    command: bin/webpack --watch --colors --progress 
+    tty: true
 volumes:
   gem_cache:
   db_data:

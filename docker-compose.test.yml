@@ -19,7 +19,6 @@ services:
       - .:/usr/src/app
       - gem_cache:/usr/local/bundle/gems
     command: bundle exec rails test
-    tty: true
     environment:
        RAILS_ENV: test
        HOSTNAME: 0.0.0.0

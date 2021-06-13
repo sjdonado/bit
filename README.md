@@ -32,8 +32,9 @@ docker-compose run --rm app rubocop
 ## TODO
 - [x] Create link model (make sure to create a index for the slug and click counter)
 - [x] Generate unique slug
-- [ ] Link unit tests
-- [ ] Stimulus setup
+- [x] Link unit tests
+- [x] Stimulus setup
+- [ ] Link controller (handle redirection)
 - [ ] Main page with input box
 - [ ] Create user model
 - [ ] User unit tests
