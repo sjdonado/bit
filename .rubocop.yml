@@ -1,0 +1,7 @@
+AllCops:
+  NewCops: enable
+Documentation:
+  Enabled: false
+MixinUsage:   
+  Exclude:
+    - 'bin/*'
