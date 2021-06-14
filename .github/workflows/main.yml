@@ -1,0 +1,25 @@
+name: Deploy production to Heroku
+on:
+  push:
+    branches:
+    - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Login to Heroku
+        run: heroku container:login 
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: Build and push
+        run: heroku container:push -a $APP_NAME web
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          APP_NAME: s-shortener
+      - name: Release
+        run: heroku container:release -a $APP_NAME web
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          APP_NAME: s-shortener

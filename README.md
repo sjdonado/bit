@@ -23,6 +23,45 @@ docker-compose run --rm app bundle exec rails test
 docker-compose run --rm app rubocop 
 ```
 
+## Results
+
+- Testing
+```bash
+Finished in 2.227992s, 10.3232 runs/s, 10.7720 assertions/s.
+23 runs, 24 assertions, 0 failures, 0 errors, 0 skips
+Coverage report generated for Minitest to /usr/src/app/coverage. 77 / 77 LOC (100.0%) covered.
+
+COVERAGE: 100.00% -- 77/77 lines in 11 files
+BRANCH COVERAGE: 100.00% -- 20/20 branches in 11 branches
+
++----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
+| coverage | file                                      | lines | missed | missing | branch coverage | branches | branches missed | branches missing |
++----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
+| 100.00%  | app/controllers/application_controller.rb | 2     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/controllers/links_controller.rb       | 22    | 0      |         | 100.00%         | 8        | 0               |                  |
+| 100.00%  | app/controllers/sessions_controller.rb    | 14    | 0      |         | 100.00%         | 4        | 0               |                  |
+| 100.00%  | app/controllers/users_controller.rb       | 12    | 0      |         | 100.00%         | 4        | 0               |                  |
+| 100.00%  | app/helpers/application_helper.rb         | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/helpers/links_helper.rb               | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/helpers/sessions_helper.rb            | 7     | 0      |         | 100.00%         | 2        | 0               |                  |
+| 100.00%  | app/helpers/users_helper.rb               | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/models/application_record.rb          | 2     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/models/link.rb                        | 11    | 0      |         | 100.00%         | 2        | 0               |                  |
+| 100.00%  | app/models/user.rb                        | 4     | 0      |         | 100.00%         | 0        | 0               |                  |
++----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
+```
+
+- Rubocop
+```bash
+Inspecting 58 files
+..........................................................
+
+58 files inspected, no offenses detected
+```
+
+- Production link
+https://s-shortener.herokuapp.com/
+
 ## TODO
 - [x] Create link model (make sure to create a index for the slug and click counter)
 - [x] Generate unique slug
@@ -36,5 +75,5 @@ docker-compose run --rm app rubocop
 - [x] Login and logout (sessions)
 - [x] User links view
 - [x] Modals layout
-- [ ] Setup Redis for production cache_store
-- [ ] Deployment CI
+- [x] Setup Redis for production cache_store
+- [x] Deployment CI

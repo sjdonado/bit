@@ -2,9 +2,8 @@ FROM ruby:2.6.3-alpine
 
 ENV APP_PATH /usr/src/app
 ENV BUNDLE_VERSION 2.1.4
-ENV BUNDLE_PATH /usr/local/bundle/gems
 ENV RAILS_LOG_TO_STDOUT true
-ENV RAILS_PORT 3000
+ENV RAILS_ENV production
 
 WORKDIR $APP_PATH
 
@@ -21,12 +20,17 @@ tzdata \
 nodejs --repository="http://dl-cdn.alpinelinux.org/alpine/v3.11/main/" \
 yarn
 
-COPY ./entrypoint.dev.sh /usr/bin/entrypoint.sh
+COPY ./entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 
 RUN gem install bundler --version "$BUNDLE_VERSION"
-RUN gem install rubocop
 
 COPY . .
 
+RUN bundle install --jobs 20 --retry 5
+
+RUN yarn
+
 ENTRYPOINT ["entrypoint.sh"]
+
+CMD ["rails", "s", "-b", "0.0.0.0"]
