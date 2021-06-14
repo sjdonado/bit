@@ -5,7 +5,6 @@ class Link < ApplicationRecord
   validates_uniqueness_of :slug
 
   validates :url, format: { with: URI::DEFAULT_PARSER.make_regexp, message: 'invalid format' }
-
   validates_length_of :url, within: 3..30_000, on: :create, message: 'max length is 30000'
 
   before_validation :generate_slug
