@@ -1,0 +1,7 @@
+<div data-links-target="userLinks">
+<% if logged_in? %>
+	<% @current_user.links.each do |link| %>
+			<%= render partial: "links/show", locals: { link: link } %>
+	<% end %>
+<% end %>
+</div>

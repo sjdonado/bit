@@ -1,0 +1,4 @@
+<% if logged_in? %>
+	<h1>You are Logged In, <%= @current_user.username %></h1>
+	<%= button_to "Logout", '/logout', method: :post %>
+<%end%>

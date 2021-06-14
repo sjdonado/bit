@@ -1,4 +1,4 @@
-<%= form_with model: Link.new, url: links_path(@link), data: { action: 'ajax:success->links#onSuccess ajax:error->links#onError' } do |f| %>
+<%= form_with model: Link.new, url: links_path(@link), data: { action: 'ajax:success->links#onCreateLinkSuccess ajax:error->links#onCreateLinkError' } do |f| %>
 	<div class="col-span-3 sm:col-span-2">
 		<label for="company_website" class="block text-sm font-medium text-gray-700">
 			Website

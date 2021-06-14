@@ -33,7 +33,9 @@ docker-compose run --rm app rubocop
 - [x] Link controller (handle redirection)
 - [x] Main page with input box
 - [x] Create user model
-- [ ] User unit tests
-- [ ] Add userId key to link model
-- [ ] Login and logout (sessions)
+- [x] User unit tests
+- [x] Add userId key to link model
+- [x] Login and logout (sessions)
+- [x] User links view
+- [ ] Modals layout
 - [ ] Setup Redis for production cache_store 
