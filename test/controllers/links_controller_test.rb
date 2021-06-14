@@ -20,6 +20,18 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success, 'Link not created'
   end
 
+  test 'Should create a link with user' do
+    user = users(:one)
+    post login_url, params: { username: user.username, password: '12345' }
+
+    assert_response :success
+
+    url = 'https://test.com'
+    post links_url, params: { link: { url: url } }
+
+    assert_response :success, 'Link not created'
+  end
+
   test 'Should return 422 on create an invalid link' do
     url = 'test'
     post links_url, params: { link: { url: url } }

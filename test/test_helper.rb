@@ -10,7 +10,18 @@ if ENV['RAILS_ENV'] == 'test'
     add_filter '/app/channels'
     add_filter '/app/mailers'
     add_filter '/app/jobs'
+
+    enable_coverage :branch
   end
+
+  simplecov_formatters = [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::Console
+  ]
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(simplecov_formatters)
+
+  SimpleCov::Formatter::Console.show_covered = true
+
   puts 'required simplecov'
 end
 

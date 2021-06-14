@@ -8,7 +8,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     params = { username: user.username, password: '12345' }
     post login_url, params: params
 
-    assert_redirected_to '/'
+    assert_response :success
+  end
+
+  test 'Should return 401 with not available user' do
+    params = { username: nil, password: 'test' }
+    post login_url, params: params
+
+    assert_response :unauthorized
   end
 
   test 'Should return 401 with wrong credentials' do
@@ -20,8 +27,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'Should destroy session' do
-    post logout_url
+    get logout_url
 
-    assert_redirected_to '/'
+    assert_response :success
   end
 end
