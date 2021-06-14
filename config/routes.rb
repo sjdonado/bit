@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  root 'sessions#welcome'
+  root 'sessions#index'
 
   get '/:slug', to: 'links#redirect', as: :short
+  get 'session/logout', to: 'sessions#destroy', as: :logout
 
   post 'login', to: 'sessions#create', as: :login
-  post 'logout', to: 'sessions#destroy', as: :logout
 
   resources :links, only: %i[create]
   resources :users, only: %i[create]

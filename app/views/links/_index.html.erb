@@ -1,7 +1,6 @@
-<div data-links-target="userLinks">
 <% if logged_in? %>
-	<% @current_user.links.each do |link| %>
+	<h2 class="text-2xl leading-7 text-gray-900 sm:text-3xl sm:truncate m-3 mt-6">My links</h2>
+		<% @current_user.links.each do |link| %>
 			<%= render partial: "links/show", locals: { link: link } %>
-	<% end %>
+		<% end %>
 <% end %>
-</div>

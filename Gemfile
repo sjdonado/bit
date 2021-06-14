@@ -58,4 +58,7 @@ group :test do
   gem 'webdrivers'
   # SimpleCov is a code coverage analysis tool for Ruby
   gem 'simplecov'
+
+  # Simple console output formatter for SimpleCov
+  gem 'simplecov-console'
 end

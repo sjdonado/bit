@@ -1,14 +1,14 @@
 <%= form_with model: Link.new, url: links_path(@link), data: { action: 'ajax:success->links#onCreateLinkSuccess ajax:error->links#onCreateLinkError' } do |f| %>
 	<div class="col-span-3 sm:col-span-2">
-		<label for="company_website" class="block text-sm font-medium text-gray-700">
-			Website
+		<label for="company_website" class="text-lg leading-6 font-medium text-gray-900">
+			Shorten an url
 		</label>
-		<div class="mt-1 flex rounded-md shadow-sm">
-			<%= f.text_field :url, data: { target: "links.url" }, placeholder: true, class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300"%>
+		<div class="mt-4 flex rounded-md shadow-sm mr-5">
+			<%= f.text_field :url, data: { target: "links.url" }, placeholder: "https://google.com", class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300" %>
 		</div>
 	</div>
 
-	<div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+	<div class="px-4 py-3 text-right sm:px-6">
 		<%= f.submit "Generate", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
 	</div>
 <% end %>

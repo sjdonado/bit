@@ -12,6 +12,7 @@ export default class extends Controller {
   }
 
   openSignupModal() {
+    this.closeLoginModal()
     this.signupModalTarget.classList.remove("hidden") 
   }
 
@@ -21,18 +22,38 @@ export default class extends Controller {
 
   onSignupSuccess() {
     this.closeSignupModal();
+    Turbolinks.visit('/')
   }
 
   onLoginSuccess() {
     this.closeLoginModal();
+    Turbolinks.visit('/')
   }
 
   onError(event) {
     const [data, ,] = event.detail
 
-    const usernameError = `Username: ${data.username.join(' ')}`
-    const passwordError = `Password: ${data.username.join(' ')}`
+    const errors = []
 
-    alert(`${usernameError}, ${passwordError}`)
+    if (data.username) {
+      errors.push(`Username: ${data.username.join(' ')}`)
+    }
+
+    if (data.password) {
+      errors.push(`Password: ${data.password.join(' ')}`)
+    }
+
+    alert(errors.join(','))
+  }
+
+  confirmLogout(event) {
+    if (!window.confirm("Do you really want to leave?")) {
+      event.stopPropagation()
+      return
+    }
+  }
+
+  onSuccessLogout() {
+    Turbolinks.visit('/')
   }
 }

@@ -3,11 +3,10 @@
 ## How to run
 
 ### Development
-- Setup
+- Run migrations
 ```bash
-docker-compose up -d
+docker-compose up -d db
 docker-compose run --rm app bundle exec rails db:migrate
-docker-compose stop
 ```
 - Run
 ```bash
@@ -15,7 +14,6 @@ docker-compose up
 ```
 
 ### Testing
-- Run tests
 ```bash
 docker-compose run --rm app bundle exec rails test
 ```
@@ -37,5 +35,6 @@ docker-compose run --rm app rubocop
 - [x] Add userId key to link model
 - [x] Login and logout (sessions)
 - [x] User links view
-- [ ] Modals layout
-- [ ] Setup Redis for production cache_store 
+- [x] Modals layout
+- [ ] Setup Redis for production cache_store
+- [ ] Deployment CI

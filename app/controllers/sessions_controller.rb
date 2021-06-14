@@ -7,15 +7,15 @@ class SessionsController < ApplicationController
     @user = User.find_by(username: session_params[:username])
     if @user&.authenticate(session_params[:password])
       session[:user_id] = @user.id
-      redirect_to '/'
+      render json: nil, status: :ok
     else
-      render json: nil, status: :unauthorized
+      render json: { username: ['Credentials not valid, try again or create an account'] }, status: :unauthorized
     end
   end
 
   def destroy
     reset_session
-    redirect_to '/'
+    render json: nil, status: :ok
   end
 
   private
