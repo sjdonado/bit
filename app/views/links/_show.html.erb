@@ -1,28 +1,36 @@
 <div class="bg-white shadow overflow-hidden sm:rounded-lg m-3">
   <div class="border-t border-gray-200">
     <dl>
-      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
         <dt class="text-sm font-medium text-gray-500">
 					Website
         </dt>
         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-					<a href="<%= link.url %>" class="mt-1 text-sm text-gray-600" target="_blank" rel="noreferrer"><%= link.url %></a>
+					<a href="<%= link.url %>" class="mt-1 text-sm text-gray-600 underline" target="_blank" rel="noreferrer"><%= link.url %></a>
         </dd>
       </div>
-      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <div class="bg-white px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
         <dt class="text-sm font-medium text-gray-500">
 					Shortened url
         </dt>
         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-					<a href="<%= link.short %>" class="mt-1 text-sm text-gray-600" target="_blank" rel="noreferrer"><%= link.short %></a>
+          <button data-action="click->links#openLink" class="mt-1 text-sm text-gray-600 underline"><%= link.short %></button>
         </dd>
       </div>
-      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+      <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
         <dt class="text-sm font-medium text-gray-500">
           Click counter
         </dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+        <dd class="counter mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
           <%= link.click_counter %>
+        </dd>
+      </div>
+      <div class="bg-white px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">
+          Created by
+        </dt>
+        <dd class="counter mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= link.user ? link.user.username : 'Guest user' %>
         </dd>
       </div>
     </dl>

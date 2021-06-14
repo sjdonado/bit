@@ -1,6 +1,8 @@
 <% if logged_in? %>
-	<h2 class="text-2xl leading-7 text-gray-900 sm:text-3xl sm:truncate m-3 mt-6">My links</h2>
-		<% @current_user.links.each do |link| %>
+	<h2 class="text-2xl leading-6 font-medium text-gray-900 mx-4 my-6">My links</h2>
+	<div data-links-target="userLinks">
+		<% @current_user.links.order(created_at: :desc).each do |link| %>
 			<%= render partial: "links/show", locals: { link: link } %>
 		<% end %>
+	</div>
 <% end %>

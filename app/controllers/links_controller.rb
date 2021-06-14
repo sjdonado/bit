@@ -14,6 +14,16 @@ class LinksController < ApplicationController
     end
   end
 
+  def counter
+    @link = Link.find_by_slug(params[:slug])
+
+    if @link
+      render json: @link.click_counter
+    else
+      render json: nil, status: :not_found
+    end
+  end
+
   def create
     @link = Link.find_or_create_by(url: link_params[:url]) do |link|
       link.user = @current_user if @current_user
