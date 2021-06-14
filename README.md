@@ -15,13 +15,9 @@ docker-compose up
 ```
 
 ### Testing
-- Run database in background
-```bash
-docker-compose -f docker-compose.test.yml up -d db 
-```
 - Run tests
 ```bash
-docker-compose -f docker-compose.test.yml run --rm app bundle exec rails test
+docker-compose run --rm app bundle exec rails test
 ```
 
 ### Rubocop
@@ -34,7 +30,7 @@ docker-compose run --rm app rubocop
 - [x] Generate unique slug
 - [x] Link unit tests
 - [x] Stimulus setup
-- [ ] Link controller (handle redirection)
+- [x] Link controller (handle redirection)
 - [ ] Main page with input box
 - [ ] Create user model
 - [ ] User unit tests
