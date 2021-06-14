@@ -24,15 +24,4 @@ class LinkTest < ActiveSupport::TestCase
     link = links(:one)
     assert link.slug, 'Slug not generated on save a new link'
   end
-
-  test 'should get shorten url of existing url' do
-    link = links(:one)
-    url = link.url
-    assert Link.shorten(url), 'Shorten url not found'
-  end
-
-  test 'should get shorten url and create a link' do
-    url = 'https://test.com'
-    assert Link.shorten(url), 'Link not created'
-  end
 end

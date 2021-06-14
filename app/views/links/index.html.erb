@@ -1,0 +1,12 @@
+<div data-controller="links" class="flex flex-col">
+  <div class="py-2 align-middle inline-block sm:px-6 lg:px-8">
+    <div class="shadow sm:rounded-md sm:overflow-hidden">
+      <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+        <div class="grid grid-cols-3 gap-6">
+          <%= render partial: "links/form" %>
+          <div data-links-target="output"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

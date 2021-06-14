@@ -14,10 +14,10 @@
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
-//= require turbolinks
 
-console.log('Hello World from Webpacker')
+require("@rails/ujs").start()
+require("turbolinks").start()
 
 import "controllers"
 
-import "stylesheets"
+import "./application.css"

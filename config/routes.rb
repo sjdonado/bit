@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  root 'links#home'
+  root 'links#index'
 
-  get '/:slug', to: 'links#show', as: :short
+  get '/:slug', to: 'links#redirect', as: :short
+
+  resources :links, only: [:create]
 end

@@ -31,7 +31,7 @@ docker-compose run --rm app rubocop
 - [x] Link unit tests
 - [x] Stimulus setup
 - [x] Link controller (handle redirection)
-- [ ] Main page with input box
+- [x] Main page with input box
 - [ ] Create user model
 - [ ] User unit tests
 - [ ] Add userId key to link model
