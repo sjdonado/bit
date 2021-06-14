@@ -18,4 +18,6 @@ class Link < ApplicationRecord
   def short
     Rails.application.routes.url_helpers.short_url(slug: slug)
   end
+
+  belongs_to :user, optional: true
 end

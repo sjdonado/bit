@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class LinksController < ApplicationController
+  before_action :authenticate, only: [:create]
+
   def redirect
     @link = Link.find_by_slug(params[:slug])
 
@@ -13,7 +15,9 @@ class LinksController < ApplicationController
   end
 
   def create
-    @link = Link.find_or_create_by(url: link_params[:url])
+    @link = Link.find_or_create_by(url: link_params[:url]) do |link|
+      link.user = @current_user if @current_user
+    end
 
     if @link.errors.any?
       render json: @link.errors, status: :unprocessable_entity
@@ -21,6 +25,8 @@ class LinksController < ApplicationController
       render partial: 'links/show', locals: { link: @link }, status: :ok
     end
   end
+
+  private
 
   def link_params
     params.require(:link).permit(:url)

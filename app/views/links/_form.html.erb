@@ -1,14 +1,14 @@
-<%= form_with model: Link.new, url: links_path(@link), data: { action: 'ajax:success->links#onSuccess ajax:error->links#onError' } do |form| %>
+<%= form_with model: Link.new, url: links_path(@link), data: { action: 'ajax:success->links#onSuccess ajax:error->links#onError' } do |f| %>
 	<div class="col-span-3 sm:col-span-2">
 		<label for="company_website" class="block text-sm font-medium text-gray-700">
 			Website
 		</label>
 		<div class="mt-1 flex rounded-md shadow-sm">
-			<%= form.text_field :url, data: { target: "links.url" }, placeholder: true, class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300"%>
+			<%= f.text_field :url, data: { target: "links.url" }, placeholder: true, class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300"%>
 		</div>
 	</div>
 
 	<div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-		<%= form.submit "Generate", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+		<%= f.submit "Generate", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
 	</div>
 <% end %>

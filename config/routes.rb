@@ -5,5 +5,6 @@ Rails.application.routes.draw do
 
   get '/:slug', to: 'links#redirect', as: :short
 
-  resources :links, only: [:create]
+  resources :links, only: %i[create]
+  resources :users, only: %i[new create]
 end

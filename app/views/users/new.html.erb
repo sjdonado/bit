@@ -1,0 +1,10 @@
+<h1>Sign Up</h1>
+<div data-controller="users">
+  <%= form_for @user, data: { action: 'ajax:error->users#onError' } do |f| %>
+    <%= f.label :username%><br>
+    <%= f.text_field :username%><br>
+    <%= f.label :password%><br>
+    <%= f.password_field :password%><br>
+    <%= f.submit %>
+  <%end%>
+</div>

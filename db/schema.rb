@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_210_613_145_459) do
+ActiveRecord::Schema.define(version: 20_210_614_114_837) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -22,6 +22,17 @@ ActiveRecord::Schema.define(version: 20_210_613_145_459) do
     t.integer 'click_counter', default: 0
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.bigint 'user_id'
     t.index ['slug'], name: 'index_links_on_slug'
+    t.index ['user_id'], name: 'index_links_on_user_id'
   end
+
+  create_table 'users', force: :cascade do |t|
+    t.string 'username'
+    t.string 'password_digest'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+  end
+
+  add_foreign_key 'links', 'users'
 end
