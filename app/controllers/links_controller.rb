@@ -1,22 +1,19 @@
 # frozen_string_literal: true
 
 class LinksController < ApplicationController
-  before_action :authenticate, only: [:create]
+  before_action :authenticate, only: %i[create]
+  before_action :set_link, only: %i[redirect counter]
 
   def redirect
-    @link = Link.find_by_slug(params[:slug])
-
     if @link
       @link.update(click_counter: @link.click_counter + 1)
       redirect_to @link.url
     else
-      render file: "#{Rails.root}/public/404", status: :not_found
+      render file: Rails.root.join('/public/404'), status: :not_found
     end
   end
 
   def counter
-    @link = Link.find_by_slug(params[:slug])
-
     if @link
       render json: @link.click_counter
     else
@@ -37,6 +34,10 @@ class LinksController < ApplicationController
   end
 
   private
+
+  def set_link
+    @link = Link.find_by(slug: params[:slug])
+  end
 
   def link_params
     params.require(:link).permit(:url)

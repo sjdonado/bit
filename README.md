@@ -27,24 +27,21 @@ docker-compose run --rm app bundle exec rubocop
 
 - Testing
 ```bash
-Finished in 2.326313s, 10.3168 runs/s, 10.7466 assertions/s.
-24 runs, 25 assertions, 0 failures, 0 errors, 0 skips
-Coverage report generated for Minitest to /usr/src/app/coverage. 79 / 79 LOC (100.0%) covered.
+Finished in 2.211344s, 9.9487 runs/s, 10.4009 assertions/s.
+22 runs, 23 assertions, 0 failures, 0 errors, 0 skips
+Coverage report generated for Minitest to /usr/src/app/coverage. 81 / 81 LOC (100.0%) covered.
 
-COVERAGE: 100.00% -- 79/79 lines in 11 files
-BRANCH COVERAGE: 100.00% -- 22/22 branches in 11 branches
+COVERAGE: 100.00% -- 81/81 lines in 8 files
+BRANCH COVERAGE: 100.00% -- 20/20 branches in 8 branches
 
 +----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
 | coverage | file                                      | lines | missed | missing | branch coverage | branches | branches missed | branches missing |
 +----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
-| 100.00%  | app/controllers/application_controller.rb | 2     | 0      |         | 100.00%         | 0        | 0               |                  |
-| 100.00%  | app/controllers/links_controller.rb       | 22    | 0      |         | 100.00%         | 8        | 0               |                  |
-| 100.00%  | app/controllers/sessions_controller.rb    | 14    | 0      |         | 100.00%         | 4        | 0               |                  |
-| 100.00%  | app/controllers/users_controller.rb       | 12    | 0      |         | 100.00%         | 4        | 0               |                  |
-| 100.00%  | app/helpers/application_helper.rb         | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
-| 100.00%  | app/helpers/links_helper.rb               | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
-| 100.00%  | app/helpers/sessions_helper.rb            | 7     | 0      |         | 100.00%         | 2        | 0               |                  |
-| 100.00%  | app/helpers/users_helper.rb               | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/controllers/application_controller.rb | 3     | 0      |         | 100.00%         | 0        | 0               |                  |
+| 100.00%  | app/controllers/links_controller.rb       | 23    | 0      |         | 100.00%         | 8        | 0               |                  |
+| 100.00%  | app/controllers/sessions_controller.rb    | 17    | 0      |         | 100.00%         | 4        | 0               |                  |
+| 100.00%  | app/controllers/users_controller.rb       | 16    | 0      |         | 100.00%         | 4        | 0               |                  |
+| 100.00%  | app/helpers/sessions_helper.rb            | 3     | 0      |         | 100.00%         | 0        | 0               |                  |
 | 100.00%  | app/models/application_record.rb          | 2     | 0      |         | 100.00%         | 0        | 0               |                  |
 | 100.00%  | app/models/link.rb                        | 13    | 0      |         | 100.00%         | 4        | 0               |                  |
 | 100.00%  | app/models/user.rb                        | 4     | 0      |         | 100.00%         | 0        | 0               |                  |
@@ -53,10 +50,10 @@ BRANCH COVERAGE: 100.00% -- 22/22 branches in 11 branches
 
 - Rubocop
 ```bash
-Inspecting 58 files
-..........................................................
+Inspecting 43 files
+...........................................
 
-58 files inspected, no offenses detected
+43 files inspected, no offenses detected
 ```
 
 - Production link

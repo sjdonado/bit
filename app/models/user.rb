@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  validates_uniqueness_of :username
+  validates :username, uniqueness: true
   has_secure_password
 
-  has_many :links
+  has_many :links, dependent: :nullify
 end
