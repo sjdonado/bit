@@ -10,9 +10,9 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Create master.key
-        uses: "finnp/create-file-action@master"
+        uses: finnp/create-file-action@master
         env:
-          FILE_NAME: "config/master.key"
+          FILE_NAME: config/master.key
           FILE_DATA: ${{ secrets.SECRET_KEY_BASE }}
       - name: Login to Heroku
         run: heroku container:login 
