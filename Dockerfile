@@ -41,6 +41,6 @@ COPY . .
 
 RUN chmod 600 config/master.key
 
-RUN bundle exec rails assets:precompile 
+RUN bundle exec rails assets:precompile
 
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
