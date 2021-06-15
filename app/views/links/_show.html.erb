@@ -14,7 +14,7 @@
 					Shortened url
         </dt>
         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          <button data-action="click->links#openLink" class="mt-1 text-sm text-gray-600 underline"><%= link.short %></button>
+          <button data-action="click->links#openLink" class="mt-1 text-sm text-gray-600 underline"><%= short_url(slug: link.slug) %></button>
         </dd>
       </div>
       <div class="bg-gray-50 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

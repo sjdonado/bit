@@ -27,12 +27,12 @@ docker-compose run --rm app bundle exec rubocop
 
 - Testing
 ```bash
-Finished in 2.227992s, 10.3232 runs/s, 10.7720 assertions/s.
-23 runs, 24 assertions, 0 failures, 0 errors, 0 skips
-Coverage report generated for Minitest to /usr/src/app/coverage. 77 / 77 LOC (100.0%) covered.
+Finished in 2.326313s, 10.3168 runs/s, 10.7466 assertions/s.
+24 runs, 25 assertions, 0 failures, 0 errors, 0 skips
+Coverage report generated for Minitest to /usr/src/app/coverage. 79 / 79 LOC (100.0%) covered.
 
-COVERAGE: 100.00% -- 77/77 lines in 11 files
-BRANCH COVERAGE: 100.00% -- 20/20 branches in 11 branches
+COVERAGE: 100.00% -- 79/79 lines in 11 files
+BRANCH COVERAGE: 100.00% -- 22/22 branches in 11 branches
 
 +----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
 | coverage | file                                      | lines | missed | missing | branch coverage | branches | branches missed | branches missing |
@@ -46,7 +46,7 @@ BRANCH COVERAGE: 100.00% -- 20/20 branches in 11 branches
 | 100.00%  | app/helpers/sessions_helper.rb            | 7     | 0      |         | 100.00%         | 2        | 0               |                  |
 | 100.00%  | app/helpers/users_helper.rb               | 1     | 0      |         | 100.00%         | 0        | 0               |                  |
 | 100.00%  | app/models/application_record.rb          | 2     | 0      |         | 100.00%         | 0        | 0               |                  |
-| 100.00%  | app/models/link.rb                        | 11    | 0      |         | 100.00%         | 2        | 0               |                  |
+| 100.00%  | app/models/link.rb                        | 13    | 0      |         | 100.00%         | 4        | 0               |                  |
 | 100.00%  | app/models/user.rb                        | 4     | 0      |         | 100.00%         | 0        | 0               |                  |
 +----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
 ```

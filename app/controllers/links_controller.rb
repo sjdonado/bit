@@ -6,11 +6,11 @@ class LinksController < ApplicationController
   def redirect
     @link = Link.find_by_slug(params[:slug])
 
-    if @link.nil?
-      render file: "#{Rails.root}/public/404", status: :not_found
-    else
+    if @link
       @link.update(click_counter: @link.click_counter + 1)
       redirect_to @link.url
+    else
+      render file: "#{Rails.root}/public/404", status: :not_found
     end
   end
 

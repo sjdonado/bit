@@ -10,13 +10,17 @@ class Link < ApplicationRecord
 
   before_validation :generate_slug
 
-  def generate_slug
-    # Number of combinations 62P6
-    self.slug = SecureRandom.alphanumeric(6) if slug.blank?
-  end
+  def generate_slug(attempts = 0)
+    return if !slug.blank? || attempts == 3
 
-  def short
-    Rails.application.routes.url_helpers.short_url(slug: slug)
+    # Number of combinations 62P6
+    generated_slug = SecureRandom.alphanumeric(6)
+
+    if Link.where(slug: generated_slug).exists?
+      generate_slug(attempts + 1)
+    else
+      self.slug = generated_slug
+    end
   end
 
   belongs_to :user, optional: true

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'minitest/mock'
 
 class LinkTest < ActiveSupport::TestCase
   test 'Should not save a link without a url' do
@@ -23,5 +24,14 @@ class LinkTest < ActiveSupport::TestCase
   test 'Should generate a slug on save a new link' do
     link = links(:one)
     assert link.slug, 'Slug not generated on save a new link'
+  end
+
+  test 'Should generate an unique slug' do
+    SecureRandom.stub :alphanumeric, 'ktr4ms' do
+      link = Link.new
+      link.url = 'https://test.com'
+      link.generate_slug
+      assert_raise(ActiveRecord::NotNullViolation) { link.save }
+    end
   end
 end
