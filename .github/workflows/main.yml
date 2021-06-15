@@ -9,6 +9,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: RuboCop Linter Action
+        uses: andrewmcodes/rubocop-linter-action@v3.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create master.key
         uses: finnp/create-file-action@master
         env:

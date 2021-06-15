@@ -25,7 +25,6 @@ COPY ./entrypoint.dev.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 
 RUN gem install bundler --version "$BUNDLE_VERSION"
-RUN gem install rubocop
 
 COPY . .
 

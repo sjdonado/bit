@@ -20,7 +20,7 @@ docker-compose run --rm app bundle exec rails test
 
 ### Rubocop
 ```bash
-docker-compose run --rm app rubocop 
+docker-compose run --rm app bundle exec rubocop 
 ```
 
 ## Results
