@@ -15,3 +15,7 @@
   <%= render partial: "links/new" %>
   <%= render partial: "links/index" %>
 </div>
+
+<% unless @current_user.nil? %>
+  <script>localStorage.setItem("session-username", "<%= current_user_username %>");</script>
+<% end %>

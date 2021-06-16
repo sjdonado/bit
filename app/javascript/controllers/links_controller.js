@@ -6,11 +6,7 @@ export default class extends Controller {
 
   initialize() {
     this.lastLink = null
-
-    const selector = document.querySelector('meta[name="logged-in"]')
-    this.loggedIn = selector.getAttribute('content')
-
-    selector.parentNode.removeChild(selector)
+    this.sessionUsername = localStorage.getItem("session-username")
   }
 
   onCreateLinkSuccess(event) {
@@ -18,7 +14,8 @@ export default class extends Controller {
 
     this.outputTarget.innerHTML = xhr.response
     
-    if (this.loggedIn && this.lastLink && this.lastLink.includes(this.loggedIn) && !this.userLinksTarget.innerHTML.includes(this.lastLink)) {
+    if (this.sessionUsername && this.lastLink && this.lastLink.includes(this.sessionUsername)
+        && !this.userLinksTarget.innerHTML.includes(this.lastLink)) {
       this.userLinksTarget.innerHTML = this.lastLink + this.userLinksTarget.innerHTML
     }
 

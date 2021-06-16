@@ -55,6 +55,7 @@ export default class extends Controller {
   }
 
   onSuccessLogout() {
+    localStorage.removeItem("session-username")
     Turbolinks.visit('/')
   }
 }
