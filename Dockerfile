@@ -1,13 +1,12 @@
 FROM ruby:2.6.3-alpine
 
+ENV RAILS_ENV production
 ENV APP_PATH /usr/src/app
 ENV BUNDLE_VERSION 2.1.4
-ENV RAILS_LOG_TO_STDOUT true
-ENV RAILS_ENV production
 
 WORKDIR $APP_PATH
 
-EXPOSE $RAILS_PORT
+EXPOSE 3000
 
 ENV ALPINE_MIRROR "http://dl-cdn.alpinelinux.org/alpine"
 RUN echo "${ALPINE_MIRROR}/v3.11/main/" >> /etc/apk/repositories
@@ -38,9 +37,5 @@ COPY ./yarn.lock .
 RUN yarn
 
 COPY . .
-
-RUN chmod 600 config/master.key
-
-RUN bundle exec rails assets:precompile
 
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]

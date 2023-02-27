@@ -56,8 +56,14 @@ Inspecting 43 files
 43 files inspected, no offenses detected
 ```
 
+- Dokku deployment
+```bash
+ bundle exec rails assets:precompile
+ bundle exec rails db:migrate
+```
+
 - Production link
-https://s-shortener.herokuapp.com/
+https://url-shortener.sjdonado.de
 
 ## TODO
 - [x] Create link model (make sure to create a index for the slug and click counter)
