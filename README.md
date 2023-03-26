@@ -1,8 +1,6 @@
 # URL shortener
 
-<p align="center">
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/27580836/227785266-40a0bb04-0f19-4f3e-9831-b74464848d99.png">
-</p>
+<img width="1200" alt="image" src="https://user-images.githubusercontent.com/27580836/227800665-4ff7e2ae-8189-4593-8961-496b7c9ac861.png">
 
 # Features
 - [x] Create link model (make sure to create a index for the slug and click counter)
