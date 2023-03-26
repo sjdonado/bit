@@ -152,7 +152,6 @@ GEM
     rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    redis (4.3.1)
     regexp_parser (2.1.1)
     rexml (3.2.5)
     rubocop (1.17.0)
@@ -250,7 +249,6 @@ DEPENDENCIES
   pg (>= 0.18, < 2.0)
   puma (~> 4.3.8)
   rails (~> 5.2.6)
-  redis (~> 4.0)
   rubocop (~> 1.17)
   rubocop-rails
   selenium-webdriver
@@ -268,4 +266,4 @@ RUBY VERSION
    ruby 2.6.3p62
 
 BUNDLED WITH
-   2.1.4
+   2.1.4  2.1.4

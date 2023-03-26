@@ -2,6 +2,6 @@
 
 set -e
 
-rm -f $APP_PATH/tmp/pids/server.pid
+rm -f "$APP_PATH/tmp/pids/server.pid"
 
-${@}
+"${@}"
