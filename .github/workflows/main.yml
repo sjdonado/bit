@@ -15,22 +15,3 @@ jobs:
           action_config_path: .github/config/rubocop_linter_action.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create master.key
-        uses: finnp/create-file-action@master
-        env:
-          FILE_NAME: config/master.key
-          FILE_DATA: ${{ secrets.SECRET_KEY_BASE }}
-      - name: Login to Heroku
-        run: heroku container:login 
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      - name: Build and push
-        run: heroku container:push -a $APP_NAME web
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          APP_NAME: s-shortener
-      - name: Release
-        run: heroku container:release -a $APP_NAME web
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          APP_NAME: s-shortener
