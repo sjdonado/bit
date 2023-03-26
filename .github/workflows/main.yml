@@ -1,4 +1,4 @@
-name: Deploy production to Heroku
+name: Rubocop Linter
 on:
   push:
     branches:
