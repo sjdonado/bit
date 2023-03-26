@@ -32,12 +32,12 @@ RUN gem install bundler --version "$BUNDLE_VERSION"
 COPY ./Gemfile .
 COPY ./Gemfile.lock .
 
-RUN bundle install --jobs 20 --retry 5
+RUN bundle install --binstubs
 
 COPY ./package.json .
 COPY ./yarn.lock .
 
-RUN yarn
+RUN yarn --production
 
 COPY . .
 
