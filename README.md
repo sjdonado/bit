@@ -1,8 +1,27 @@
 # URL shortener
 
-## How to run
+<p align="center">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/27580836/227785266-40a0bb04-0f19-4f3e-9831-b74464848d99.png">
+</p>
 
-### Development
+# Features
+- [x] Create link model (make sure to create a index for the slug and click counter)
+- [x] Generate unique slug
+- [x] Link unit tests
+- [x] Stimulus setup
+- [x] Link controller (handle redirection)
+- [x] Main page with input box
+- [x] Create user model
+- [x] User unit tests
+- [x] Add userId key to link model
+- [x] Login and logout (sessions)
+- [x] User links view
+- [x] Modals layout
+- [x] Deployment CI
+
+# How to run
+
+## Development
 - Run migrations
 ```bash
 docker-compose up -d db
@@ -13,19 +32,19 @@ docker-compose run --rm app bundle exec rails db:migrate
 docker-compose up
 ```
 
-### Testing
+## Testing
 ```bash
 docker-compose run --rm app bundle exec rails test
 ```
 
-### Rubocop
+## Rubocop
 ```bash
 docker-compose run --rm app bundle exec rubocop 
 ```
 
-## Results
+# Results
 
-- Testing
+## Testing
 ```bash
 Finished in 2.211344s, 9.9487 runs/s, 10.4009 assertions/s.
 22 runs, 23 assertions, 0 failures, 0 errors, 0 skips
@@ -48,7 +67,7 @@ BRANCH COVERAGE: 100.00% -- 20/20 branches in 8 branches
 +----------+-------------------------------------------+-------+--------+---------+-----------------+----------+-----------------+------------------+
 ```
 
-- Rubocop
+## Rubocop
 ```bash
 Inspecting 43 files
 ...........................................
@@ -64,19 +83,3 @@ Inspecting 43 files
 
 - Production link
 https://url-shortener.sjdonado.de
-
-## TODO
-- [x] Create link model (make sure to create a index for the slug and click counter)
-- [x] Generate unique slug
-- [x] Link unit tests
-- [x] Stimulus setup
-- [x] Link controller (handle redirection)
-- [x] Main page with input box
-- [x] Create user model
-- [x] User unit tests
-- [x] Add userId key to link model
-- [x] Login and logout (sessions)
-- [x] User links view
-- [x] Modals layout
-- [x] Setup Redis for production cache_store
-- [x] Deployment CI
