@@ -7,5 +7,10 @@ one:
 
 two:
   slug: qwu62l
-  url: 'https://gapfish.com'
+  url: 'https://www.google.com'
+  click_counter: 1
+
+three:
+  slug: rwi43l
+  url: 'google.com'
   click_counter: 1

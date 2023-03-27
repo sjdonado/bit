@@ -4,7 +4,7 @@
       URL Shortener
 		</label>
 		<div class="mt-4 flex rounded-md shadow-sm">
-      <%= f.text_field :url, pattern: '(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?)(?:\/[^\s]*)?', data: { target: "links.url" }, placeholder: "https://google.com", class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300" %>
+      <%= f.text_field :url, pattern: '(https?:\/\/)?(www\.)?([a-zA-Z0-9_-]+\.)+[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?([\/?#][^\s]*)?', data: { target: "links.url" }, placeholder: "https://google.com", class: "focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-md sm:text-sm border-gray-300" %>
 		</div>
 	</div>
 

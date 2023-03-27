@@ -42,9 +42,10 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
   test 'Should redirect from slug to url' do
     link = links(:one)
     slug = link.slug
+
     get short_url(slug: slug)
 
-    assert_redirected_to link.url
+    assert_redirected_to link.parsed_url
   end
 
   test 'Should get link counter' do

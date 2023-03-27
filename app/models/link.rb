@@ -1,17 +1,21 @@
 # frozen_string_literal: true
 
-VALID_URL_REGEX = /\A(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)? \
-                    ([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?) \
-                    (?:\/[^\s]*)?\z/
-
 class Link < ApplicationRecord
   validates :url, presence: true
   validates :slug, uniqueness: true
 
-  validates :url, format: { with: VALID_URL_REGEX, message: 'invalid format' }
+  validates :url,
+            format: {
+              with: %r{\A(https?://)?(www\.)?([a-zA-Z0-9_-]+\.)+[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?([/?#][^\s]*)?\z}i,
+              message: 'must be a valid URL'
+            }
   validates :url, length: { within: 3..30_000, on: :create, message: 'max length is 30000' }
 
   before_validation :generate_slug
+
+  def parsed_url
+    "https://#{url}"
+  end
 
   def generate_slug(attempts = 0)
     return if slug.present? || attempts == 3

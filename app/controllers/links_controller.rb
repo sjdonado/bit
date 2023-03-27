@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class LinksController < ApplicationController
+  include LinksHelper
+
   before_action :authenticate, only: %i[create]
   before_action :set_link, only: %i[redirect counter]
 
   def redirect
     if @link
-      @link.update(click_counter: @link.click_counter + 1)
-      redirect_to @link.url
+      @link.increment!(:click_counter) # rubocop:disable Rails/SkipsModelValidations
+      redirect_to @link.parsed_url
     else
       render file: Rails.root.join('/public/404'), status: :not_found
     end
@@ -22,7 +24,9 @@ class LinksController < ApplicationController
   end
 
   def create
-    @link = Link.find_or_create_by(url: link_params[:url]) do |link|
+    url = stripped_url(link_params[:url])
+
+    @link = Link.find_or_create_by(url: url) do |link|
       link.user = @current_user if @current_user
     end
 

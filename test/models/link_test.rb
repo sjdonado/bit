@@ -9,21 +9,31 @@ class LinkTest < ActiveSupport::TestCase
     assert_not link.save, 'Saved the link without a url'
   end
 
-  test 'Should not save a link with a invalid url' do
+  test 'Should not save a link with a invalid url - number' do
     link = Link.new
-    link.url = 'test.com'
+    link.url = 0
     assert_not link.save, 'Saved the link with invalid url format'
   end
 
-  test 'Should create a link with a valid url' do
+  test 'Should not save a link with a invalid url - string' do
     link = Link.new
-    link.url = 'https://test.com'
-    assert link.save, 'Link with valid url not saved'
+    link.url = 'test'
+    assert_not link.save, 'Saved the link with invalid url format'
   end
 
-  test 'Should generate a slug on save a new link' do
+  test 'Should generate a slug on save a new link - format https://google.com' do
     link = links(:one)
-    assert link.slug, 'Slug not generated on save a new link'
+    assert link.save, 'Slug generated on save a new link'
+  end
+
+  test 'Should generate a slug on save a new link - format http://www.google.com' do
+    link = links(:two)
+    assert link.save, 'Slug generated on save a new link'
+  end
+
+  test 'Should generate a slug on save a new link - format google.com' do
+    link = links(:three)
+    assert link.save, 'Slug generated on save a new link'
   end
 
   test 'Should generate an unique slug' do
