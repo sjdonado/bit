@@ -6,8 +6,8 @@ class Link < ApplicationRecord
 
   validates :url,
             format: {
-              with: %r{\A(https?://)?(www\.)?([a-zA-Z0-9_-]+\.)+[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?([/?#][^\s]*)?\z}i,
-              message: 'must be a valid URL'
+              with: %r{\A(?:https?://)?(?:\w+\.)?(?:google\.com|sjdonado\.de)(?:/[\w-]+)*/?\z},
+              message: 'domains allowed for demo purposes: [google.com, sjdonado.de]'
             }
   validates :url, length: { within: 3..30_000, on: :create, message: 'max length is 30000' }
 

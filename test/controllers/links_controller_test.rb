@@ -14,7 +14,7 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'Should create a link' do
-    url = 'https://test.com'
+    url = 'https://test.sjdonado.de'
     post links_url, params: { link: { url: url } }
 
     assert_response :success
@@ -26,7 +26,7 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    url = 'https://test.com'
+    url = 'https://test.sjdonado.de'
     post links_url, params: { link: { url: url } }
 
     assert_response :success

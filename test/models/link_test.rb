@@ -39,7 +39,7 @@ class LinkTest < ActiveSupport::TestCase
   test 'Should generate an unique slug' do
     SecureRandom.stub :alphanumeric, 'ktr4ms' do
       link = Link.new
-      link.url = 'https://test.com'
+      link.url = 'https://test.sjdonado.de'
       link.generate_slug
       assert_raise(ActiveRecord::NotNullViolation) { link.save }
     end
