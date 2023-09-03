@@ -1,4 +1,4 @@
-name: Deploy production to sjdonado.de
+name: Deploy production to donado.co
 on:
   push:
     branches:
@@ -20,5 +20,5 @@ jobs:
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
-          git_remote_url: "ssh://dokku@ssh.sjdonado.de:22/url-shortener"
+          git_remote_url: "ssh://dokku@ssh.donado.co:22/url-shortener"
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

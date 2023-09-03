@@ -41,6 +41,6 @@ RUN yarn --production
 
 COPY . .
 
-RUN bundle exec rails assets:precompile
+RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
