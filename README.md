@@ -44,6 +44,3 @@ docker-compose run --rm app bundle exec rubocop
 ```bash
  bundle exec rails db:migrate
 ```
-
-## Production link
-https://url-shortener.sjdonado.de
