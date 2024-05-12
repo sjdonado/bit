@@ -1,2 +1,2 @@
 require "spec"
-require "../src/url-shortener"
+require "../src/pa"

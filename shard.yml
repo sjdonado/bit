@@ -1,16 +1,28 @@
-name: url-shortener
+name: pa
 version: 0.1.0
 
 authors:
   - Juan Rodriguez <sjdonado@icloud.com>
 
 targets:
-  url-shortener:
-    main: src/url-shortener.cr
+  pa:
+    main: src/pa.cr
 
 dependencies:
   kemal:
     github: kemalcr/kemal
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+  crecto:
+    github: fridgerator/crecto
+  micrate:
+    github: amberframework/micrate
+
+development_dependencies:
+  dotenv:
+    github: gdotdesign/cr-dotenv
+  spec-kemal:
+    github: kemalcr/spec-kemal
 
 crystal: '>= 1.12.1'
 
