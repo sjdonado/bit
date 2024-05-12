@@ -1,7 +1,7 @@
 require "sqlite3"
 require "crecto"
 
-module Pa::Lib
+module App::Lib
   class Database
     extend Crecto::Repo
 
@@ -9,8 +9,7 @@ module Pa::Lib
     Multi = Crecto::Repo::Multi
 
     config do |conf|
-      conf.adapter = Crecto::Adapters::SQLite3
-      conf.database = ENV["DATABASE_URL"]
+      conf.uri = ENV["DATABASE_URL"]
     end
   end
 end

@@ -1,7 +1,7 @@
 require "../lib/controller.cr"
 
-module Pa::Controllers::Ping
-  class Get < Pa::Lib::BaseController
+module App::Controllers::Ping
+  class Get < App::Lib::BaseController
     def call(env)
       response = {"pong" => "ok"}
       response.to_json

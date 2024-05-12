@@ -1,4 +1,4 @@
-name: pa
+name: url-shortener
 version: 0.1.0
 
 authors:
@@ -6,7 +6,7 @@ authors:
 
 targets:
   pa:
-    main: src/pa.cr
+    main: src/url-shortener.cr
 
 dependencies:
   kemal:

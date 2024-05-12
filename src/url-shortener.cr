@@ -1,7 +1,10 @@
 require "kemal"
 
 require "./config/*"
-require "./services/*"
+require "./lib/*"
+require "./models/*"
+require "./serializers/*"
+
 require "./routes"
 
 error 500 { |env| {"status" => 500, "error" => "Internal Server Error"}.to_json }
