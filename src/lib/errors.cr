@@ -1,16 +1,9 @@
 require "kemal"
 
 module App
-  class UnauthorizedException < Kemal::Exceptions::CustomException
+  class BadRequestException < Kemal::Exceptions::CustomException
     def initialize(context)
-      context.response.status_code = 401
-      super(context)
-    end
-  end
-
-  class ForbiddenException < Kemal::Exceptions::CustomException
-    def initialize(context)
-      context.response.status_code = 403
+      context.response.status_code = 400
       super(context)
     end
   end

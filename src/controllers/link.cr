@@ -6,10 +6,12 @@ module App::Controllers::Link
     include App::Lib
 
     def call(env)
-      params = env.params.json["link"].as(Hash)
+      json_params = env.params.json.to_h
+      url = json_params.has_key?("url") ? json_params["url"] : nil
+      raise App::BadRequestException.new(env) if !url #TODO: return url "required field" error message
 
       link = Link.new
-      link.url = params["url"].as_s
+      link.url = url.to_s
       link.slug = Random::Secure.urlsafe_base64(4)
 
       changeset = Database.insert(link)
@@ -19,7 +21,26 @@ module App::Controllers::Link
         raise App::UnprocessableEntityException.new(env, errors.to_json)
       end
 
-      App::Serializers::Link.new(link).to_json
+      response = {"data" => App::Serializers::Link.new(link) }
+      response.to_json
     end
   end
+
+  class Index < App::Lib::BaseController
+    include App::Models
+    include App::Lib
+
+    def call(env)
+      slug = env.params.url["slug"]
+
+      link = Database.get_by(Link, slug: slug)
+      raise App::NotFoundException.new(env) if !link
+
+      #TODO: update click_counter
+
+      env.redirect link.url!
+    end
+  end
+
+  #TODO: update, delete, list links
 end

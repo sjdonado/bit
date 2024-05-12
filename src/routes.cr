@@ -9,6 +9,10 @@ module App
     Controllers::Ping::Get.new.call(env)
   end
 
+  get "/:slug" do |env|
+    Controllers::Link::Index.new.call(env)
+  end
+
   post "/api/links" do |env|
     Controllers::Link::Create.new.call(env)
   end
