@@ -8,6 +8,10 @@ targets:
   url-shortener:
     main: src/url-shortener.cr
 
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+
 crystal: '>= 1.12.1'
 
 license: MIT

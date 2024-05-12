@@ -1,6 +1,7 @@
-# TODO: Write documentation for `Url::Shortener`
-module Url::Shortener
-  VERSION = "0.1.0"
+require "kemal"
 
-  # TODO: Put your code here
+get "/" do
+  "Hello World!"
 end
+
+Kemal.run
