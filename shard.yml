@@ -1,0 +1,13 @@
+name: url-shortener
+version: 0.1.0
+
+authors:
+  - Juan Rodriguez <sjdonado@icloud.com>
+
+targets:
+  url-shortener:
+    main: src/url-shortener.cr
+
+crystal: '>= 1.12.1'
+
+license: MIT

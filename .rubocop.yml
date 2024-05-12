@@ -1,9 +1,0 @@
-require: rubocop-rails
-
-AllCops:
-  NewCops: enable
-Style/Documentation:
-  Enabled: false
-Style/MixinUsage:   
-  Exclude:
-    - 'bin/*'
