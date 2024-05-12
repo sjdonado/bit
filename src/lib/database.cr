@@ -1,8 +1,8 @@
 require "sqlite3"
 require "crecto"
 
-module Pa::Services
-  class Repo
+module Pa::Lib
+  class Database
     extend Crecto::Repo
 
     Query = Crecto::Repo::Query

@@ -1,3 +1,5 @@
+require "kemal"
+
 require "./config/*"
 require "./services/*"
 require "./routes"

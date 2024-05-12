@@ -15,8 +15,6 @@ dependencies:
     github: crystal-lang/crystal-sqlite3
   crecto:
     github: fridgerator/crecto
-  micrate:
-    github: amberframework/micrate
 
 development_dependencies:
   dotenv:

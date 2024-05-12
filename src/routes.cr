@@ -1,4 +1,3 @@
-require "kemal"
 require "./controllers/**"
 
 module Pa
