@@ -1,0 +1,17 @@
+meta {
+  name: Update Link
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/links/0da9dc9d-c56c-4d4e-942e-1ebf05ed7090
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "url": "https://idonthavespotify.donado.co"
+  }
+}

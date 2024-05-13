@@ -20,4 +20,8 @@ module App
   post "/api/links" do |env|
     Controllers::Link::Create.new.call(env)
   end
+
+  put "/api/links/:id" do |env|
+    Controllers::Link::Update.new.call(env)
+  end
 end

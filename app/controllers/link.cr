@@ -36,8 +36,7 @@ module App::Controllers::Link
     def call(env)
       slug = env.params.url["slug"]
 
-      link = Database.get_by(Link, slug: slug)
-      raise App::NotFoundException.new(env) if !link
+      link = Database.get_by!(Link, slug: slug)
 
       spawn do
         link.click_counter = link.click_counter! + 1
@@ -59,13 +58,39 @@ module App::Controllers::Link
     def call(env)
       id = env.params.url["id"]
 
-      link = Database.get(Link, id)
-      raise App::NotFoundException.new(env) if !link
+      link = Database.get!(Link, id)
 
       response = {"data" => App::Serializers::Link.new(link)}
       response.to_json
     end
   end
 
-  # TODO: update, delete
+  class Update < App::Lib::BaseController
+    include App::Models
+    include App::Lib
+
+    def call(env)
+      id = env.params.url["id"]
+
+      json_params = env.params.json.to_h
+      url = json_params.has_key?("url") ? json_params["url"] : nil
+      raise App::BadRequestException.new(env, {"url" => "Required field"}) if !url
+
+      link = Database.get!(Link, id)
+      link.url = url.to_s
+      link.click_counter = 0
+
+      changeset = Database.update(link)
+
+      if !changeset.valid?
+        errors = {"errors" => map_changeset_errors(changeset.errors)}
+        raise App::UnprocessableEntityException.new(env, errors)
+      end
+
+      response = {"data" => App::Serializers::Link.new(link)}
+      response.to_json
+    end
+  end
+
+  # TODO: delete
 end
