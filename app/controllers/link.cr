@@ -8,12 +8,14 @@ module App::Controllers::Link
     include App::Lib
 
     def call(env)
+      user = env.get("user").as(User)
       body = parse_body(env, ["url"])
 
       link = Link.new
       link.id = UUID.v4.to_s
       link.url = body["url"].to_s
       link.slug = Random::Secure.urlsafe_base64(4)
+      link.user = user
 
       changeset = Database.insert(link)
       if !changeset.valid?
@@ -48,17 +50,17 @@ module App::Controllers::Link
     end
   end
 
-  class Read < App::Lib::BaseController
+  class All < App::Lib::BaseController
     include App::Models
     include App::Lib
 
     def call(env)
-      id = env.params.url["id"]
+      user = env.get("user").as(User)
 
-      link = Database.get(Link, id)
-      raise App::NotFoundException.new(env) if !link
+      query = Database::Query.where(user_id: user.id.as(String))
+      links = Database.all(Link, query)
 
-      response = {"data" => App::Serializers::Link.new(link)}
+      response = {"data" => links.map { |link| App::Serializers::Link.new(link) }}
       response.to_json
     end
   end
@@ -68,11 +70,16 @@ module App::Controllers::Link
     include App::Lib
 
     def call(env)
+      user = env.get("user").as(User)
       id = env.params.url["id"]
       body = parse_body(env, ["url"])
 
       link = Database.get(Link, id)
       raise App::NotFoundException.new(env) if !link
+
+      if link.user_id != user.id
+        raise App::ForbiddenException.new(env)
+      end
 
       link.url = body["url"].to_s
       link.click_counter = 0
@@ -92,10 +99,15 @@ module App::Controllers::Link
     include App::Lib
 
     def call(env)
+      user = env.get("user").as(User)
       id = env.params.url["id"]
 
       link = Database.get(Link, id)
       raise App::NotFoundException.new(env) if !link
+
+      if link.user_id != user.id
+        raise App::ForbiddenException.new(env)
+      end
 
       result = Database.raw_exec("DELETE FROM links WHERE id = (?)", link.id) # tempfix: Database.delete does not work
       if result.rows_affected == 0
