@@ -6,17 +6,14 @@ TODO: Write a description here
 
 ```bash
 brew tap amberframework/micrate
-brew install micrate crystal
+brew install micrate
+
+shards install
 ```
 
 TODO: Write installation instructions here
 
 ## Usage
-
-```bash
-crystal build url-shortener.cr --release --progress
-ENV=production ./url-shortener
-```
 
 TODO: Write usage instructions here
 
@@ -25,6 +22,13 @@ TODO: Write usage instructions here
 ```bash
 DATABASE_URL=sqlite3://./sqlite/data.db micrate up
 crystal run url-shortener.cr
+```
+
+## Build
+
+```bash
+crystal build url-shortener.cr --release --progress
+ENV=production ./url-shortener
 ```
 
 ## Contributing

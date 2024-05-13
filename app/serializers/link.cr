@@ -11,8 +11,8 @@ module App::Serializers
       builder.object do
         builder.field("id", @link.id)
         builder.field("link", "#{ENV["APP_URL"]}/#{@link.slug}")
-        builder.field("clicks", @link.click_counter)
         builder.field("origin", @link.url)
+        builder.field("clicks", @link.click_counter)
       end
     end
   end

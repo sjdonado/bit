@@ -10,10 +10,10 @@ module App::Controllers::Link
     def call(env)
       json_params = env.params.json.to_h
       url = json_params.has_key?("url") ? json_params["url"] : nil
-      raise App::BadRequestException.new(env) if !url #TODO: return url "required field" error message
+      raise App::BadRequestException.new(env, {"url" => "Required field"}) if !url
 
       link = Link.new
-      link.id = UUID.v4().to_s
+      link.id = UUID.v4.to_s
       link.url = url.to_s
       link.slug = Random::Secure.urlsafe_base64(4)
 
@@ -21,10 +21,10 @@ module App::Controllers::Link
 
       if !changeset.valid?
         errors = {"errors" => map_changeset_errors(changeset.errors)}
-        raise App::UnprocessableEntityException.new(env, errors.to_json)
+        raise App::UnprocessableEntityException.new(env, errors)
       end
 
-      response = {"data" => App::Serializers::Link.new(link) }
+      response = {"data" => App::Serializers::Link.new(link)}
       response.to_json
     end
   end
@@ -44,7 +44,7 @@ module App::Controllers::Link
 
         changeset = Database.update(link)
         if changeset.errors.any?
-          Log.error { "Increase click counter failed: #{changeset.errors}"}
+          Log.error { "Increase click counter failed: #{changeset.errors}" }
         end
       end
 
@@ -62,10 +62,10 @@ module App::Controllers::Link
       link = Database.get(Link, id)
       raise App::NotFoundException.new(env) if !link
 
-      response = {"data" => App::Serializers::Link.new(link) }
+      response = {"data" => App::Serializers::Link.new(link)}
       response.to_json
     end
   end
 
-  #TODO: update, delete
+  # TODO: update, delete
 end

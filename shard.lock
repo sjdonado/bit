@@ -24,10 +24,6 @@ shards:
     git: https://github.com/kemalcr/kemal.git
     version: 1.5.0
 
-  micrate:
-    git: https://github.com/amberframework/micrate.git
-    version: 0.3.3
-
   radix:
     git: https://github.com/luislavena/radix.git
     version: 0.4.1
