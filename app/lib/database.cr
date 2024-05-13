@@ -5,11 +5,10 @@ module App::Lib
   class Database
     extend Crecto::Repo
 
-    Query = Crecto::Repo::Query
-    Multi = Crecto::Repo::Multi
-
     config do |conf|
       conf.uri = ENV["DATABASE_URL"]
     end
+
+    Crecto::DbLogger.set_handler(STDOUT)
   end
 end

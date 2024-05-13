@@ -14,7 +14,7 @@ module App
   end
 
   get "/api/links/:id" do |env|
-    Controllers::Link::Get.new.call(env)
+    Controllers::Link::Read.new.call(env)
   end
 
   post "/api/links" do |env|
@@ -23,5 +23,9 @@ module App
 
   put "/api/links/:id" do |env|
     Controllers::Link::Update.new.call(env)
+  end
+
+  delete "/api/links/:id" do |env|
+    Controllers::Link::Delete.new.call(env)
   end
 end

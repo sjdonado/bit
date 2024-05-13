@@ -3,6 +3,7 @@
 /bin/
 /.shards/
 *.dwarf
-*.db
-.env.*
-url-shortener
+.DS_Store
+
+./sqlite/*
+.env.production

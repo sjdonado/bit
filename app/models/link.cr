@@ -10,6 +10,7 @@ module App::Models
       field :click_counter, Int64, default: 0
     end
 
+    unique_constraint :slug
     validate_required [:slug, :url]
   end
 end
