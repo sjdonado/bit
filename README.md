@@ -21,14 +21,13 @@ TODO: Write usage instructions here
 
 ```bash
 DATABASE_URL=sqlite3://./sqlite/data.db micrate up
-crystal run url-shortener.cr
+shards run url-shortener
 ```
 
 ## Build
 
 ```bash
-crystal build url-shortener.cr --release --progress
-ENV=production ./url-shortener
+shards build
 ```
 
 ## Contributing

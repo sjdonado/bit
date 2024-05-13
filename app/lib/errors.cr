@@ -9,6 +9,21 @@ module App
     end
   end
 
+  class UnauthorizedException < Kemal::Exceptions::CustomException
+    def initialize(context)
+      context.response.status_code = 401
+      super(context)
+    end
+  end
+
+  class ForbiddenException < Kemal::Exceptions::CustomException
+    def initialize(context)
+      context.response.status_code = 403
+      context.response.print({ "error" => "Access not allowed" }.to_json)
+      super(context)
+    end
+  end
+
   class NotFoundException < Kemal::Exceptions::CustomException
     def initialize(context)
       context.response.status_code = 404
