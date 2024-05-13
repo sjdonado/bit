@@ -5,3 +5,4 @@
 *.dwarf
 *.db
 .env.*
+url-shortener

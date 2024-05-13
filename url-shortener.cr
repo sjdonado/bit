@@ -1,11 +1,11 @@
 require "kemal"
 
-require "./config/*"
-require "./lib/*"
-require "./models/*"
-require "./serializers/*"
+require "./app/config/*"
+require "./app/lib/*"
+require "./app/models/*"
+require "./app/serializers/*"
 
-require "./routes"
+require "./app/routes"
 
 error 500 { |env| {"status" => 500, "error" => "Internal Server Error"}.to_json }
 error 401 { |env| {"status" => 401, "error" => "Unauthorized"}.to_json }
