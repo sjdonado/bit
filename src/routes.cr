@@ -13,6 +13,10 @@ module App
     Controllers::Link::Index.new.call(env)
   end
 
+  get "/api/links/:id" do |env|
+    Controllers::Link::Get.new.call(env)
+  end
+
   post "/api/links" do |env|
     Controllers::Link::Create.new.call(env)
   end

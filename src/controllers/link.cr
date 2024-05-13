@@ -1,3 +1,5 @@
+require "uuid"
+
 require "../lib/controller.cr"
 
 module App::Controllers::Link
@@ -11,6 +13,7 @@ module App::Controllers::Link
       raise App::BadRequestException.new(env) if !url #TODO: return url "required field" error message
 
       link = Link.new
+      link.id = UUID.v4().to_s
       link.url = url.to_s
       link.slug = Random::Secure.urlsafe_base64(4)
 
@@ -36,11 +39,33 @@ module App::Controllers::Link
       link = Database.get_by(Link, slug: slug)
       raise App::NotFoundException.new(env) if !link
 
-      #TODO: update click_counter
+      spawn do
+        link.click_counter = link.click_counter! + 1
+
+        changeset = Database.update(link)
+        if changeset.errors.any?
+          Log.error { "Increase click counter failed: #{changeset.errors}"}
+        end
+      end
 
       env.redirect link.url!
     end
   end
 
-  #TODO: update, delete, list links
+  class Get < App::Lib::BaseController
+    include App::Models
+    include App::Lib
+
+    def call(env)
+      id = env.params.url["id"]
+
+      link = Database.get(Link, id)
+      raise App::NotFoundException.new(env) if !link
+
+      response = {"data" => App::Serializers::Link.new(link) }
+      response.to_json
+    end
+  end
+
+  #TODO: update, delete
 end
