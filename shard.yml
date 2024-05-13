@@ -5,8 +5,10 @@ authors:
   - Juan Rodriguez <sjdonado@icloud.com>
 
 targets:
-  pa:
-    main: src/url-shortener.cr
+  url-shortener:
+    main: url-shortener.cr
+  cli:
+    main: scripts/cli.cr
 
 dependencies:
   kemal:
@@ -21,6 +23,9 @@ development_dependencies:
     github: gdotdesign/cr-dotenv
   spec-kemal:
     github: kemalcr/spec-kemal
+  micrate:
+    github: amberframework/micrate
+    version: 0.15.1
 
 crystal: '>= 1.12.1'
 
