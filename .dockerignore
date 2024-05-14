@@ -1,6 +1,6 @@
 .git
-.gitignore
-
-config/master.key
-
-README.md
+/bin/
+/.shards/
+/bruno/
+/spec/
+/sqlite/

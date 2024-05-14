@@ -1,0 +1,34 @@
+name: url-shortener
+version: 0.1.0
+
+authors:
+  - Juan Rodriguez <sjdonado@icloud.com>
+
+targets:
+  url-shortener:
+    main: url-shortener.cr
+  cli:
+    main: scripts/cli.cr
+  migrate:
+    main: scripts/migrate.cr
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+  crecto:
+    github: fridgerator/crecto
+  micrate:
+    github: amberframework/micrate
+    version: 0.15.1
+
+development_dependencies:
+  dotenv:
+    github: gdotdesign/cr-dotenv
+  spec-kemal:
+    github: kemalcr/spec-kemal
+
+crystal: '>= 1.12.1'
+
+license: MIT

@@ -1,7 +1,0 @@
-check_name: RuboCop Results
-
-versions:
-  - rubocop
-  - rubocop-rails
-
-rubocop_fail_level: error

@@ -1,46 +1,19 @@
-FROM ruby:2.6.3-alpine
+FROM alpine:edge as base
+WORKDIR /usr/src/app
 
-ARG RAILS_MASTER_KEY=''
-ENV RAILS_MASTER_KEY ${RAILS_MASTER_KEY}
+RUN apk add crystal shards sqlite-dev openssl-dev
 
-ENV RAILS_ENV production
-ENV APP_PATH /usr/src/app
-ENV BUNDLE_VERSION 2.1.4
+FROM base AS build
+ENV ENV=production
+COPY . . 
 
-WORKDIR $APP_PATH
+RUN shards install
+RUN shards build --progress
 
-EXPOSE 3000
+FROM base AS release
+RUN mkdir -p /usr/src/app/sqlite
+COPY --from=build /usr/src/app/db db
+COPY --from=build /usr/src/app/bin /usr/local/bin
 
-ENV ALPINE_MIRROR "http://dl-cdn.alpinelinux.org/alpine"
-RUN echo "${ALPINE_MIRROR}/v3.11/main/" >> /etc/apk/repositories
-
-RUN apk -U add --no-cache \
-build-base \
-postgresql-dev \
-postgresql-client \
-tzdata \
-nodejs --repository="http://dl-cdn.alpinelinux.org/alpine/v3.11/main/" \
-yarn
-
-COPY ./entrypoint.sh /usr/bin/entrypoint.sh
-RUN chmod +x /usr/bin/entrypoint.sh
-
-ENTRYPOINT ["entrypoint.sh"]
-
-RUN gem install bundler --version "$BUNDLE_VERSION"
-
-COPY ./Gemfile .
-COPY ./Gemfile.lock .
-
-RUN bundle install --binstubs
-
-COPY ./package.json .
-COPY ./yarn.lock .
-
-RUN yarn --production
-
-COPY . .
-
-RUN RAILS_ENV=production bundle exec rails assets:precompile
-
-CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
+EXPOSE 4000/tcp
+CMD ["url-shortener"]

@@ -1,42 +1,9 @@
-version: '3'
-
 services:
-  db:
-    build:
-      context: .
-      dockerfile: Dockerfile.db
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: app_user
-      POSTGRES_PASSWORD: secure_12345
-    ports:
-      - 5432:5432
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    volumes:
-      - .:/usr/src/app
-      - gem_cache:/usr/local/bundle/gems
-    command: bundle exec rails s -b '0.0.0.0'
-    tty: true
+    build: .
     environment:
-      RAILS_ENV: development
-      HOSTNAME: 0.0.0.0
+      ENV: production
+      DATABASE_URL: sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true
+      APP_URL: http://0.0.0.0:4001
     ports:
-      - 3000:3000
-    depends_on:
-      - db
-  webpack:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    volumes:
-      - .:/usr/src/app
-      - gem_cache:/usr/local/bundle/gems
-    command: bin/webpack --watch --colors --progress 
-    tty: true
-volumes:
-  gem_cache:
-  db_data:
+      - 4000:4000
