@@ -11,9 +11,9 @@ RUN shards install
 RUN shards build --progress
 
 FROM base AS release
-COPY --from=build /usr/src/app/bin/migrate .
-COPY --from=build /usr/src/app/bin/url-shortener .
-COPY --from=build /usr/src/app/bin/cli .
+RUN mkdir -p /usr/src/app/sqlite
+COPY --from=build /usr/src/app/db db
+COPY --from=build /usr/src/app/bin /usr/local/bin
 
 EXPOSE 4000/tcp
-CMD ["./url-shortener"]
+CMD ["url-shortener"]
