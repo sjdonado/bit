@@ -76,7 +76,7 @@ shards run migrate
 shards run url-shortener
 ```
 
-**Generate an API_KEY**
+**Generate the `X-Api-Key`**
 
 ```bash
 shards run cli -- --create-user=Admin
