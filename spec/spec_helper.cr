@@ -8,6 +8,8 @@ require "../url-shortener"
 Spec.before_suite do
   Micrate::DB.connection_url = ENV["DATABASE_URL"]
   Micrate::Cli.run_up
+
+  Kemal.config.logging = false
 end
 
 def create_test_user

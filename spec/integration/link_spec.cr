@@ -78,10 +78,11 @@ describe App::Controllers::Link do
       serialized_link = App::Serializers::Link.new(test_link)
 
       get(serialized_link.refer, headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-
-      updated_test_link = get_test_link(test_link.id)
+      Fiber.yield
 
       response.headers["Location"].should eq(link)
+
+      updated_test_link = get_test_link(test_link.id)
       updated_test_link.click_counter.should eq(1)
     end
 
