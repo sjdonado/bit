@@ -9,6 +9,8 @@ targets:
     main: url-shortener.cr
   cli:
     main: scripts/cli.cr
+  migrate:
+    main: scripts/migrate.cr
 
 dependencies:
   kemal:
@@ -17,15 +19,15 @@ dependencies:
     github: crystal-lang/crystal-sqlite3
   crecto:
     github: fridgerator/crecto
+  micrate:
+    github: amberframework/micrate
+    version: 0.15.1
 
 development_dependencies:
   dotenv:
     github: gdotdesign/cr-dotenv
   spec-kemal:
     github: kemalcr/spec-kemal
-  micrate:
-    github: amberframework/micrate
-    version: 0.15.1
 
 crystal: '>= 1.12.1'
 

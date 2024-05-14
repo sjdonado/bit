@@ -5,5 +5,5 @@
 *.dwarf
 .DS_Store
 
-data.*
+/sqlite/
 .env.production
