@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe App::Controllers::Ping do
+describe "App::Controllers::Ping" do
   it "should return pong" do
     get "/api/ping"
 

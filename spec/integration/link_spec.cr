@@ -1,9 +1,9 @@
 require "../spec_helper"
 require "../../app/models/*"
 
-API_KEY = Random::Secure.urlsafe_base64()
+API_KEY = Random::Secure.urlsafe_base64
 
-describe App::Controllers::Link do
+describe "App::Controllers::Link" do
   describe "Create" do
     it "should create link" do
       test_user = create_test_user()
@@ -36,7 +36,7 @@ describe App::Controllers::Link do
     it "should return 400 - invalid url" do
       test_user = create_test_user()
 
-      payload = {"url" => "test" }
+      payload = {"url" => "test"}
       post(
         "/api/links",
         headers: HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => test_user.api_key.to_s},
