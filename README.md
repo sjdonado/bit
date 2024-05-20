@@ -1,7 +1,31 @@
 # url-shortener
 > Lightning fast, lightweight and minimal self-hosted url shortener
 
+## Benchmark
+
 ## Self-hosted
+
+- Run via docker-compose
+```bash
+docker-compose up
+
+docker-compose exec -it app migrate
+docker-compose exec -it app cli --create-user=Admin
+```
+
+- Run via docker cli
+```bash
+docker run \
+    --name url-shortener \
+    -p 4000:4000 \
+    -e ENV="production" \
+    -e DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" \
+    -e APP_URL="http://localhost:4000" \
+    sjdonado/url-shortener
+
+docker exec -it url-shortener migrate
+docker exec -it url-shortener cli --create-user=Admin
+```
 
 - Dokku
 ```dockerfile
@@ -24,20 +48,6 @@ dokku ports:add url-shortener https:443:4000
 
 dokku run url-shortener migrate
 dokku run url-shortener cli --create-user=Admin
-```
-
-- Run
-```bash
-docker run \
-    --name url-shortener \
-    -p 4000:4000 \
-    -e ENV="production" \
-    -e DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" \
-    -e APP_URL="http://localhost:4000" \
-    sjdonado/url-shortener
-
-docker exec -it url-shortener migrate
-docker exec -it url-shortener cli --create-user=Admin
 ```
 
 ## Usage
