@@ -1,9 +1,23 @@
 #!/bin/bash
 
 api_url="http://localhost:4001/api/links"
-num_links=100
+num_links=1000
 num_requests=10
 resource_usage_interval=1  # Interval in seconds for resource usage logging
+
+semaphore="/tmp/semaphore"
+max_concurrent_processes=$(ulimit -u)  # Adjust this number based on your system's capability
+
+# Initialize semaphore
+mkfifo $semaphore
+exec 3<> $semaphore
+rm $semaphore
+
+for ((i=0; i<max_concurrent_processes; i++)); do
+    echo >&3
+done
+
+echo "Semaphore initialized with $max_concurrent_processes slots."
 
 function get_resource_usage {
     while true; do
@@ -53,11 +67,13 @@ function measure {
                         --header "X-Api-Key: $api_key" \
                         --header "Content-Type: application/json" \
                         --data "{ \"url\": \"https://kagi.com\" }")
-        # echo "API Response for link $i: $response"
 
         refer=$(echo $response | awk -F'"' '/"refer":/{print $(NF-1)}')
         if [[ -n $refer ]]; then
             refer_links+=("$refer")
+            if (( i % 100 == 0 )); then
+                echo "Created short link $i/$num_links"
+            fi
         else
             echo "Failed to create short link $i"
         fi
@@ -66,15 +82,27 @@ function measure {
     echo "Accessing each link $num_requests times concurrently..."
     > times.txt  # Ensure times.txt is created and empty
 
+    total_accesses=$((num_links * num_requests))
+    accesses_done=0
+
     for refer in "${refer_links[@]}"; do
         for ((i=1; i<=num_requests; i++)); do
-            (
+            # Wait for a slot
+            read -u 3
+            {
                 start_time=$(date +%s%6N)
                 curl -s "$refer" >> /dev/null
                 end_time=$(date +%s%6N)
                 elapsed_time=$(echo "$end_time - $start_time" | bc)
                 echo $elapsed_time >> times.txt
-            ) &
+                # Release the slot
+                echo >&3
+
+                ((accesses_done++))
+                if (( accesses_done % 10 == 0 )); then
+                    echo "Accessed $accesses_done/$total_accesses"
+                fi
+            } &
         done
     done
 

@@ -2,6 +2,34 @@
 > Lightning fast, lightweight and minimal self-hosted url shortener
 
 ## Benchmark
+```shell
+./benchmark.sh
+Semaphore initialized with 2666 slots.
+Setup...
+[+] Running 1/0
+ ✔ Container url-shortener-app-1  Running                                                                                                                                                                                   0.0s
+2024-05-20T16:39:53.818306Z   INFO - micrate: No migrations to run. current version: 20240513130054
+Captured API Key: 4y2mblZDneZLcI-YywHGFA
+Waiting for database to be ready...
+Creating 1000 short links...
+Created short link 100/1000
+Created short link 200/1000
+Created short link 300/1000
+Created short link 400/1000
+Created short link 500/1000
+Created short link 600/1000
+Created short link 700/1000
+Created short link 800/1000
+Created short link 900/1000
+Created short link 1000/1000
+Accessing each link 10 times concurrently...
+****Results****
+Average Memory Usage: 11.00 MiB
+Average Response Time: 5.28 µs
+[+] Running 2/2
+ ✔ Container url-shortener-app-1  Removed                                                                                                                                                                                  10.2s
+ ✔ Network url-shortener_default  Removed
+```
 
 ## Self-hosted
 
