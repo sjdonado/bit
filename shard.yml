@@ -1,12 +1,12 @@
-name: url-shortener
-version: 0.1.0
+name: bit
+version: 1.0.0
 
 authors:
   - Juan Rodriguez <sjdonado@icloud.com>
 
 targets:
-  url-shortener:
-    main: url-shortener.cr
+  bit:
+    main: bit.cr
   cli:
     main: scripts/cli.cr
   migrate:
@@ -29,6 +29,6 @@ development_dependencies:
   spec-kemal:
     github: kemalcr/spec-kemal
 
-crystal: '>= 1.12.1'
+crystal: ">= 1.12.1"
 
 license: MIT

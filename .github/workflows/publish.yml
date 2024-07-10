@@ -30,8 +30,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Extract version tag
         id: extract_tag
-        if: github.event_name == 'release'
-        run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
       - name: Build and push image
         id: push
         uses: docker/build-push-action@v5.0.0
@@ -40,11 +42,11 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            sjdonado/url-shortener:latest
-            ${{ github.event_name == 'release' && 'sjdonado/url-shortener:${{ env.RELEASE_TAG }}' || '' }}
+            sjdonado/bit:latest
+            ${{ github.event_name == 'release' && 'sjdonado/bit:${{ env.RELEASE_TAG }}' || '' }}
       - name: Attest
         uses: actions/attest-build-provenance@v1
         id: attest
         with:
-          subject-name: sjdonado/url-shortener
+          subject-name: sjdonado/bit
           subject-digest: ${{ steps.push.outputs.digest }}

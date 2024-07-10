@@ -3,7 +3,7 @@ require "uuid"
 require "spec-kemal"
 require "micrate"
 
-require "../url-shortener"
+require "../bit"
 
 Spec.before_suite do
   Micrate::DB.connection_url = ENV["DATABASE_URL"]

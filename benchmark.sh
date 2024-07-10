@@ -21,7 +21,7 @@ echo "Semaphore initialized with $max_concurrent_processes slots."
 
 function get_resource_usage {
     while true; do
-        docker stats --no-stream --format "{{.MemUsage}} {{.CPUPerc}}" url-shortener >> resource_usage.txt
+        docker stats --no-stream --format "{{.MemUsage}} {{.CPUPerc}}" bit >> resource_usage.txt
         sleep $resource_usage_interval
     done
 }

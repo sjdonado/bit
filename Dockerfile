@@ -16,4 +16,4 @@ COPY --from=build /usr/src/app/db db
 COPY --from=build /usr/src/app/bin /usr/local/bin
 
 EXPOSE 4000/tcp
-CMD ["url-shortener"]
+CMD ["bit"]
