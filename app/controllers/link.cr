@@ -46,7 +46,10 @@ module App::Controllers::Link
         end
       end
 
-      env.redirect link.url!, 301
+      env.response.status_code = 301
+      env.response.headers["Location"] = link.url!
+      env.response.headers["Content-Type"] = "text/html"
+      env.response.print("Redirecting...")
     end
   end
 
