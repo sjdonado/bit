@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+  release:
+    types: [published]
 
 jobs:
   push_to_registry:
@@ -17,19 +19,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Login to GitHub Container Registry
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Extract version tag
+        id: extract_tag
+        if: github.event_name == 'release'
+        run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Build and push image
         id: push
         uses: docker/build-push-action@v5.0.0
         with:
           context: .
           push: true
-          tags: sjdonado/url-shortener:latest
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            sjdonado/url-shortener:latest
+            ${{ github.event_name == 'release' && 'sjdonado/url-shortener:${{ env.RELEASE_TAG }}' || '' }}
       - name: Attest
         uses: actions/attest-build-provenance@v1
         id: attest
