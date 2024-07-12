@@ -21,34 +21,33 @@ echo "Semaphore initialized with $max_concurrent_processes slots."
 
 function get_resource_usage {
     while true; do
-        docker stats --no-stream --format "{{.MemUsage}} {{.CPUPerc}}" bit >> resource_usage.txt
+        docker stats --no-stream --format "table {{.MemUsage}} {{.CPUPerc}}" bit-app-1 | awk 'NR>1 {print "Memory:", $1, "CPU:", $2}' >> resource_usage.txt
         sleep $resource_usage_interval
     done
 }
 
 function calculate_average_usage {
     total_mem=0
+    total_cpu=0
     count=0
 
     while read -r line; do
-        mem=$(echo $line | awk '{print $1}')
-
-        # Convert memory to MiB if necessary
-        if [[ $mem == *MiB ]]; then
-            mem=$(echo $mem | sed 's/MiB//')
-        elif [[ $mem == *GiB ]]; then
-            mem=$(echo $mem | sed 's/GiB//')
-            mem=$(echo "$mem * 1024" | bc)
+        if echo $line | grep -q 'Memory'; then
+            mem=$(echo $line | awk '{print $2}' | sed 's/MiB//')
+            total_mem=$(echo "$total_mem + $mem" | bc)
+        elif echo $line | grep -q 'CPU'; then
+            cpu=$(echo $line | awk '{print $2}' | sed 's/%//')
+            total_cpu=$(echo "$total_cpu + $cpu" | bc)
         fi
-
-        total_mem=$(echo "$total_mem + $mem" | bc)
         ((count++))
     done < resource_usage.txt
 
-    avg_mem=$(echo "scale=2; $total_mem / $count" | bc)
+    avg_mem=$(echo "scale=2; $total_mem / ($count / 2)" | bc)  # Since there are 2 lines per interval
+    avg_cpu=$(echo "scale=2; $total_cpu / ($count / 2)" | bc)
     rm resource_usage.txt
 
     echo "Average Memory Usage: $avg_mem MiB"
+    echo "Average CPU Usage: $avg_cpu%"
 }
 
 function measure {

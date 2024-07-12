@@ -3,13 +3,19 @@
 ## Benchmark
 
 ```shell
-./benchmark.sh
+$ ./benchmark.sh
 Semaphore initialized with 2666 slots.
 Setup...
-[+] Running 1/0
- ✔ Container bit-app-1  Running                                                                                                                                                                                   0.0s
-2024-05-20T16:39:53.818306Z   INFO - micrate: No migrations to run. current version: 20240513130054
-Captured API Key: 4y2mblZDneZLcI-YywHGFA
+[+] Running 2/2
+ ✔ Network bit_default  Created                                                                              0.0s
+ ✔ Container bit-app-1  Started                                                                              0.2s
+2024-07-12T18:41:20.962052Z   INFO - micrate: Migrating db, current version: 0, target: 20240711224103
+2024-07-12T18:41:20.965729Z   INFO - micrate: OK   20240512214223_create_links.sql
+2024-07-12T18:41:20.969198Z   INFO - micrate: OK   20240512225208_add_slug_index_to_links.sql
+2024-07-12T18:41:20.973136Z   INFO - micrate: OK   20240513115731_create_users.sql
+2024-07-12T18:41:20.975525Z   INFO - micrate: OK   20240513130054_add_api_key_index_to_users.sql
+2024-07-12T18:41:20.979195Z   INFO - micrate: OK   20240711224103_create_clicks.sql
+Captured API Key: Z01Qk4M5E0xhggZUCdQAPw
 Waiting for database to be ready...
 Creating 1000 short links...
 Created short link 100/1000
@@ -24,11 +30,9 @@ Created short link 900/1000
 Created short link 1000/1000
 Accessing each link 10 times concurrently...
 ****Results****
-Average Memory Usage: 11.00 MiB
-Average Response Time: 5.28 µs
-[+] Running 2/2
- ✔ Container bit-app-1  Removed                                                                                                                                                                                  10.2s
- ✔ Network bit_default  Removed
+Average Memory Usage: 16.36 MiB
+Average CPU Usage: 0%
+Average Response Time: 12.37 µs
 ```
 
 ## Self-hosted
