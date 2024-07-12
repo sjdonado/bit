@@ -92,6 +92,7 @@ dokku run bit cli --create-user=Admin
 | `/api/ping`      | GET         | Ping the API to check if it's running | -                                   |
 | `/:slug`         | GET         | Retrieve a link by its slug           | -                                   |
 | `/api/links`     | GET         | Retrieve all links                    | -                                   |
+| `/api/links/:id` | GET         | Retrieve a link by its ID             | -                                   |
 | `/api/links`     | POST        | Create a new link                     | `{"url": "https://example.com"}`    |
 | `/api/links/:id` | PUT         | Update an existing link by its ID     | `{"url": "https://newexample.com"}` |
 | `/api/links/:id` | DELETE      | Delete a link by its ID               | -                                   |

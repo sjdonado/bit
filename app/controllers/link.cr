@@ -102,6 +102,26 @@ module App::Controllers::Link
     end
   end
 
+  class Get < App::Lib::BaseController
+    include App::Models
+    include App::Lib
+
+    def call(env)
+      user = env.get("user").as(User)
+      link_id = env.params.url["id"]
+
+      query = Database::Query.where(id: link_id.as(String), user_id: user.id.as(String)).limit(1)
+      links = Database.all(Link, query, preload: [:clicks])
+
+      if links.empty?
+        raise App::NotFoundException.new(env)
+      end
+
+      response = {"data" => App::Serializers::Link.new(links.first)}
+      response.to_json
+    end
+  end
+
   class Update < App::Lib::BaseController
     include App::Models
     include App::Lib
