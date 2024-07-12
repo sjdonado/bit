@@ -15,7 +15,6 @@ module App::Serializers
         builder.field("id", @link.id)
         builder.field("refer", @refer)
         builder.field("origin", @link.url)
-        builder.field("clicks", @link.click_counter)
       end
     end
   end

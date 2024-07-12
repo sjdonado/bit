@@ -1,4 +1,8 @@
 require "uuid"
+require "geoip2"
+require "user_agent_parser"
+
+UserAgent.load_regexes(File.read("data/regexes.yaml"))
 
 require "../lib/controller.cr"
 
@@ -38,11 +42,26 @@ module App::Controllers::Link
       raise App::NotFoundException.new(env) if !link
 
       spawn do
-        link.click_counter = link.click_counter! + 1
+        user_agent_str = env.request.headers["User-Agent"]
+        user_agent = UserAgent.new(user_agent_str)
 
-        changeset = Database.update(link)
+        language_header = env.request.headers["Accept-Language"]? || "Unknown"
+        language = language_header.split(',').first.split(';').first
+
+        referer = env.request.headers["Referer"]?
+
+        click = Click.new
+        click.id = UUID.v4.to_s
+        click.link = link
+        click.language = language
+        click.user_agent = user_agent_str
+        click.browser = user_agent.family
+        click.os = user_agent.os.try &.family || "Unknown"
+        click.source = referer ? URI.parse(referer).host : "Unknown"
+
+        changeset = Database.insert(click)
         if changeset.errors.any?
-          Log.error { "Increase click counter failed: #{changeset.errors}" }
+          Log.error { "Logging click event failed: #{changeset.errors}" }
         end
       end
 
@@ -85,7 +104,6 @@ module App::Controllers::Link
       end
 
       link.url = body["url"].to_s
-      link.click_counter = 0
 
       changeset = Database.update(link)
       if !changeset.valid?
