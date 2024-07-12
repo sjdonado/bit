@@ -1,5 +1,4 @@
 require "uuid"
-require "geoip2"
 require "user_agent_parser"
 
 UserAgent.load_regexes(File.read("data/regexes.yaml"))
@@ -14,12 +13,28 @@ module App::Controllers::Link
     def call(env)
       user = env.get("user").as(User)
       body = parse_body(env, ["url"])
+      url = body["url"].to_s
+
+      query = Database::Query.where(url: url, user_id: user.id.as(String)).limit(1)
+      existing_links = Database.all(Link, query)
+      existing_link = existing_links.empty? ? nil : existing_links.first
+      if existing_link
+        response = {"data" => App::Serializers::Link.new(existing_link)}
+        return response.to_json
+      end
 
       link = Link.new
       link.id = UUID.v4.to_s
-      link.url = body["url"].to_s
-      link.slug = Random::Secure.urlsafe_base64(4)
+      link.url = url
       link.user = user
+
+      loop do
+        slug = Random::Secure.urlsafe_base64(4).gsub(/[^a-zA-Z0-9]/, "")
+        if !Database.get_by(Link, slug: slug)
+          link.slug = slug
+          break
+        end
+      end
 
       changeset = Database.insert(link)
       if !changeset.valid?
