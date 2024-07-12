@@ -16,8 +16,7 @@ module App::Controllers::Link
       url = body["url"].to_s
 
       query = Database::Query.where(url: url, user_id: user.id.as(String)).limit(1)
-      existing_links = Database.all(Link, query, preload: [:clicks])
-      existing_link = existing_links.empty? ? nil : existing_links.first
+      existing_link = Database.all(Link, query, preload: [:clicks]).first?
       if existing_link
         response = {"data" => App::Serializers::Link.new(existing_link)}
         return response.to_json
@@ -59,8 +58,8 @@ module App::Controllers::Link
       raise App::NotFoundException.new(env) if !link
 
       spawn do
-        user_agent_str = env.request.headers["User-Agent"]
-        user_agent = UserAgent.new(user_agent_str)
+        user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
+        user_agent = user_agent_str != "Unknown" ? UserAgent.new(user_agent_str) : nil
 
         language_header = env.request.headers["Accept-Language"]? || "Unknown"
         language = language_header.split(',').first.split(';').first
@@ -72,8 +71,8 @@ module App::Controllers::Link
         click.link = link
         click.language = language
         click.user_agent = user_agent_str
-        click.browser = user_agent.family
-        click.os = user_agent.os.try &.family || "Unknown"
+        click.browser = user_agent ? user_agent.family : "Unknown"
+        click.os = user_agent ? (user_agent.os.try &.family || "Unknown") : "Unknown"
         click.source = referer ? URI.parse(referer).host : "Unknown"
 
         changeset = Database.insert(click)
@@ -113,13 +112,11 @@ module App::Controllers::Link
       link_id = env.params.url["id"]
 
       query = Database::Query.where(id: link_id.as(String), user_id: user.id.as(String)).limit(1)
-      links = Database.all(Link, query, preload: [:clicks])
+      link = Database.all(Link, query, preload: [:clicks]).first?
 
-      if links.empty?
-        raise App::NotFoundException.new(env)
-      end
+      raise App::NotFoundException.new(env) if link.nil?
 
-      response = {"data" => App::Serializers::Link.new(links.first)}
+      response = {"data" => App::Serializers::Link.new(link)}
       response.to_json
     end
   end
@@ -133,12 +130,11 @@ module App::Controllers::Link
       id = env.params.url["id"]
       body = parse_body(env, ["url"])
 
-      link = Database.get(Link, id)
-      raise App::NotFoundException.new(env) if !link
+      query = Database::Query.where(id: id).limit(1)
+      link = Database.all(Link, query, preload: [:clicks]).first?
 
-      if link.user_id != user.id
-        raise App::ForbiddenException.new(env)
-      end
+      raise App::NotFoundException.new(env) if link.nil?
+      raise App::ForbiddenException.new(env) if link.user_id != user.id
 
       link.url = body["url"].to_s
 
