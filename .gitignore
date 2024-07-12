@@ -7,3 +7,5 @@
 
 /sqlite/
 .env.production
+
+resource_usage.txt
