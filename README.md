@@ -1,4 +1,6 @@
-`latest` tag is unstable (Under development!)
+[![Docker Pulls](https://img.shields.io/docker/pulls/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
+[![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
+[![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
 
 ## Benchmark
 
@@ -89,15 +91,15 @@ dokku run bit cli --create-user=Admin
 
 **REST API**
 
-| Endpoint         | HTTP Method | Description                           | Payload                             |
-| ---------------- | ----------- | ------------------------------------- | ----------------------------------- |
-| `/api/ping`      | GET         | Ping the API to check if it's running | -                                   |
-| `/:slug`         | GET         | Retrieve a link by its slug           | -                                   |
-| `/api/links`     | GET         | Retrieve all links                    | -                                   |
-| `/api/links/:id` | GET         | Retrieve a link by its ID             | -                                   |
-| `/api/links`     | POST        | Create a new link                     | `{"url": "https://example.com"}`    |
-| `/api/links/:id` | PUT         | Update an existing link by its ID     | `{"url": "https://newexample.com"}` |
-| `/api/links/:id` | DELETE      | Delete a link by its ID               | -                                   |
+| Endpoint         | HTTP Method | Description                           | Payload                           | Response Example                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------- | ----------- | ------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/ping`      | GET         | Ping the API to check if it's running | -                                 | HTTP 200 `{"message": "pong"}`                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `/:slug`         | GET         | Retrieve a link by its slug           | -                                 | HTTP 301                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `/api/links`     | GET         | Retrieve all links                    | -                                 | HTTP 200 `[ { "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://monocuco.donado.co", "clicks": [ { "id": "730e2202-58f9-478c-a24c-f1c561df6716", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0", "language": "en-US", "browser": "Firefox", "os": "Mac OS X", "source": "Unknown", "created_at": "2024-07-12T19:25:22Z" } ] } } ]` |
+| `/api/links/:id` | GET         | Retrieve a link by its ID             | -                                 | HTTP 200 `{ "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://monocuco.donado.co", "clicks": [ { "id": "730e2202-58f9-478c-a24c-f1c561df6716", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0", "language": "en-US", "browser": "Firefox", "os": "Mac OS X", "source": "Unknown", "created_at": "2024-07-12T19:25:22Z" } ] } }`     |
+| `/api/links`     | POST        | Create a new link                     | `{"url": "https://kagi.com"}`     | HTTP 200 `{ "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://kagi.com", "clicks": [] } }`                                                                                                                                                                                                                                                                                               |
+| `/api/links/:id` | PUT         | Update an existing link by its ID     | `{"url": "https://sjdonado.com"}` | HTTP 200 `{ "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://sjdonado.com", "clicks": [] } }`                                                                                                                                                                                                                                                                                           |
+| `/api/links/:id` | DELETE      | Delete a link by its ID               | -                                 | HTTP 204                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 **CLI**
 
@@ -145,4 +147,4 @@ ENV=test crystal spec
 
 ## Contributors
 
-- [sjdonado](https://github.com/sjdonado) - creator and maintainer
+-
