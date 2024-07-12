@@ -1,16 +1,19 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE links (
+CREATE TABLE clicks (
 	id TEXT PRIMARY KEY NOT NULL,
-	user_id TEXT NOT NULL,
-	slug VARCHAR(4) UNIQUE NOT NULL,
-	url TEXT NOT NULL,
+	link_id TEXT NOT NULL,
+	user_agent TEXT,
+	language TEXT,
+	browser TEXT,
+	os TEXT,
+	source TEXT,
 	created_at INTEGER DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	updated_at INTEGER DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
-	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE
 );
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE links;
+DROP TABLE clicks;
