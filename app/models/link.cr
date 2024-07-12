@@ -11,6 +11,7 @@ module App::Models
       field :url, String
 
       belongs_to :user, User
+      has_many :clicks, Click
     end
 
     unique_constraint :slug

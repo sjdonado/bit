@@ -95,7 +95,7 @@ module App::Controllers::Link
       user = env.get("user").as(User)
 
       query = Database::Query.where(user_id: user.id.as(String))
-      links = Database.all(Link, query)
+      links = Database.all(Link, query, preload: [:clicks])
 
       response = {"data" => links.map { |link| App::Serializers::Link.new(link) }}
       response.to_json
