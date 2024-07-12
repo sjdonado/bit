@@ -2,7 +2,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
 
-## Benchmark
+# Benchmark
 
 ```shell
 $ ./benchmark.sh
@@ -37,7 +37,7 @@ Average CPU Usage: 0%
 Average Response Time: 12.37 µs
 ```
 
-## Self-hosted
+# Self-hosted
 
 - Run via docker-compose
 
@@ -87,21 +87,175 @@ dokku run bit migrate
 dokku run bit cli --create-user=Admin
 ```
 
-## Usage
+# Usage
 
-**REST API**
+## API Endpoints
 
-| Endpoint         | HTTP Method | Description                           | Payload                           | Response Example                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ---------------- | ----------- | ------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/api/ping`      | GET         | Ping the API to check if it's running | -                                 | HTTP 200 `{"message": "pong"}`                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `/:slug`         | GET         | Retrieve a link by its slug           | -                                 | HTTP 301                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `/api/links`     | GET         | Retrieve all links                    | -                                 | HTTP 200 `[ { "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://monocuco.donado.co", "clicks": [ { "id": "730e2202-58f9-478c-a24c-f1c561df6716", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0", "language": "en-US", "browser": "Firefox", "os": "Mac OS X", "source": "Unknown", "created_at": "2024-07-12T19:25:22Z" } ] } } ]` |
-| `/api/links/:id` | GET         | Retrieve a link by its ID             | -                                 | HTTP 200 `{ "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://monocuco.donado.co", "clicks": [ { "id": "730e2202-58f9-478c-a24c-f1c561df6716", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0", "language": "en-US", "browser": "Firefox", "os": "Mac OS X", "source": "Unknown", "created_at": "2024-07-12T19:25:22Z" } ] } }`     |
-| `/api/links`     | POST        | Create a new link                     | `{"url": "https://kagi.com"}`     | HTTP 200 `{ "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://kagi.com", "clicks": [] } }`                                                                                                                                                                                                                                                                                               |
-| `/api/links/:id` | PUT         | Update an existing link by its ID     | `{"url": "https://sjdonado.com"}` | HTTP 200 `{ "data": { "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db", "refer": "http://localhost:4000/3wP4BQ", "origin": "https://sjdonado.com", "clicks": [] } }`                                                                                                                                                                                                                                                                                           |
-| `/api/links/:id` | DELETE      | Delete a link by its ID               | -                                 | HTTP 204                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+1. **Ping the API**
 
-**CLI**
+   - **Endpoint**: `/api/ping`
+   - **HTTP Method**: GET
+   - **Description**: Ping the API to check if it's running
+   - **Payload**: -
+   - **Response Example**:
+     ```json
+     {
+       "message": "pong"
+     }
+     ```
+
+2. **Retrieve a link by its slug**
+
+   - **Endpoint**: `/:slug`
+   - **HTTP Method**: GET
+   - **Description**: Retrieve a link by its slug
+   - **Payload**: -
+   - **Headers**: `X-Api-Key`
+   - **Response Example**:
+     ```json
+     {
+       "data": {
+         "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
+         "refer": "http://localhost:4000/3wP4BQ",
+         "origin": "https://monocuco.donado.co",
+         "clicks": [
+           {
+             "id": "730e2202-58f9-478c-a24c-f1c561df6716",
+             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0",
+             "language": "en-US",
+             "browser": "Firefox",
+             "os": "Mac OS X",
+             "source": "Unknown",
+             "created_at": "2024-07-12T19:25:22Z"
+           }
+         ]
+       }
+     }
+     ```
+
+3. **Retrieve all links**
+
+   - **Endpoint**: `/api/links`
+   - **HTTP Method**: GET
+   - **Description**: Retrieve all links
+   - **Payload**: -
+   - **Headers**: `X-Api-Key`
+   - **Response Example**:
+     ```json
+     {
+       "data": [
+         {
+           "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
+           "refer": "http://localhost:4000/3wP4BQ",
+           "origin": "https://monocuco.donado.co",
+           "clicks": [
+             {
+               "id": "730e2202-58f9-478c-a24c-f1c561df6716",
+               "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0",
+               "language": "en-US",
+               "browser": "Firefox",
+               "os": "Mac OS X",
+               "source": "Unknown",
+               "created_at": "2024-07-12T19:25:22Z"
+             }
+           ]
+         }
+       ]
+     }
+     ```
+
+4. **Retrieve a link by its ID**
+
+   - **Endpoint**: `/api/links/:id`
+   - **HTTP Method**: GET
+   - **Description**: Retrieve a link by its ID
+   - **Payload**: -
+   - **Headers**: `X-Api-Key`
+   - **Response Example**:
+     ```json
+     {
+       "data": {
+         "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
+         "refer": "http://localhost:4000/3wP4BQ",
+         "origin": "https://monocuco.donado.co",
+         "clicks": [
+           {
+             "id": "730e2202-58f9-478c-a24c-f1c561df6716",
+             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0",
+             "language": "en-US",
+             "browser": "Firefox",
+             "os": "Mac OS X",
+             "source": "Unknown",
+             "created_at": "2024-07-12T19:25:22Z"
+           }
+         ]
+       }
+     }
+     ```
+
+5. **Create a new link**
+
+   - **Endpoint**: `/api/links`
+   - **HTTP Method**: POST
+   - **Description**: Create a new link
+   - **Payload**:
+     ```json
+     {
+       "url": "https://example.com"
+     }
+     ```
+   - **Headers**: `X-Api-Key`
+   - **Response Example**:
+     ```json
+     {
+       "data": {
+         "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
+         "refer": "http://localhost:4000/3wP4BQ",
+         "origin": "https://monocuco.donado.co/test",
+         "clicks": []
+       }
+     }
+     ```
+
+6. **Update an existing link by its ID**
+
+   - **Endpoint**: `/api/links/:id`
+   - **HTTP Method**: PUT
+   - **Description**: Update an existing link by its ID
+   - **Payload**:
+     ```json
+     {
+       "url": "https://newexample.com"
+     }
+     ```
+   - **Headers**: `X-Api-Key`
+   - **Response Example**:
+     ```json
+     {
+       "data": {
+         "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
+         "refer": "http://localhost:4000/3wP4BQ",
+         "origin": "https://newexample.com",
+         "clicks": []
+       }
+     }
+     ```
+
+7. **Delete a link by its ID**
+
+   - **Endpoint**: `/api/links/:id`
+   - **HTTP Method**: DELETE
+   - **Description**: Delete a link by its ID
+   - **Payload**: -
+   - **Headers**: `X-Api-Key`
+   - **Response Example**:
+     ```json
+     {
+       "message": "Link deleted"
+     }
+     ```
+
+## CLI
 
 ```
 Usage: ./cli [options]
@@ -111,9 +265,9 @@ Options:
   --delete-user=USER_ID Delete a user by ID
 ```
 
-## Development
+# Development
 
-**Installation**
+1. **Installation**
 
 ```bash
 brew tap amberframework/micrate
@@ -125,26 +279,22 @@ shards run migrate
 shards run bit
 ```
 
-**Generate the `X-Api-Key`**
+2. **Generate the `X-Api-Key`**
 
 ```bash
 shards run cli -- --create-user=Admin
 ```
 
-## Run tests
+# Run tests
 
 ```bash
 ENV=test crystal spec
 ```
 
-## Contributing
+# Contributing
 
 1. Fork it (<https://github.com/sjdonado/bit/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
-
-## Contributors
-
--
