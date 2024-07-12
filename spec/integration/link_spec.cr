@@ -15,8 +15,32 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
-      parsed_response = Hash(String, Hash(String, String | Int64)).from_json(response.body)
+      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
       parsed_response["data"]["origin"].should eq(payload["url"])
+    end
+
+    it "should return existing link if url already exists" do
+      test_user = create_test_user()
+
+      payload = {"url" => "https://kagi.com"}
+      post(
+        "/api/links",
+        headers: HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => test_user.api_key.to_s},
+        body: payload.to_json
+      )
+
+      first_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      first_response["data"]["origin"].should eq(payload["url"])
+
+      post(
+        "/api/links",
+        headers: HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => test_user.api_key.to_s},
+        body: payload.to_json
+      )
+
+      second_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      second_response["data"]["origin"].should eq(payload["url"])
+      second_response["data"]["id"].should eq(first_response["data"]["id"])
     end
 
     it "should return 400 - url required field" do
@@ -70,20 +94,21 @@ describe "App::Controllers::Link" do
       response.headers["Location"].should eq(link)
     end
 
-    it "should increase click counter after redirect" do
+    it "should create a new click after redirect" do
       link = "https://kagi.com"
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
       serialized_link = App::Serializers::Link.new(test_link)
 
-      get(serialized_link.refer, headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-      Fiber.yield
+      get(serialized_link.refer, headers: HTTP::Headers{"User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"})
+
+      Fiber.yield # replace yield with sleep 5 to debug errors
 
       response.headers["Location"].should eq(link)
 
       updated_test_link = get_test_link(test_link.id)
-      updated_test_link.click_counter.should eq(1)
+      updated_test_link.clicks.size.should eq(test_link.clicks.size + 1)
     end
 
     it "should return 404 - link does not exist" do
@@ -114,7 +139,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String | Int64))).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64 | Array(Hash(String, String))))).from_json(response.body)
       parsed_response["data"][0]["origin"].should eq(links[0])
       parsed_response["data"][1]["origin"].should eq(links[1])
       parsed_response["data"][2]["origin"].should eq(links[2])
@@ -133,7 +158,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String | Int64))).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64 | Array(Hash(String, String))))).from_json(response.body)
       parsed_response["data"].size.should eq(3)
       parsed_response["data"][0]["origin"].should eq(links[0])
       parsed_response["data"][1]["origin"].should eq(links[1])
@@ -142,6 +167,38 @@ describe "App::Controllers::Link" do
 
     it "should return 401 - missing api key" do
       get "/api/links"
+
+      expected = {"error" => "Unauthorized"}.to_json
+      response.status_code.should eq(401)
+      response.body.should eq(expected)
+    end
+  end
+
+  describe "Get" do
+    it "should return the specified link with click details" do
+      link = "https://kagi.com"
+      test_user = create_test_user()
+      test_link = create_test_link(test_user, link)
+
+      get("/api/links/#{test_link.id}", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+
+      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      parsed_response["data"]["origin"].should eq(link)
+      parsed_response["data"]["clicks"].should be_a(Array(Hash(String, String)))
+    end
+
+    it "should return 404 - link does not exist" do
+      test_user = create_test_user()
+
+      get("/api/links/1", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+
+      expected = {"error" => "Not Found"}.to_json
+      response.status_code.should eq(404)
+      response.body.should eq(expected)
+    end
+
+    it "should return 401 - missing api key" do
+      get "/api/links/1"
 
       expected = {"error" => "Unauthorized"}.to_json
       response.status_code.should eq(401)
@@ -162,7 +219,7 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
-      parsed_response = Hash(String, Hash(String, String | Int64)).from_json(response.body)
+      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
       parsed_response["data"]["origin"].should eq(payload["url"])
     end
 

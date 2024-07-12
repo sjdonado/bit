@@ -38,11 +38,18 @@ def create_test_link(user, url)
     raise "Test link creation failed"
   end
 
+  link.clicks = [] of App::Models::Click
+
   link
 end
 
 def get_test_link(link_id)
-  App::Lib::Database.get!(App::Models::Link, link_id)
+  query = App::Lib::Database::Query.where(id: link_id.as(String)).limit(1)
+  link = App::Lib::Database.all(App::Models::Link, query, preload: [:clicks]).first?
+
+  raise "Link not found" if link.nil?
+
+  link
 end
 
 def delete_test_link(link_id)
