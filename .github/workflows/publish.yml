@@ -35,7 +35,8 @@ jobs:
         id: extract_version
         run: |
           VERSION=$(grep -oP 'version:\s*\K\S+' shard.yml)
-          echo "RELEASE_TAG=${VERSION}" >> $GITHUB_ENV
+          VERSION=$(echo $VERSION | tr -d '\n\r')
+          echo "RELEASE_TAG=$VERSION" >> $GITHUB_ENV
 
       - name: Build and push image
         id: push
@@ -46,7 +47,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             sjdonado/bit:latest
-            ${{ github.event_name == 'release' && 'sjdonado/bit:${{ env.RELEASE_TAG }}' || '' }}
+            ${{ github.event_name == 'release' && env.RELEASE_TAG && 'sjdonado/bit:${{ env.RELEASE_TAG }}' || '' }}
 
       - name: Attest
         uses: actions/attest-build-provenance@v1
