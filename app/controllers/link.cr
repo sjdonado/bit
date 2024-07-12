@@ -16,7 +16,7 @@ module App::Controllers::Link
       url = body["url"].to_s
 
       query = Database::Query.where(url: url, user_id: user.id.as(String)).limit(1)
-      existing_links = Database.all(Link, query)
+      existing_links = Database.all(Link, query, preload: [:clicks])
       existing_link = existing_links.empty? ? nil : existing_links.first
       if existing_link
         response = {"data" => App::Serializers::Link.new(existing_link)}
@@ -41,7 +41,9 @@ module App::Controllers::Link
         raise App::UnprocessableEntityException.new(env, map_changeset_errors(changeset.errors))
       end
 
+      link.clicks = [] of App::Models::Click
       response = {"data" => App::Serializers::Link.new(link)}
+
       response.to_json
     end
   end
