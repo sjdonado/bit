@@ -1,5 +1,6 @@
-FROM alpine:edge as base
+FROM alpine:edge AS build
 
+ENV ENV=production
 WORKDIR /usr/src/app
 
 RUN apk update && apk add --no-cache \
@@ -9,20 +10,29 @@ RUN apk update && apk add --no-cache \
     sqlite-dev \
     openssl-dev
 
-FROM base AS build
-ENV ENV=production
-
-COPY . . 
+COPY . .
 
 RUN shards install
-RUN shards build --progress
+RUN shards build --release --no-debug
 
-FROM base AS release
-RUN mkdir -p /usr/src/app/sqlite
+FROM alpine:edge AS runtime
+
+ENV ENV=production
+WORKDIR /usr/src/app
+
+RUN apk add --no-cache \
+    gc \
+    pcre2 \
+    libevent \
+    yaml \
+    sqlite-libs \
+    openssl
+
+RUN mkdir -p sqlite
+
 COPY --from=build /usr/src/app/db db
 COPY --from=build /usr/src/app/data data
 COPY --from=build /usr/src/app/bin /usr/local/bin
-COPY --from=build /usr/src/app/data /usr/local/data
 
 EXPOSE 4000/tcp
 CMD ["bit"]

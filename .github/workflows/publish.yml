@@ -39,6 +39,15 @@ jobs:
           VERSION=$(echo $VERSION | tr -d '\n\r')
           echo "RELEASE_TAG=$VERSION" >> $GITHUB_ENV
 
+      - name: Set tags
+        id: set_tags
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "TAGS=latest,${{ env.RELEASE_TAG }}" >> $GITHUB_ENV
+          else
+            echo "TAGS=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build and push image
         id: push
         uses: docker/build-push-action@v5.0.0
@@ -46,9 +55,7 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: |
-            sjdonado/bit:latest
-            ${{ github.event_name == 'release' && env.RELEASE_TAG && 'sjdonado/bit:${{ env.RELEASE_TAG }}' || '' }}
+          tags: sjdonado/bit:${{ env.TAGS }}
 
       - name: Attest
         uses: actions/attest-build-provenance@v1

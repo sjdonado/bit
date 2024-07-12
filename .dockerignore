@@ -1,6 +1,5 @@
 .git
 /bin/
 /.shards/
-/bruno/
 /spec/
 /sqlite/

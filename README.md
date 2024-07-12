@@ -1,6 +1,6 @@
-[![Docker Pulls](https://img.shields.io/docker/pulls/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
-[![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
-[![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/repository/docker/sjdonado/bit/general)
+[![Docker Pulls](https://img.shields.io/docker/pulls/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit)
+[![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/repository/docker/sjdonado/bit)
+[![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/repository/docker/sjdonado/bit)
 
 # Benchmark
 
@@ -39,7 +39,7 @@ Average Response Time: 12.37 µs
 
 # Self-hosted
 
-- Run via docker-compose
+## Run via docker-compose
 
 ```bash
 docker-compose up
@@ -48,7 +48,7 @@ docker-compose exec -it app migrate
 docker-compose exec -it app cli --create-user=Admin
 ```
 
-- Run via docker cli
+## Run via docker cli
 
 ```bash
 docker run \
@@ -63,7 +63,7 @@ docker exec -it bit migrate
 docker exec -it bit cli --create-user=Admin
 ```
 
-- Dokku
+## Dokku
 
 ```dockerfile
 FROM sjdonado/bit
@@ -93,11 +93,9 @@ dokku run bit cli --create-user=Admin
 
 1. **Ping the API**
 
-   - **Endpoint**: `/api/ping`
-   - **HTTP Method**: GET
-   - **Description**: Ping the API to check if it's running
-   - **Payload**: -
-   - **Response Example**:
+   - Endpoint: `GET /api/ping`
+   - Payload: None
+   - Response Example
      ```json
      {
        "message": "pong"
@@ -106,12 +104,10 @@ dokku run bit cli --create-user=Admin
 
 2. **Retrieve a link by its slug**
 
-   - **Endpoint**: `/:slug`
-   - **HTTP Method**: GET
-   - **Description**: Retrieve a link by its slug
-   - **Payload**: -
-   - **Headers**: `X-Api-Key`
-   - **Response Example**:
+   - Endpoint: `GET /:slug`
+   - Headers: `X-Api-Key`
+   - Payload: None
+   - Response Example
      ```json
      {
        "data": {
@@ -135,12 +131,10 @@ dokku run bit cli --create-user=Admin
 
 3. **Retrieve all links**
 
-   - **Endpoint**: `/api/links`
-   - **HTTP Method**: GET
-   - **Description**: Retrieve all links
-   - **Payload**: -
-   - **Headers**: `X-Api-Key`
-   - **Response Example**:
+   - Endpoint: `GET /api/links`
+   - Headers: `X-Api-Key`
+   - Payload: None
+   - Response Example
      ```json
      {
        "data": [
@@ -166,12 +160,10 @@ dokku run bit cli --create-user=Admin
 
 4. **Retrieve a link by its ID**
 
-   - **Endpoint**: `/api/links/:id`
-   - **HTTP Method**: GET
-   - **Description**: Retrieve a link by its ID
-   - **Payload**: -
-   - **Headers**: `X-Api-Key`
-   - **Response Example**:
+   - Endpoint: `GET /api/links/:id`
+   - Headers: `X-Api-Key`
+   - Payload: None
+   - Response Example
      ```json
      {
        "data": {
@@ -195,17 +187,15 @@ dokku run bit cli --create-user=Admin
 
 5. **Create a new link**
 
-   - **Endpoint**: `/api/links`
-   - **HTTP Method**: POST
-   - **Description**: Create a new link
-   - **Payload**:
+   - Endpoint\*\*: `POST /api/links`
+   - Payload:
      ```json
      {
        "url": "https://example.com"
      }
      ```
-   - **Headers**: `X-Api-Key`
-   - **Response Example**:
+   - Headers: `X-Api-Key`
+   - Response Example:
      ```json
      {
        "data": {
@@ -219,17 +209,15 @@ dokku run bit cli --create-user=Admin
 
 6. **Update an existing link by its ID**
 
-   - **Endpoint**: `/api/links/:id`
-   - **HTTP Method**: PUT
-   - **Description**: Update an existing link by its ID
-   - **Payload**:
+   - Endpoint: `PUT /api/links/:id`
+   - Payload:
      ```json
      {
        "url": "https://newexample.com"
      }
      ```
-   - **Headers**: `X-Api-Key`
-   - **Response Example**:
+   - Headers: `X-Api-Key`
+   - Response Example:
      ```json
      {
        "data": {
@@ -243,12 +231,10 @@ dokku run bit cli --create-user=Admin
 
 7. **Delete a link by its ID**
 
-   - **Endpoint**: `/api/links/:id`
-   - **HTTP Method**: DELETE
-   - **Description**: Delete a link by its ID
-   - **Payload**: -
-   - **Headers**: `X-Api-Key`
-   - **Response Example**:
+   - Endpoint: `DELETE /api/links/:id`
+   - Payload: None
+   - Headers: `X-Api-Key`
+   - Response Example:
      ```json
      {
        "message": "Link deleted"
@@ -267,7 +253,7 @@ Options:
 
 # Development
 
-1. **Installation**
+## Installation
 
 ```bash
 brew tap amberframework/micrate
@@ -279,19 +265,19 @@ shards run migrate
 shards run bit
 ```
 
-2. **Generate the `X-Api-Key`**
+## Generate the `X-Api-Key`
 
 ```bash
 shards run cli -- --create-user=Admin
 ```
 
-# Run tests
+## Run tests
 
 ```bash
 ENV=test crystal spec
 ```
 
-# Contributing
+## Contributing
 
 1. Fork it (<https://github.com/sjdonado/bit/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
