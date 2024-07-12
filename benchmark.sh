@@ -67,8 +67,8 @@ function measure {
                         --header "X-Api-Key: $api_key" \
                         --header "Content-Type: application/json" \
                         --data "{ \"url\": \"https://kagi.com\" }")
-
         refer=$(echo $response | awk -F'"' '/"refer":/{print $(NF-1)}')
+
         if [[ -n $refer ]]; then
             refer_links+=("$refer")
             if (( i % 100 == 0 )); then
@@ -76,6 +76,8 @@ function measure {
             fi
         else
             echo "Failed to create short link $i"
+            echo $response
+            exit 1
         fi
     done
 

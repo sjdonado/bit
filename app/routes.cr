@@ -4,7 +4,7 @@ module App
   before_all do |env|
     env.response.headers["Access-Control-Allow-Origin"] = "*"
     env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    env.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Accept, X-Api-Key"
+    env.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Accept, Origin, X-Api-Key"
   end
 
   after_all do |env|

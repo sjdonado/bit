@@ -1,6 +1,4 @@
-# bit
-
-> Lightning fast, lightweight and minimal self-hosted url shortener
+`latest` tag is unstable (Under development!)
 
 ## Benchmark
 
