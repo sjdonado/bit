@@ -3,7 +3,10 @@ services:
     build: .
     environment:
       ENV: production
-      DATABASE_URL: sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true
-      APP_URL: http://0.0.0.0:4001
     ports:
-      - 4001:4000
+      - 4000:4000
+    volumes:
+      - sqlite_data:/app/sqlite
+
+volumes:
+  sqlite_data:
