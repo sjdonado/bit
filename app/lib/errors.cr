@@ -1,6 +1,15 @@
 require "kemal"
 
 module App
+  class InternalServerErrorException < Kemal::Exceptions::CustomException
+    def initialize(context)
+      context.response.content_type = "application/json"
+      context.response.status_code = 500
+      context.response.print({ "error" => "Internal Server Error" }.to_json)
+      super(context)
+    end
+  end
+
   class BadRequestException < Kemal::Exceptions::CustomException
     def initialize(context, message : String)
       context.response.content_type = "application/json"
@@ -45,4 +54,13 @@ module App
       super(context)
     end
   end
+end
+
+error 500 do |env|
+  App::InternalServerErrorException.new(env)
+  ""
+end
+
+error 404 do |env|
+  ""
 end
