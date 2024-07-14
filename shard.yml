@@ -9,8 +9,6 @@ targets:
     main: bit.cr
   cli:
     main: scripts/cli.cr
-  migrate:
-    main: scripts/migrate.cr
 
 dependencies:
   kemal:

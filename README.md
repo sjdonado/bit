@@ -44,7 +44,7 @@ Average Response Time: 12.37 µs
 ```bash
 docker-compose up
 
-docker-compose exec -it app migrate
+# Generate an api key
 docker-compose exec -it app cli --create-user=Admin
 ```
 
@@ -59,7 +59,6 @@ docker run \
     -e APP_URL="http://localhost:4000" \
     sjdonado/bit
 
-docker exec -it bit migrate
 docker exec -it bit cli --create-user=Admin
 ```
 
@@ -83,7 +82,6 @@ dokku config:set bit DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&s
 dokku ports:add bit http:80:4000
 dokku ports:add bit https:443:4000
 
-dokku run bit migrate
 dokku run bit cli --create-user=Admin
 ```
 
@@ -261,7 +259,6 @@ brew install micrate
 ```
 
 ```bash
-shards run migrate
 shards run bit
 ```
 

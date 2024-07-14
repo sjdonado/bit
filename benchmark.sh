@@ -134,12 +134,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-docker-compose exec -T app migrate
-if [ $? -ne 0 ]; then
-    echo "Failed to run database migrations."
-    exit 1
-fi
-
 # Create a new user and capture the API key
 output=$(docker-compose exec -T app cli --create-user=Admin)
 api_key=$(echo "$output" | awk -F' ' '/X-Api-Key:/{print $NF}')
