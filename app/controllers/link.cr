@@ -27,12 +27,14 @@ module App::Controllers::Link
       link.url = url
       link.user = user
 
+      attempts = 0
       loop do
-        slug = Random::Secure.urlsafe_base64(5).gsub(/[^a-zA-Z0-9]/, "")
-        if !Database.get_by(Link, slug: slug)
+        slug = Random::Secure.urlsafe_base64(attempts >= 2 ? 6 : 5).gsub(/[^a-zA-Z0-9]/, "")
+        unless Database.get_by(Link, slug: slug)
           link.slug = slug
           break
         end
+        attempts += 1
       end
 
       changeset = Database.insert(link)
