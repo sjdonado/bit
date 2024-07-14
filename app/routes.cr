@@ -5,6 +5,7 @@ module App
     env.response.headers["Access-Control-Allow-Origin"] = "*"
     env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     env.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Accept, Origin, X-Api-Key"
+    env.response.headers.delete("X-Powered-By")
   end
 
   after_all do |env|
