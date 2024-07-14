@@ -17,6 +17,6 @@ module App::Models
     unique_constraint :slug
 
     validate_required [:slug, :url]
-    validate_format :url, /\A(?:https?:\/\/)?(?:[\w-]+\.)+[\w-]+(?:\/\S*)?/
+    validate_format :url, /\Ahttps?:\/\/(?:[\w.-]+)(?::\d+)?(?:[\/?#]\S*)?\z/i
   end
 end
