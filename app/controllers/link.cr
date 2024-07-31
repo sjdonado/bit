@@ -27,16 +27,7 @@ module App::Controllers::Link
       link.id = UUID.v4.to_s
       link.url = url
       link.user = user
-
-      attempts = 0
-      loop do
-        slug = SlugService.generate_base64(url, 5 + attempts)
-        unless Database.get_by(Link, slug: slug)
-          link.slug = slug
-          break
-        end
-        attempts += 1
-      end
+      link.slug = SlugService.shorten_url(url)
 
       changeset = Database.insert(link)
       if !changeset.valid?
