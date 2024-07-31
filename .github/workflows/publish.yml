@@ -35,8 +35,7 @@ jobs:
       - name: Extract version from shard.yml
         id: extract_version
         run: |
-          VERSION=$(grep -oP 'version:\s*\K\S+' shard.yml)
-          VERSION=$(echo $VERSION | tr -d '\n\r')
+          VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
           echo "RELEASE_TAG=$VERSION" >> $GITHUB_ENV
 
       - name: Set tags
@@ -50,7 +49,7 @@ jobs:
 
       - name: Build and push image
         id: push
-        uses: docker/build-push-action@v5.0.0
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
