@@ -5,6 +5,7 @@ require "./app/lib/*"
 require "./app/models/*"
 require "./app/serializers/*"
 require "./app/middlewares/*"
+require "./app/services/*"
 
 require "./app/routes"
 

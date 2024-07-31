@@ -9,6 +9,7 @@ module App::Controllers::Link
   class Create < App::Lib::BaseController
     include App::Models
     include App::Lib
+    include App::Services
 
     def call(env)
       user = env.get("user").as(User)
@@ -29,7 +30,7 @@ module App::Controllers::Link
 
       attempts = 0
       loop do
-        slug = Random::Secure.urlsafe_base64(attempts >= 2 ? 6 : 5).gsub(/[^a-zA-Z0-9]/, "")
+        slug = SlugService.generate_base64(url, 5 + attempts)
         unless Database.get_by(Link, slug: slug)
           link.slug = slug
           break
