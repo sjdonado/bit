@@ -22,7 +22,7 @@ describe "App::Controllers::Link" do
     it "should return existing link if url already exists" do
       test_user = create_test_user()
 
-      payload = {"url" => "https://kagi.com"}
+      payload = {"url" => "http://idonthavespotify.donado.co"}
       post(
         "/api/links",
         headers: HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => test_user.api_key.to_s},
@@ -75,7 +75,7 @@ describe "App::Controllers::Link" do
       payload = {"url" => "https://kagi.com"}
       post("/api/links", headers: HTTP::Headers{"Content-Type" => "application/json"}, body: payload.to_json)
 
-      expected = {"error" => "Unauthorized"}.to_json
+      expected = {"error" => "Unauthorized access"}.to_json
       response.status_code.should eq(401)
       response.body.should eq(expected)
     end
@@ -83,7 +83,7 @@ describe "App::Controllers::Link" do
 
   describe "Index" do
     it "should redirect to origin domain" do
-      link = "https://kagi.com"
+      link = "https://test.com"
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
@@ -95,7 +95,7 @@ describe "App::Controllers::Link" do
     end
 
     it "should create a new click after redirect" do
-      link = "https://kagi.com"
+      link = "https://sjdonado.com"
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
@@ -112,17 +112,11 @@ describe "App::Controllers::Link" do
     end
 
     it "should return 404 - link does not exist" do
-      link = "https://kagi.com"
       test_user = create_test_user()
 
-      test_link = create_test_link(test_user, link)
-      serialized_link = App::Serializers::Link.new(test_link)
+      get("https://localhost:4001/R4kj2")
 
-      delete_test_link(test_link.id)
-
-      get(serialized_link.refer, headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-
-      expected = {"error" => "Not Found"}.to_json
+      expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
       response.body.should eq(expected)
     end
@@ -146,7 +140,7 @@ describe "App::Controllers::Link" do
     end
 
     it "should return owned links only" do
-      links = ["https://google.com", "google.com", "google.com.co", "kagi.com"]
+      links = ["https://google.de", "google.de", "google.edu.co", "x.com"]
       test_user = create_test_user()
 
       links[0..2].each do |link|
@@ -168,7 +162,7 @@ describe "App::Controllers::Link" do
     it "should return 401 - missing api key" do
       get "/api/links"
 
-      expected = {"error" => "Unauthorized"}.to_json
+      expected = {"error" => "Unauthorized access"}.to_json
       response.status_code.should eq(401)
       response.body.should eq(expected)
     end
@@ -176,7 +170,7 @@ describe "App::Controllers::Link" do
 
   describe "Get" do
     it "should return the specified link with click details" do
-      link = "https://kagi.com"
+      link = "https://bing.com"
       test_user = create_test_user()
       test_link = create_test_link(test_user, link)
 
@@ -192,7 +186,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links/1", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      expected = {"error" => "Not Found"}.to_json
+      expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
       response.body.should eq(expected)
     end
@@ -200,7 +194,7 @@ describe "App::Controllers::Link" do
     it "should return 401 - missing api key" do
       get "/api/links/1"
 
-      expected = {"error" => "Unauthorized"}.to_json
+      expected = {"error" => "Unauthorized access"}.to_json
       response.status_code.should eq(401)
       response.body.should eq(expected)
     end
@@ -208,11 +202,11 @@ describe "App::Controllers::Link" do
 
   describe "Update" do
     it "should update link url" do
-      link = "https://kagi.com"
+      link = "https://github.com"
       test_user = create_test_user()
       test_link = create_test_link(test_user, link)
 
-      payload = {"url" => "https://kagi.com.co"}
+      payload = {"url" => "https://github.com.co"}
       put(
         "/api/links/#{test_link.id}",
         headers: HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => test_user.api_key.to_s},
@@ -233,7 +227,7 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
-      expected = {"error" => "Not Found"}.to_json
+      expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
       response.body.should eq(expected)
     end
@@ -246,7 +240,7 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
-      expected = {"error" => "Unauthorized"}.to_json
+      expected = {"error" => "Unauthorized access"}.to_json
       response.status_code.should eq(401)
       response.body.should eq(expected)
     end
@@ -254,7 +248,7 @@ describe "App::Controllers::Link" do
 
   describe "Delete" do
     it "should delete link url" do
-      link = "https://kagi.com"
+      link = "https://news.ycombinator.com"
       test_user = create_test_user()
       test_link = create_test_link(test_user, link)
 
@@ -268,7 +262,7 @@ describe "App::Controllers::Link" do
 
       delete("/api/links/1", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      expected = {"error" => "Not Found"}.to_json
+      expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
       response.body.should eq(expected)
     end
@@ -276,7 +270,7 @@ describe "App::Controllers::Link" do
     it "should return 401 - missing api key" do
       delete "/api/links/1"
 
-      expected = {"error" => "Unauthorized"}.to_json
+      expected = {"error" => "Unauthorized access"}.to_json
       response.status_code.should eq(401)
       response.body.should eq(expected)
     end

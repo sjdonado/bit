@@ -47,7 +47,7 @@ def create_test_link(user, url)
   changeset = App::Lib::Database.insert(link)
   unless changeset.valid?
     error_messages = changeset.errors.map { |error| "#{error}" }.join(", ")
-    raise "Test link creation failed: #{error_messages} #{url} #{link.slug}"
+    raise "Test link creation failed: #{error_messages}"
   end
 
   link.clicks = [] of App::Models::Click
