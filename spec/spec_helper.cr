@@ -40,7 +40,7 @@ end
 def create_test_link(user, url)
   link = App::Models::Link.new
   link.id = UUID.v4.to_s
-  link.slug = App::Services::SlugService.shorten_url(url)
+  link.slug = App::Services::SlugService.shorten_url(url, user.id.to_s)
   link.url = url
   link.user = user
 

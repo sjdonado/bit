@@ -27,7 +27,7 @@ module App::Controllers::Link
       link.id = UUID.v4.to_s
       link.url = url
       link.user = user
-      link.slug = SlugService.shorten_url(url)
+      link.slug = SlugService.shorten_url(url, user.id.to_s)
 
       changeset = Database.insert(link)
       if !changeset.valid?
@@ -118,6 +118,7 @@ module App::Controllers::Link
   class Update < App::Lib::BaseController
     include App::Models
     include App::Lib
+    include App::Services
 
     def call(env)
       user = env.get("user").as(User)
@@ -130,7 +131,17 @@ module App::Controllers::Link
       raise App::NotFoundException.new(env) if link.nil?
       raise App::ForbiddenException.new(env) if link.user_id != user.id
 
-      link.url = body["url"].to_s
+      new_url = body["url"].to_s
+
+      existing_query = Database::Query.where(url: new_url, user_id: user.id.to_s).limit(1)
+      existing_link = Database.all(Link, existing_query).first?
+
+      if existing_link
+        raise App::UnprocessableEntityException.new(env, { "url" => ["URL already exists"] })
+      end
+
+      link.url = new_url
+      link.slug = SlugService.shorten_url(new_url, user.id.to_s)
 
       changeset = Database.update(link)
       if !changeset.valid?
