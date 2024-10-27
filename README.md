@@ -6,35 +6,43 @@
 
 ```shell
 $ ./benchmark.sh
-Semaphore initialized with 2666 slots.
-Setup...
-[+] Running 2/2
- ✔ Network bit_default  Created                                                                              0.0s
- ✔ Container bit-app-1  Started                                                                              0.2s
-2024-07-12T18:41:20.962052Z   INFO - micrate: Migrating db, current version: 0, target: 20240711224103
-2024-07-12T18:41:20.965729Z   INFO - micrate: OK   20240512214223_create_links.sql
-2024-07-12T18:41:20.969198Z   INFO - micrate: OK   20240512225208_add_slug_index_to_links.sql
-2024-07-12T18:41:20.973136Z   INFO - micrate: OK   20240513115731_create_users.sql
-2024-07-12T18:41:20.975525Z   INFO - micrate: OK   20240513130054_add_api_key_index_to_users.sql
-2024-07-12T18:41:20.979195Z   INFO - micrate: OK   20240711224103_create_clicks.sql
-Captured API Key: Z01Qk4M5E0xhggZUCdQAPw
-Waiting for database to be ready...
-Creating 1000 short links...
-Created short link 100/1000
-Created short link 200/1000
-Created short link 300/1000
-Created short link 400/1000
-Created short link 500/1000
-Created short link 600/1000
-Created short link 700/1000
-Created short link 800/1000
-Created short link 900/1000
-Created short link 1000/1000
-Accessing each link 10 times concurrently...
-****Results****
-Average Memory Usage: 16.36 MiB
-Average CPU Usage: 0%
-Average Response Time: 12.37 µs
+Setting up...
+[+] Running 3/3
+ ✔ Network bit_default       Created                                                                         0.0s
+ ✔ Volume "bit_sqlite_data"  Created                                                                         0.0s
+ ✔ Container bit             Started                                                                         0.1s
+Captured API Key: aHOCnZSuo2kOHy2mDa-iOA
+Waiting for the application to be ready...
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 27 Oct 2024 11:52:33 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
+Content-Length: 13
+
+Starting resource usage monitoring...
+Creating 10000 short links with parallel requests...
+Link creation complete: 10000 links created.
+Fetching all created links from /api/links...
+Selected link for benchmarking: http://localhost:4000/oEKLAg
+Starting benchmark with Bombardier...
+Bombarding http://localhost:4000/oEKLAg with 10000 request(s) using 100 connection(s)
+ 10000 / 10000 [===============================================================================] 100.00% 844/s 11s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec       857.65    1577.98    5255.85
+  Latency      116.99ms    10.31ms   133.59ms
+  HTTP codes:
+    1xx - 0, 2xx - 0, 3xx - 10000, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   362.05KB/s
+Benchmark completed.
+Analyzing resource usage...
+**** Results ****
+Average CPU Usage: 43.20%
+Average Memory Usage: 25.52 MiB
 ```
 
 # Self-hosted
