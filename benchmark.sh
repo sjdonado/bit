@@ -3,13 +3,11 @@
 # Configuration variables
 server_url="http://localhost:4000"
 api_url="${server_url}/api/links"
-num_links=1000
-num_requests=100000
+num_links=10000
+num_requests=10000
 concurrency=100
 resource_usage_interval=1
 container_name="bit"
-
-pipe="/tmp/progress_pipe"
 
 check_dependencies() {
     if ! command -v bombardier &> /dev/null; then
@@ -48,7 +46,7 @@ setup_containers() {
 
 monitor_resource_usage() {
     echo "Starting resource usage monitoring..."
-    echo "Timestamp,CPU(%),Memory(MB)" > resource_usage.csv
+    echo "Timestamp,CPU,Memory" > resource_usage.csv
     while :; do
         stats=$(docker stats --no-stream --format "{{.CPUPerc}},{{.MemUsage}}" $container_name)
         cpu=$(echo $stats | awk -F',' '{print $1}' | sed 's/%//')
@@ -60,49 +58,27 @@ monitor_resource_usage() {
 }
 
 create_links() {
-    local batch_size=$((num_links / 10))
-    local progress_bar_width=50
-    local completed_links=0
-    local active_requests=0
+    local temp_file=$(mktemp)
 
-    local -a url_queue
-    mkfifo "$pipe"
-    echo "Creating $num_links short links concurrently in batches of $batch_size..."
+    echo "Creating $num_links short links with $concurrency conrurrent requests..."
 
-    # Populate the queue with unique URLs
+    # Populate URLs into a file to feed into curl
     for ((i=1; i<=num_links; i++)); do
-        url_queue+=("https://example.com/${i}-${num_links}")
+        url="https://example.com/${i}-${num_links}"
+        echo "--next" >> "$temp_file"
+        echo "--request POST" >> "$temp_file"
+        echo "--url \"$api_url\"" >> "$temp_file"
+        echo "--header \"X-Api-Key: $api_key\"" >> "$temp_file"
+        echo "--header \"Content-Type: application/json\"" >> "$temp_file"
+        echo "--data \"{ \\\"url\\\": \\\"$url\\\" }\"" >> "$temp_file"
     done
 
-    # Background reader to update progress bar
-    while read -r line < "$pipe"; do
-        ((completed_links++))
+    curl --parallel --parallel-immediate --parallel-max $concurrency --config "$temp_file" --silent --write-out "%{http_code}\n" > /dev/null
 
-        progress=$((completed_links * progress_bar_width / num_links))
-        bar=$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')
-        printf "\r[%-${progress_bar_width}s] %d%%" "${bar:0:progress}" $((completed_links * 100 / num_links))
-    done &
-
-    # Main loop for processing links
-    while [ "${#url_queue[@]}" -gt 0 ] || [ "$active_requests" -gt 0 ]; do
-        if (( active_requests < batch_size )) && [ "${#url_queue[@]}" -gt 0 ]; then
-            next_url="${url_queue[0]}"
-            url_queue=("${url_queue[@]:1}")
-
-            # Send the request and update active_requests counter
-            (curl --silent --request POST \
-                  --url "$api_url" \
-                  --header "X-Api-Key: $api_key" \
-                  --header "Content-Type: application/json" \
-                  --data "{ \"url\": \"$next_url\" }" > /dev/null && echo "done" > "$pipe" && ((active_requests--))) &
-            ((active_requests++))
-        else
-            sleep 0.1
-        fi
-    done
-
-    printf "\r[%-${progress_bar_width}s] 100%%\n" "$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')"
     echo "Link creation complete: $num_links links created."
+
+    # Clean up
+    rm -f "$temp_file"
 }
 
 run_benchmark() {
@@ -133,15 +109,23 @@ analyze_resource_usage() {
     count=0
 
     while IFS=',' read -r timestamp cpu mem; do
-        if [[ $timestamp != "Timestamp" ]]; then
+        # Skip header line and lines with empty cpu or mem values
+        if [[ $timestamp != "Timestamp" && -n $cpu && -n $mem ]]; then
+            mem=${mem%MiB}
+
             total_cpu=$(echo "$total_cpu + $cpu" | bc)
             total_mem=$(echo "$total_mem + $mem" | bc)
             ((count++))
         fi
     done < resource_usage.csv
 
-    avg_cpu=$(echo "scale=2; $total_cpu / ($count == 0 ? 1 : $count)" | bc)
-    avg_mem=$(echo "scale=2; $total_mem / ($count == 0 ? 1 : $count)" | bc)
+    avg_cpu=0.00
+    avg_mem=0.00
+
+    if (( count > 0 )); then
+        avg_cpu=$(echo "scale=2; $total_cpu / $count" | bc)
+        avg_mem=$(echo "scale=2; $total_mem / $count" | bc)
+    fi
 
     echo "**** Results ****"
     echo "Average CPU Usage: $avg_cpu%"
@@ -149,7 +133,7 @@ analyze_resource_usage() {
 }
 
 cleanup() {
-    rm -f "$pipe" resource_usage.csv
+    rm -f resource_usage.csv
     docker compose down
 }
 
@@ -163,8 +147,10 @@ main() {
 
     create_links
     run_benchmark
+
+    kill $monitor_pid
     analyze_resource_usage
     cleanup
 }
 
-mainain
+main
