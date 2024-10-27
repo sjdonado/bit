@@ -5,7 +5,7 @@ services:
     environment:
       ENV: production
     ports:
-      - 4001:4000
+      - 4000:4000
     volumes:
       - sqlite_data:/app/sqlite
 

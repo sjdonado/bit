@@ -1,25 +1,53 @@
 #!/bin/bash
 
-# Check dependencies
-if ! command -v bombardier &> /dev/null; then
-    echo "Error: bombardier is not installed. Please install it to proceed."
-    exit 1
-fi
-
-if ! command -v jq &> /dev/null; then
-    echo "Error: jq is not installed. Please install it to proceed."
-    exit 1
-fi
-
-server_url="http://localhost:4001"
+# Configuration variables
+server_url="http://localhost:4000"
 api_url="${server_url}/api/links"
-num_links=10000     # Total number of links to create by curl
-num_requests=10000  # Total number of requests to perform by bombardier
-concurrency=100     # Number of multiple requests to make at a time
-resource_usage_interval=1  # Interval in seconds for resource usage logging
+num_links=1000
+num_requests=100000
+concurrency=100
+resource_usage_interval=1
 container_name="bit"
 
-function monitor_resource_usage {
+pipe="/tmp/progress_pipe"
+
+check_dependencies() {
+    if ! command -v bombardier &> /dev/null; then
+        echo "Error: bombardier is not installed. Please install it to proceed."
+        exit 1
+    fi
+
+    if ! command -v jq &> /dev/null; then
+        echo "Error: jq is not installed. Please install it to proceed."
+        exit 1
+    fi
+}
+
+setup_containers() {
+    echo "Setting up..."
+    docker compose up -d
+    if [ $? -ne 0 ]; then
+        echo "Failed to start Docker containers."
+        exit 1
+    fi
+
+    output=$(docker compose exec -T app cli --create-user=Admin)
+    api_key=$(echo "$output" | awk -F' ' '/X-Api-Key:/{print $NF}')
+    echo "Captured API Key: $api_key"
+
+    if [[ -z "$api_key" ]]; then
+        echo "Error: API key could not be retrieved."
+        exit 1
+    fi
+
+    echo "Waiting for the application to be ready..."
+    until curl --silent --head --fail --header "X-Api-Key: $api_key" "$server_url/api/ping"; do
+        sleep 2
+    done
+}
+
+monitor_resource_usage() {
+    echo "Starting resource usage monitoring..."
     echo "Timestamp,CPU(%),Memory(MB)" > resource_usage.csv
     while :; do
         stats=$(docker stats --no-stream --format "{{.CPUPerc}},{{.MemUsage}}" $container_name)
@@ -31,108 +59,112 @@ function monitor_resource_usage {
     done
 }
 
-echo "Setting up..."
+create_links() {
+    local batch_size=$((num_links / 10))
+    local progress_bar_width=50
+    local completed_links=0
+    local active_requests=0
 
-docker compose up -d
-if [ $? -ne 0 ]; then
-    echo "Failed to start Docker containers."
-    exit 1
-fi
+    local -a url_queue
+    mkfifo "$pipe"
+    echo "Creating $num_links short links concurrently in batches of $batch_size..."
 
-output=$(docker compose exec -T app cli --create-user=Admin)
-api_key=$(echo "$output" | awk -F' ' '/X-Api-Key:/{print $NF}')
-echo "Captured API Key: $api_key"
-
-# Ensure the API key is valid
-if [[ -z "$api_key" ]]; then
-    echo "Error: API key could not be retrieved."
-    exit 1
-fi
-
-echo "Waiting for the application to be ready..."
-until curl --silent --head --fail --header "X-Api-Key: $api_key" "$server_url/api/ping"; do
-    sleep 2
-done
-
-echo "Starting resource usage monitoring..."
-monitor_resource_usage &  # Run in the background
-monitor_pid=$!
-
-echo "Creating $num_links short links..."
-batch_size=$((num_links / 10))
-progress_bar_width=50
-
-for ((batch=1; batch<=num_links; batch+=batch_size)); do
-    progress=$(( (batch - 1) * progress_bar_width / num_links))
-    bar=$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')
-    printf "\r[%-${progress_bar_width}s] %d%%" "${bar:0:progress}" $(((batch - 1) * 100 / num_links))
-
-    # Launch a batch of background processes
-    for ((i=batch; i<batch+batch_size && i<=num_links; i++)); do
-        unique_url="https://example.com/${RANDOM}-${i}"
-        curl --silent --request POST \
-             --url "$api_url" \
-             --header "X-Api-Key: $api_key" \
-             --header "Content-Type: application/json" \
-             --data "{ \"url\": \"$unique_url\" }" > /dev/null &
+    # Populate the queue with unique URLs
+    for ((i=1; i<=num_links; i++)); do
+        url_queue+=("https://example.com/${i}-${num_links}")
     done
-    wait  # Wait for all processes in the current batch to finish
 
-    progress=$((batch * progress_bar_width / num_links))
-    bar=$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')
-    printf "\r[%-${progress_bar_width}s] %d%%" "${bar:0:progress}" $((batch * 100 / num_links))
-done
+    # Background reader to update progress bar
+    while read -r line < "$pipe"; do
+        ((completed_links++))
 
-printf "\r[%-${progress_bar_width}s] 100%%\n" "$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')"
-echo "Link creation complete: $num_links links created."
+        progress=$((completed_links * progress_bar_width / num_links))
+        bar=$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')
+        printf "\r[%-${progress_bar_width}s] %d%%" "${bar:0:progress}" $((completed_links * 100 / num_links))
+    done &
 
-echo "Fetching all created links from /api/links..."
-all_links_response=$(curl --silent --request GET \
-                          --url "$api_url" \
-                          --header "X-Api-Key: $api_key" \
-                          --header "Content-Type: application/json")
+    # Main loop for processing links
+    while [ "${#url_queue[@]}" -gt 0 ] || [ "$active_requests" -gt 0 ]; do
+        if (( active_requests < batch_size )) && [ "${#url_queue[@]}" -gt 0 ]; then
+            next_url="${url_queue[0]}"
+            url_queue=("${url_queue[@]:1}")
 
-links=($(echo "$all_links_response" | jq -r '.data[] | .refer'))
-if [[ ${#links[@]} -ne $num_links ]]; then
-    echo "Error: Expected $num_links links but found ${#links[@]}."
-    exit 1
-fi
+            # Send the request and update active_requests counter
+            (curl --silent --request POST \
+                  --url "$api_url" \
+                  --header "X-Api-Key: $api_key" \
+                  --header "Content-Type: application/json" \
+                  --data "{ \"url\": \"$next_url\" }" > /dev/null && echo "done" > "$pipe" && ((active_requests--))) &
+            ((active_requests++))
+        else
+            sleep 0.1
+        fi
+    done
 
-random_link="${links[RANDOM % ${#links[@]}]}"
-echo "Selected link for benchmarking: $random_link"
+    printf "\r[%-${progress_bar_width}s] 100%%\n" "$(printf "%-${progress_bar_width}s" "#" | tr ' ' '#')"
+    echo "Link creation complete: $num_links links created."
+}
 
-echo "Starting benchmark with Bombardier..."
-bombardier -c $concurrency -n $num_requests "$random_link"
+run_benchmark() {
+    echo "Fetching all created links from /api/links..."
+    all_links_response=$(curl --silent --request GET \
+                              --url "$api_url" \
+                              --header "X-Api-Key: $api_key" \
+                              --header "Content-Type: application/json")
 
-echo "Benchmark completed."
-
-# Stop resource monitoring
-kill $monitor_pid 2>/dev/null
-
-echo "Analyzing resource usage..."
-
-total_cpu=0
-total_mem=0
-count=0
-
-# Process each line in the resource usage log
-while IFS=',' read -r timestamp cpu mem; do
-    # Skip the header line
-    if [[ $timestamp != "Timestamp" ]]; then
-        total_cpu=$(echo "$total_cpu + $cpu" | bc)
-        total_mem=$(echo "$total_mem + $mem" | bc)
-        ((count++))
+    links=($(echo "$all_links_response" | jq -r '.data[] | .refer'))
+    if [[ ${#links[@]} -ne $num_links ]]; then
+        echo "Error: Expected $num_links links but found ${#links[@]}."
+        exit 1
     fi
-done < resource_usage.csv
 
-# Calculate averages; if count is 0, output will be 0.00
-avg_cpu=$(echo "scale=2; $total_cpu / ($count == 0 ? 1 : $count)" | bc)
-avg_mem=$(echo "scale=2; $total_mem / ($count == 0 ? 1 : $count)" | bc)
+    random_link="${links[RANDOM % ${#links[@]}]}"
+    echo "Selected link for benchmarking: $random_link"
 
-echo "**** Results ****"
-echo "Average CPU Usage: $avg_cpu%"
-echo "Average Memory Usage: $avg_mem MiB"
+    echo "Starting benchmark with Bombardier..."
+    bombardier -c $concurrency -n $num_requests "$random_link"
+    echo "Benchmark completed."
+}
 
-echo "Cleaning up..."
-rm resource_usage.csv
-docker compose down
+analyze_resource_usage() {
+    echo "Analyzing resource usage..."
+    total_cpu=0
+    total_mem=0
+    count=0
+
+    while IFS=',' read -r timestamp cpu mem; do
+        if [[ $timestamp != "Timestamp" ]]; then
+            total_cpu=$(echo "$total_cpu + $cpu" | bc)
+            total_mem=$(echo "$total_mem + $mem" | bc)
+            ((count++))
+        fi
+    done < resource_usage.csv
+
+    avg_cpu=$(echo "scale=2; $total_cpu / ($count == 0 ? 1 : $count)" | bc)
+    avg_mem=$(echo "scale=2; $total_mem / ($count == 0 ? 1 : $count)" | bc)
+
+    echo "**** Results ****"
+    echo "Average CPU Usage: $avg_cpu%"
+    echo "Average Memory Usage: $avg_mem MiB"
+}
+
+cleanup() {
+    rm -f "$pipe" resource_usage.csv
+    docker compose down
+}
+
+main() {
+    check_dependencies
+    setup_containers
+
+    monitor_resource_usage &  # Start monitoring in the background
+    monitor_pid=$!
+    trap 'kill $monitor_pid; cleanup; exit' INT
+
+    create_links
+    run_benchmark
+    analyze_resource_usage
+    cleanup
+}
+
+mainain
