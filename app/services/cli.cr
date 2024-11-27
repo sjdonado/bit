@@ -3,11 +3,11 @@ require "../lib/*"
 require "../models/*"
 
 module App::Services::Cli
-  def self.create_user(name)
+  def self.create_user(name, api_key = nil)
     user = App::Models::User.new
     user.id = UUID.v4.to_s
     user.name = name
-    user.api_key = Random::Secure.urlsafe_base64()
+    user.api_key = api_key || Random::Secure.urlsafe_base64()
 
     changeset = App::Lib::Database.insert(user)
     return changeset.errors if !changeset.valid?
@@ -34,5 +34,24 @@ module App::Services::Cli
     return "Failed to delete user: #{result}" if result.rows_affected == 0
 
     "User with ID #{user_id} deleted successfully"
+  end
+
+  def self.setup_admin_user
+    admin_name = ENV["ADMIN_NAME"]
+    admin_api_key = ENV["ADMIN_API_KEY"]
+
+    if admin_name && admin_api_key
+      # Query to check if admin user already exists
+      query = App::Lib::Database::Query.where(name: admin_name, api_key: admin_api_key).limit(1)
+      existing_user = App::Lib::Database.all(App::Models::User, query).first?
+
+      return if existing_user
+
+      puts "Admin user setup detected. Creating admin user..."
+      result = create_user(admin_name, admin_api_key)
+      puts result
+    else
+      puts "Admin setup skipped: Missing ADMIN_NAME or ADMIN_API_KEY environment variables."
+    end
   end
 end

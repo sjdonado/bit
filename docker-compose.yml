@@ -4,6 +4,8 @@ services:
     build: .
     environment:
       ENV: production
+      ADMIN_NAME: 'Tester'
+      ADMIN_API_KEY: '0p+mDvbpZGLPGVCXnV+EDduR9Blkv27Dhq9XSzSbdQY='
     ports:
       - 4000:4000
     volumes:
