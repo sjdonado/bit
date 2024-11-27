@@ -154,6 +154,58 @@
      }
      ```
 
+## Self-hosted
+
+### Run via docker-compose
+
+```bash
+docker-compose up
+
+# Optional: Generate an api key
+# docker-compose exec -it app cli --create-user=Admin
+```
+
+### Run via docker cli
+
+```bash
+docker run \
+    --name bit \
+    -p 4000:4000 \
+    -e ENV="production" \
+    -e DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" \
+    -e APP_URL="http://localhost:4000" \
+    -e ADMIN_NAME="Admin" \
+    -e ADMIN_API_KEY=$(openssl rand -base64 32) \
+    sjdonado/bit
+
+# Optional: Generate an api key
+# docker exec -it bit cli --create-user=Admin
+```
+
+### Dokku
+
+```dockerfile
+FROM sjdonado/bit
+```
+
+```bash
+dokku apps:create bit
+
+dokku domains:set bit bit.donado.co
+dokku letsencrypt:enable bit
+
+dokku storage:ensure-directory bit-sqlite
+dokku storage:mount bit /var/lib/dokku/data/storage/bit-sqlite:/usr/src/app/sqlite/
+
+dokku config:set bit DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" APP_URL=https://bit.donado.co ADMIN_NAME=Admin ADMIN_API_KEY=$(openssl rand -base64 32)
+
+dokku ports:add bit http:80:4000
+dokku ports:add bit https:443:4000
+
+# Optional: Generate an api key
+# dokku run bit cli --create-user=Admin
+```
+
 ## CLI
 
 ```
@@ -209,54 +261,6 @@ Average Memory Usage: 28.62 MiB
 [+] Running 2/2
  ✔ Container bit        Removed                                                                                                                                                                                               10.1s
  ✔ Network bit_default  Removed  
-```
-
-## Self-hosted
-
-### Run via docker-compose
-
-```bash
-docker-compose up
-
-# Generate an api key
-docker-compose exec -it app cli --create-user=Admin
-```
-
-### Run via docker cli
-
-```bash
-docker run \
-    --name bit \
-    -p 4000:4000 \
-    -e ENV="production" \
-    -e DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" \
-    -e APP_URL="http://localhost:4000" \
-    sjdonado/bit
-
-docker exec -it bit cli --create-user=Admin
-```
-
-### Dokku
-
-```dockerfile
-FROM sjdonado/bit
-```
-
-```bash
-dokku apps:create bit
-
-dokku domains:set bit bit.donado.co
-dokku letsencrypt:enable bit
-
-dokku storage:ensure-directory bit-sqlite
-dokku storage:mount bit /var/lib/dokku/data/storage/bit-sqlite:/usr/src/app/sqlite/
-
-dokku config:set bit DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" APP_URL=https://bit.donado.co
-
-dokku ports:add bit http:80:4000
-dokku ports:add bit https:443:4000
-
-dokku run bit cli --create-user=Admin
 ```
 
 ## Development
