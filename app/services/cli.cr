@@ -37,8 +37,8 @@ module App::Services::Cli
   end
 
   def self.setup_admin_user
-    admin_name = ENV["ADMIN_NAME"]
-    admin_api_key = ENV["ADMIN_API_KEY"]
+    admin_name = ENV["ADMIN_NAME"]?
+    admin_api_key = ENV["ADMIN_API_KEY"]?
 
     if admin_name && admin_api_key
       # Query to check if admin user already exists
