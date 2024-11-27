@@ -41,7 +41,6 @@ module App::Services::Cli
     admin_api_key = ENV["ADMIN_API_KEY"]?
 
     if admin_name && admin_api_key
-      # Query to check if admin user already exists
       query = App::Lib::Database::Query.where(name: admin_name, api_key: admin_api_key).limit(1)
       existing_user = App::Lib::Database.all(App::Models::User, query).first?
 
