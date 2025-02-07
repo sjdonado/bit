@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Publish Docker images
 
 on:
   push:
@@ -8,14 +8,16 @@ on:
     types: [published]
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  build-and-push:
+    name: Build and Push
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
     permissions:
-      packages: write
       contents: read
-      attestations: write
-      id-token: write
+      packages: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,33 +34,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract version from shard.yml
-        id: extract_version
+      - name: Extract version
+        id: version
         run: |
           VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
-          echo "RELEASE_TAG=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Set tags
-        id: set_tags
-        run: |
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            echo "TAGS=latest,${{ env.RELEASE_TAG }}" >> $GITHUB_ENV
-          else
-            echo "TAGS=latest" >> $GITHUB_ENV
-          fi
-
-      - name: Build and push image
-        id: push
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: ${{ matrix.platform }}
           push: true
-          platforms: linux/amd64,linux/arm64
-          tags: sjdonado/bit:${{ env.TAGS }}
-
-      - name: Attest
-        uses: actions/attest-build-provenance@v1
-        id: attest
-        with:
-          subject-name: sjdonado/bit
-          subject-digest: ${{ steps.push.outputs.digest }}
+          tags: |
+            sjdonado/bit:${{ steps.version.outputs.version }}-${{ contains(matrix.platform, 'amd64') && 'amd64' || 'arm64' }}
+            sjdonado/bit:latest-${{ contains(matrix.platform, 'amd64') && 'amd64' || 'arm64' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
