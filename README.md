@@ -6,7 +6,7 @@
 
 Lightweight URL shortener service with minimal resource requirements. Average memory consumption is **20MB RAM** with container disk space under **50MB**.
 
-Bit is fast, see the [benchmark](docs/SETUP.md#benchmark)
+Bit is highly performant, achieving over 850 requests per second with an average latency of just 118ms. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
 
 ## Quick Start
 ```bash

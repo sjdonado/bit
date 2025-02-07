@@ -3,8 +3,8 @@
 ```
 Usage: ./cli [options]
 Options:
-  --create-user=NAME  Create a new user with the given name
-  --list-users        List all users
+  --create-user=NAME    Create a new user with the given name
+  --list-users          List all users
   --delete-user=USER_ID Delete a user by ID
 ```
 
@@ -61,6 +61,8 @@ dokku ports:add bit https:443:4000
 ```
 
 ## Benchmark
+
+Conducted on a MacBook Air M2 with 16GB RAM.
 
 ```
 $ ./benchmark.sh
