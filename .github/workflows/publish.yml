@@ -8,8 +8,8 @@ on:
     types: [published]
 
 jobs:
-  build-and-push:
-    name: Build and Push
+  build-platforms:
+    name: Build Platforms
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,14 +40,32 @@ jobs:
           VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build and push
+      - name: Build and push platform image
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            sjdonado/bit:latest-${{ contains(matrix.platform, 'amd64') && 'amd64' || 'arm64' }}
-            ${{ github.event_name == 'release' && format('sjdonado/bit:{0}-{1}', steps.version.outputs.version, contains(matrix.platform, 'amd64') && 'amd64' || 'arm64') || '' }}
+            sjdonado/bit:${{ github.event_name == 'release' && steps.version.outputs.version || 'latest' }}-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  create-manifest:
+    name: Create Manifest
+    runs-on: ubuntu-latest
+    needs: build-platforms
+    permissions:
+      packages: write
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create manifest
+        run: |
+          docker buildx imagetools create \
+            -t sjdonado/bit:${{ github.event_name == 'release' && needs.build-platforms.outputs.version || 'latest' }} \
+            sjdonado/bit:${{ github.event_name == 'release' && needs.build-platforms.outputs.version || 'latest' }}-{amd64,arm64}
