@@ -47,7 +47,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            sjdonado/bit:${{ steps.version.outputs.version }}-${{ contains(matrix.platform, 'amd64') && 'amd64' || 'arm64' }}
             sjdonado/bit:latest-${{ contains(matrix.platform, 'amd64') && 'amd64' || 'arm64' }}
+            ${{ github.event_name == 'release' && format('sjdonado/bit:{0}-{1}', steps.version.outputs.version, contains(matrix.platform, 'amd64') && 'amd64' || 'arm64') || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
