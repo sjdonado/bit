@@ -5,42 +5,6 @@ We welcome contributions from the community! Please follow these guidelines to h
 ## Code of Conduct
 This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to uphold its terms.
 
-### Requirements
-- Crystal 1.0+
-- Shards package manager
-- SQLite3
-
-## Local Development
-
-- linux
-```bash
-sudo apt-get update && sudo apt-get install -y crystal libssl-dev libsqlite3-dev
-```
-
-- macos
-```bash
-brew tap amberframework/micrate
-brew install micrate
-```
-
-## Run
-```bash
-shards run bit
-```
-
-- Generate the `X-Api-Key`
-
-```bash
-shards run cli -- --create-user=Admin
-```
-
-- Run tests
-
-```bash
-ENV=test crystal spec
-```
-
-
 ## How to Contribute
 
 ### 1. Fork the Repository
@@ -64,6 +28,7 @@ git checkout -b fix/issue-description
 ```
 
 ### 4. Develop Your Changes
+- Check [Local Development](docs/SETUP.md#local-development) guidelines
 - Ensure changes match the project scope
 - Write clear commit messages
 - Include tests for new functionality

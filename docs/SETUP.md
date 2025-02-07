@@ -8,9 +8,9 @@ Options:
   --delete-user=USER_ID Delete a user by ID
 ```
 
-## Run it anywhere
+## Run It Anywhere
 
-### docker-compose
+### Docker Compose
 
 ```bash
 docker-compose up
@@ -19,7 +19,7 @@ docker-compose up
 # docker-compose exec -it app cli --create-user=Admin
 ```
 
-### Docker cli
+### Docker CLI
 
 ```bash
 docker run \
@@ -58,6 +58,42 @@ dokku ports:add bit https:443:4000
 
 # Optional: Generate an api key
 # dokku run bit cli --create-user=Admin
+```
+
+## Local Development
+
+### Requirements
+- Crystal 1.12+
+- Shards package manager
+- SQLite3
+
+- linux
+```bash
+sudo apt-get update && sudo apt-get install -y crystal libssl-dev libsqlite3-dev
+```
+
+- macos
+```bash
+brew tap amberframework/micrate
+brew install micrate
+```
+
+### Install Shards and Run
+
+```bash
+shards run bit
+```
+
+- Generate the `X-Api-Key`
+
+```bash
+shards run cli -- --create-user=Admin
+```
+
+- Run tests
+
+```bash
+ENV=test crystal spec
 ```
 
 ## Benchmark
