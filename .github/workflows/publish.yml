@@ -22,9 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -42,12 +39,16 @@ jobs:
 
       - name: Build and push platform image
         uses: docker/build-push-action@v5
+        env:
+          CRYSTAL_WORKERS: ${{ matrix.platform == 'linux/amd64' && 4 || 2 }}
         with:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
             sjdonado/bit:${{ github.event_name == 'release' && steps.version.outputs.version || 'latest' }}-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
+          build-args: |
+            TARGETARCH=${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
