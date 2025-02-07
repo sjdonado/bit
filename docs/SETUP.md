@@ -67,6 +67,7 @@ dokku ports:add bit https:443:4000
 - Shards package manager
 - SQLite3
 
+### Install Dependencies
 - linux
 ```bash
 sudo apt-get update && sudo apt-get install -y crystal libssl-dev libsqlite3-dev
