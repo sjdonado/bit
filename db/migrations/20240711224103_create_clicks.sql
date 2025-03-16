@@ -4,7 +4,6 @@ CREATE TABLE clicks (
 	id TEXT PRIMARY KEY NOT NULL,
 	link_id TEXT NOT NULL,
 	user_agent TEXT,
-	language TEXT,
 	browser TEXT,
 	os TEXT,
 	source TEXT,

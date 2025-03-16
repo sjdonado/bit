@@ -5,14 +5,14 @@ module App::Models
     schema :clicks do
       field :id, String, primary_key: true
       field :user_agent, String
-      field :language, String
+      field :country, String
       field :browser, String
       field :os, String
-      field :source, String
+      field :referer, String
 
       belongs_to :link, Link
     end
 
-    validate_required [:user_agent, :language, :source]
+    validate_required [:user_agent, :country, :referer]
   end
 end

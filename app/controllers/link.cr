@@ -72,7 +72,7 @@ module App::Controllers::Link
         click.user_agent = user_agent_str
         click.browser = user_agent ? user_agent.family : "Unknown"
         click.os = user_agent ? (user_agent.os.try &.family || "Unknown") : "Unknown"
-        click.source = referer ? URI.parse(referer).host : "Unknown"
+        click.referer = referer ? URI.parse(referer).host : "Unknown"
 
         changeset = Database.insert(click)
         if changeset.errors.any?
