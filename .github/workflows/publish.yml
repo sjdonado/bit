@@ -31,11 +31,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract version
+      - name: Determine version
         id: version
         run: |
-          VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Build and push platform image
         uses: docker/build-push-action@v5
@@ -46,7 +50,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            sjdonado/bit:${{ github.event_name == 'release' && steps.version.outputs.version || 'latest' }}-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
+            sjdonado/bit:${{ steps.version.outputs.version }}-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           build-args: |
             TARGETARCH=${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           cache-from: type=gha
@@ -65,8 +69,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create manifest
         run: |
           docker buildx imagetools create \
-            -t sjdonado/bit:${{ github.event_name == 'release' && needs.build-platforms.outputs.version || 'latest' }} \
-            sjdonado/bit:${{ github.event_name == 'release' && needs.build-platforms.outputs.version || 'latest' }}-{amd64,arm64}
+            -t sjdonado/bit:${{ steps.version.outputs.version }} \
+            sjdonado/bit:${{ steps.version.outputs.version }}-{amd64,arm64}
