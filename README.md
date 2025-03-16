@@ -12,7 +12,7 @@ Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 It is feature-complete by design. Its strength lies in simplicity, a reliable URL shortener without unnecessary bloat. Bug fixes will continue, but new features aren't planned.
 
 - Minimal tracking setup: Country, browser, os, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
-- Flexible request forwarding system passes client context (IP, user-agent) to destinations via standard X-Forwarded-For and X-Forwarded-User-Agent headers, enabling advanced tracking and integration capabilities when needed.
+- Flexible request forwarding system passes client context (IP, user-agent) to destinations via standard `X-Forwarded-For` and `User-Agent` headers, enabling advanced tracking and integration capabilities when needed.
 - Multiple users are supported via API key authentication. Create, list and delete via the [CLI](docs/SETUP.md#cli).
 
 ## Minimum Requirements
