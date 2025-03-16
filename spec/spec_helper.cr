@@ -55,6 +55,26 @@ def create_test_link(user, url)
   link
 end
 
+def create_test_click(link)
+  click = App::Models::Click.new
+  click.id = UUID.v4.to_s
+  click.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
+  click.browser = "Firefox"
+  click.os = "Mac OS X"
+  click.referer = "example.com"
+  click.country = "US"
+  click.created_at = Time.utc
+  click.link = link
+  click.link_id = link.id
+
+  changeset = App::Lib::Database.insert(click)
+  unless changeset.valid?
+    error_messages = changeset.errors.map { |error| "#{error}" }.join(", ")
+    raise "Test click creation failed: #{error_messages}"
+  end
+  click
+end
+
 def get_test_link(link_id)
   query = App::Lib::Database::Query.where(id: link_id.as(String)).limit(1)
   link = App::Lib::Database.all(App::Models::Link, query, preload: [:clicks]).first?
