@@ -53,7 +53,7 @@ module App::Controllers::Link
       link = Database.get_by(Link, slug: slug)
       raise App::NotFoundException.new(env) if !link
 
-      remote_address = env.request.remote_address.try &.to_s
+      remote_address = env.request.headers["Cf-Connecting-Ip"]?.try(&.presence) || env.request.remote_address.try &.to_s
       user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
 
       client_ip = IpLookup.extract_ip(remote_address) || "Unknown"
@@ -62,7 +62,7 @@ module App::Controllers::Link
       env.response.headers["Location"] = link.url!
 
       env.response.headers["X-Forwarded-For"] = client_ip
-      env.response.headers["X-Forwarded-User-Agent"] = user_agent_str
+      env.response.headers["User-Agent"] = user_agent_str
 
       spawn do
         ip_lookup = client_ip != "Unknown" ? IpLookup.new(client_ip) : nil
