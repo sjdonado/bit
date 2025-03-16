@@ -14,29 +14,8 @@
 2. **Redirect by Slug**
 
    - Endpoint: `GET /:slug`
-   - Headers: `X-Api-Key`
    - Payload: None
-   - Response Example
-     ```json
-     {
-       "data": {
-         "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
-         "refer": "http://localhost:4000/3wP4BQ",
-         "origin": "https://monocuco.donado.co",
-         "clicks": [
-           {
-             "id": "730e2202-58f9-478c-a24c-f1c561df6716",
-             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0",
-             "language": "en-US",
-             "browser": "Firefox",
-             "os": "Mac OS X",
-             "source": "Unknown",
-             "created_at": "2024-07-12T19:25:22Z"
-           }
-         ]
-       }
-     }
-     ```
+   - Response 301
 
 3. **List All Links**
 

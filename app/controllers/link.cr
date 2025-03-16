@@ -51,15 +51,20 @@ module App::Controllers::Link
       link = Database.get_by(Link, slug: slug)
       raise App::NotFoundException.new(env) if !link
 
+      client_ip = env.request.remote_address.try &.to_s || "Unknown"
+      user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
+      user_agent = user_agent_str != "Unknown" ? UserAgent.new(user_agent_str) : nil
+      language_header = env.request.headers["Accept-Language"]? || "Unknown"
+      language = language_header.split(',').first.split(';').first
+      referer = env.request.headers["Referer"]?
+
+      env.response.status_code = 301
+      env.response.headers["Location"] = link.url!
+
+      env.response.headers["X-Forwarded-For"] = client_ip
+      env.response.headers["X-Forwarded-User-Agent"] = user_agent_str
+
       spawn do
-        user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
-        user_agent = user_agent_str != "Unknown" ? UserAgent.new(user_agent_str) : nil
-
-        language_header = env.request.headers["Accept-Language"]? || "Unknown"
-        language = language_header.split(',').first.split(';').first
-
-        referer = env.request.headers["Referer"]?
-
         click = Click.new
         click.id = UUID.v4.to_s
         click.link = link
@@ -74,11 +79,6 @@ module App::Controllers::Link
           Log.error { "Logging click event failed: #{changeset.errors}" }
         end
       end
-
-      env.response.status_code = 301
-      env.response.headers["Location"] = link.url!
-      env.response.headers["Content-Type"] = "text/html"
-      env.response.print("Redirecting...")
     end
   end
 
