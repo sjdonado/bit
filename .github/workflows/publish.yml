@@ -37,8 +37,7 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "version=latest" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push platform image
@@ -75,8 +74,7 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
           else
-            VERSION=$(grep '^version:' shard.yml | cut -d ' ' -f 2)
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "version=latest" >> $GITHUB_OUTPUT
           fi
 
       - name: Create manifest
