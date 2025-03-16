@@ -17,8 +17,13 @@ module App::Serializers
         builder.field("refer", @refer)
         builder.field("origin", @link.url)
 
-        unless @link.clicks.empty?
-          builder.field("clicks", @link.clicks.map { |click| App::Serializers::Click.new(click) })
+        begin
+          clicks = @link.clicks
+          unless clicks.empty?
+            builder.field("clicks", clicks.map { |click| App::Serializers::Click.new(click) })
+          end
+        rescue Crecto::AssociationNotLoaded
+          # Association not loaded, skip this field silently
         end
       end
     end

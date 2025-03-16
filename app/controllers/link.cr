@@ -134,11 +134,54 @@ module App::Controllers::Link
       link_id = env.params.url["id"]
 
       query = Database::Query.where(id: link_id.as(String), user_id: user.id.as(String)).limit(1)
-      link = Database.all(Link, query, preload: [:clicks]).first?
-
+      link = Database.all(Link, query).first?
       raise App::NotFoundException.new(env) if link.nil?
 
+      clicks_query = Database::Query.where(link_id: link_id.as(String))
+                                    .order_by("id DESC")
+                                    .limit(100)
+      link.clicks = Database.all(Click, clicks_query)
+
       response = {"data" => App::Serializers::Link.new(link)}
+      response.to_json
+    end
+  end
+
+  class Clicks < App::Lib::BaseController
+    include App::Models
+    include App::Lib
+
+    def call(env)
+      user = env.get("user").as(User)
+      link_id = env.params.url["id"]
+
+      link_query = Database::Query.where(id: link_id.as(String), user_id: user.id.as(String)).limit(1)
+      link = Database.all(Link, link_query).first?
+      raise App::NotFoundException.new(env) if link.nil?
+
+      limit = (env.params.query["limit"]? || "100").to_i
+      cursor = env.params.query["cursor"]?
+
+      query = Database::Query.where(link_id: link_id.as(String))
+      if cursor
+        query = query.where("id < ?", cursor)
+      end
+
+      query = query.order_by("id DESC").limit(limit + 1)
+      clicks = Database.all(Click, query)
+
+      has_more = clicks.size > limit
+      clicks = clicks[0...limit] if has_more
+      next_cursor = has_more ? clicks.last.id : nil
+
+      response = {
+        "data" => clicks.map { |click| App::Serializers::Click.new(click) },
+        "pagination" => {
+          "has_more" => has_more,
+          "next" => next_cursor
+        }
+      }
+
       response.to_json
     end
   end
