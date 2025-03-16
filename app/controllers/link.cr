@@ -97,10 +97,30 @@ module App::Controllers::Link
     def call(env)
       user = env.get("user").as(User)
 
-      query = Database::Query.where(user_id: user.id.as(String))
-      links = Database.all(Link, query, preload: [:clicks])
+      limit = (env.params.query["limit"]? || "100").to_i
+      cursor = env.params.query["cursor"]?
 
-      response = {"data" => links.map { |link| App::Serializers::Link.new(link) }}
+      query = Database::Query.where(user_id: user.id.as(String))
+      if cursor
+        query = query.where("id < ?", cursor)
+      end
+
+      query = query.order_by("id DESC").limit(limit + 1)
+      links = Database.all(Link, query)
+
+      has_more = links.size > limit
+      links = links[0...limit] if has_more
+
+      next_cursor = has_more ? links.last.id : nil
+
+      response = {
+        "data" => links.map { |link| App::Serializers::Link.new(link) },
+        "pagination" => {
+          "has_more" => has_more,
+          "next" => next_cursor
+        }
+      }
+
       response.to_json
     end
   end

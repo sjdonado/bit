@@ -16,7 +16,10 @@ module App::Serializers
         builder.field("id", @link.id)
         builder.field("refer", @refer)
         builder.field("origin", @link.url)
-        builder.field("clicks", @link.clicks.map { |click| App::Serializers::Click.new(click) })
+
+        unless @link.clicks.empty?
+          builder.field("clicks", @link.clicks.map { |click| App::Serializers::Click.new(click) })
+        end
       end
     end
   end
