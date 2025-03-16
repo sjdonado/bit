@@ -99,21 +99,28 @@ ENV=test crystal spec
 
 ## Benchmark
 
-Conducted on a MacBook Air M2 with 16GB RAM.
+CPU: Apple M3 Pro
 
 ```
-$ ./benchmark.sh
+> colima start --cpu 1 --memory 1
+INFO[0000] starting colima
+INFO[0000] runtime: docker
+INFO[0001] starting ...                                  context=vm
+INFO[0076] provisioning ...                              context=docker
+INFO[0077] starting ...                                  context=docker
+INFO[0077] done
+
+> ./benchmark.sh
 Setting up...
-[+] Running 3/3
- ✔ Network bit_default       Created                                                                         0.0s
- ✔ Volume "bit_sqlite_data"  Created                                                                         0.0s
- ✔ Container bit             Started                                                                         0.1s
-Captured API Key: aHOCnZSuo2kOHy2mDa-iOA
+[+] Running 2/2
+ ✔ Network bit_default  Created                                                                                                                                                                     0.0s
+ ✔ Container bit        Started                                                                                                                                                                     0.1s
+Captured API Key: v-8gljT0WjMhQECito3e5g
 Waiting for the application to be ready...
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Type: application/json
-Date: Sun, 27 Oct 2024 11:52:33 GMT
+Date: Sun, 16 Mar 2025 10:51:22 GMT
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
@@ -123,25 +130,25 @@ Starting resource usage monitoring...
 Creating 10000 short links with 100 conrurrent requests...
 Link creation complete: 10000 links created.
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/UaVZjA
+Selected link for benchmarking: http://localhost:4000/pKtTjA
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/oEKLAg with 10000 request(s) using 100 connection(s)
- 10000 / 10000 [===============================================================================] 100.00% 830/s 12s
+Bombarding http://localhost:4000/pKtTjA with 10000 request(s) using 100 connection(s)
+ 10000 / 10000 [======================================================================================================================================================================] 100.00% 1424/s 7s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec       853.89    1625.49    8942.54
-  Latency      118.48ms    11.52ms   142.58ms
+  Reqs/sec      1885.24    7686.34  140641.16
+  Latency       68.00ms     6.43ms    89.56ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 10000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:   360.02KB/s
+  Throughput:   625.54KB/s
 Benchmark completed.
 Analyzing resource usage...
 **** Results ****
-Average CPU Usage: 40.68%
-Average Memory Usage: 28.62 MiB
-./benchmark.sh: line 135: 61567 Terminated: 15          monitor_resource_usage
+Average CPU Usage: 42.98%
+Average Memory Usage: 33.25 MiB
+./benchmark.sh: line 135:  1500 Terminated: 15          monitor_resource_usage
 [+] Running 2/2
- ✔ Container bit        Removed                                                                                                                                                                                               10.1s
- ✔ Network bit_default  Removed  
+ ✔ Container bit        Removed                                                                                                                                                                    10.1s
+ ✔ Network bit_default  Removed                                                                                                                                                                     0.0s
 ```
