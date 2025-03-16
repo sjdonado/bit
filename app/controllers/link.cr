@@ -1,9 +1,11 @@
 require "uuid"
 require "user_agent_parser"
 
-UserAgent.load_regexes(File.read("data/regexes.yaml"))
-
 require "../lib/controller.cr"
+require "../lib/ip_lookup"
+
+UserAgent.load_regexes(File.read("data/regexes.yaml"))
+IpLookup.load_mmdb("data/GeoLite2-Country.mmdb")
 
 module App::Controllers::Link
   class Create < App::Lib::BaseController
@@ -51,12 +53,10 @@ module App::Controllers::Link
       link = Database.get_by(Link, slug: slug)
       raise App::NotFoundException.new(env) if !link
 
-      client_ip = env.request.remote_address.try &.to_s || "Unknown"
+      remote_address = env.request.remote_address.try &.to_s
       user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
-      user_agent = user_agent_str != "Unknown" ? UserAgent.new(user_agent_str) : nil
-      language_header = env.request.headers["Accept-Language"]? || "Unknown"
-      language = language_header.split(',').first.split(';').first
-      referer = env.request.headers["Referer"]?
+
+      client_ip = IpLookup.extract_ip(remote_address) || "Unknown"
 
       env.response.status_code = 301
       env.response.headers["Location"] = link.url!
@@ -65,14 +65,22 @@ module App::Controllers::Link
       env.response.headers["X-Forwarded-User-Agent"] = user_agent_str
 
       spawn do
+        ip_lookup = client_ip != "Unknown" ? IpLookup.new(client_ip) : nil
+        country = ip_lookup.try &.country.try &.code
+
+        user_agent = user_agent_str != "Unknown" ? UserAgent.new(user_agent_str) : nil
+
+        source = env.params.query["utm_source"]? || "Direct"
+        referer_host = env.request.headers["Referer"]?.try { |r| begin URI.parse(r).host rescue r end } || source
+
         click = Click.new
         click.id = UUID.v4.to_s
         click.link = link
-        click.language = language
+        click.country = country
         click.user_agent = user_agent_str
-        click.browser = user_agent ? user_agent.family : "Unknown"
-        click.os = user_agent ? (user_agent.os.try &.family || "Unknown") : "Unknown"
-        click.referer = referer ? URI.parse(referer).host : "Unknown"
+        click.browser = user_agent.try &.family
+        click.os = user_agent.try &.os.try &.family
+        click.referer = referer_host
 
         changeset = Database.insert(click)
         if changeset.errors.any?

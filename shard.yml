@@ -22,7 +22,8 @@ dependencies:
     version: 0.15.1
   user_agent_parser:
     github: busyloop/user_agent_parser
-    version: 2.0.1
+  maxminddb:
+    github: delef/maxminddb.cr
 
 development_dependencies:
   dotenv:

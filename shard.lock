@@ -20,8 +20,16 @@ shards:
     git: https://github.com/crystal-loot/exception_page.git
     version: 0.4.1
 
+  ipaddress:
+    git: https://github.com/sija/ipaddress.cr.git
+    version: 0.2.3
+
   kemal:
     git: https://github.com/kemalcr/kemal.git
+    version: 1.5.0
+
+  maxminddb:
+    git: https://github.com/delef/maxminddb.cr.git
     version: 1.5.0
 
   micrate:

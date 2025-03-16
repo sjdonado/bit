@@ -82,33 +82,71 @@ describe "App::Controllers::Link" do
   end
 
   describe "Index" do
-    it "should redirect to origin domain" do
+    it "should redirect to origin domain with forwarded headers" do
       link = "https://test.com"
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
       serialized_link = App::Serializers::Link.new(test_link)
 
-      get(serialized_link.refer, headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+      user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
+
+      get(serialized_link.refer, headers: HTTP::Headers{
+        "X-Api-Key" => test_user.api_key.to_s,
+        "User-Agent" => user_agent
+      })
 
       response.headers["Location"].should eq(link)
+      response.headers["X-Forwarded-User-Agent"].should eq(user_agent)
+      response.headers.has_key?("X-Forwarded-For").should be_true
     end
 
-    it "should create a new click after redirect" do
+    it "should create a new click after redirect with proper information" do
       link = "https://sjdonado.com"
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
       serialized_link = App::Serializers::Link.new(test_link)
 
-      get(serialized_link.refer, headers: HTTP::Headers{"User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"})
+      user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
+      referer = "https://example.com/page"
+
+      get(serialized_link.refer, headers: HTTP::Headers{
+        "User-Agent" => user_agent,
+        "Referer" => referer
+      })
 
       Fiber.yield # replace yield with sleep 5 to debug errors
 
       response.headers["Location"].should eq(link)
 
+      # Verify that the click was recorded
       updated_test_link = get_test_link(test_link.id)
       updated_test_link.clicks.size.should eq(test_link.clicks.size + 1)
+
+      # Verify click details
+      latest_click = updated_test_link.clicks.last
+      latest_click.user_agent.should eq(user_agent)
+      latest_click.browser.should eq("Firefox")
+      latest_click.os.should eq("Mac OS X")
+      latest_click.referer.should eq("example.com") # Should extract host from the referer
+    end
+
+    it "should create a click with utm_source when no referer is provided" do
+      link = "https://sjdonado.com"
+      test_user = create_test_user()
+
+      test_link = create_test_link(test_user, link)
+      serialized_link = App::Serializers::Link.new(test_link)
+
+      # Add utm_source parameter
+      get("#{serialized_link.refer}?utm_source=email_campaign")
+
+      Fiber.yield
+
+      updated_test_link = get_test_link(test_link.id)
+      latest_click = updated_test_link.clicks.last
+      latest_click.referer.should eq("email_campaign")
     end
 
     it "should return 404 - link does not exist" do

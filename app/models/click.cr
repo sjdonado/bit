@@ -13,6 +13,6 @@ module App::Models
       belongs_to :link, Link
     end
 
-    validate_required [:user_agent, :country, :referer]
+    validate_required [:user_agent, :referer]
   end
 end
