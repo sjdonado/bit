@@ -4,7 +4,7 @@ require "user_agent_parser"
 require "../lib/controller.cr"
 require "../lib/ip_lookup"
 
-UserAgent.load_regexes(File.read("data/regexes.yaml"))
+UserAgent.load_regexes(File.read("data/uap_core_regexes.yaml"))
 IpLookup.load_mmdb("data/GeoLite2-Country.mmdb")
 
 module App::Controllers::Link

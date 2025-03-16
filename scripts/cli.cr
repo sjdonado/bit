@@ -19,11 +19,20 @@ OptionParser.parse do |parser|
     exit
   end
 
+  parser.on("--update-data", "Download all required data files (UA Parser and GeoLite2)") do
+    puts "=== Starting data files update ==="
+    App::Services::Cli.update_uap_regexes
+    App::Services::Cli.download_geolite_db
+    puts "=== All data files updated successfully ==="
+    exit
+  end
+
   if ARGV.empty?
     puts "Usage: ./cli [options]"
     puts "Options:"
-    puts "  --create-user=NAME  Create a new user with the given name"
-    puts "  --list-users        List all users"
-    puts "  --delete-user=USER_ID Delete a user by ID"
+    puts "  --create-user=NAME     Create a new user with the given name"
+    puts "  --list-users           List all users"
+    puts "  --delete-user=USER_ID  Delete a user by ID"
+    puts "  --update-data          Download all required data files"
   end
 end
