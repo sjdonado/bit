@@ -7,7 +7,7 @@
    - Response Example
      ```json
      {
-       "message": "pong"
+       "data": "pong"
      }
      ```
 
@@ -15,7 +15,7 @@
 
    - Endpoint: `GET /:slug`
    - Payload: None
-   - Response 301
+   - Response: 301
 
 3. **List All Links**
 
@@ -34,10 +34,10 @@
              {
                "id": "730e2202-58f9-478c-a24c-f1c561df6716",
                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0",
-               "language": "en-US",
+               "country": "DE",
                "browser": "Firefox",
                "os": "Mac OS X",
-               "source": "Unknown",
+               "referer": "Direct",
                "created_at": "2024-07-12T19:25:22Z"
              }
            ]
@@ -62,10 +62,10 @@
            {
              "id": "730e2202-58f9-478c-a24c-f1c561df6716",
              "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0",
-             "language": "en-US",
+             "country": "DE",
              "browser": "Firefox",
              "os": "Mac OS X",
-             "source": "Unknown",
+             "referer": "Direct",
              "created_at": "2024-07-12T19:25:22Z"
            }
          ]
@@ -89,7 +89,7 @@
        "data": {
          "id": "84f0c7a4-8c4e-4665-b676-cb9c5e40f1db",
          "refer": "http://localhost:4000/3wP4BQ",
-         "origin": "https://monocuco.donado.co/test",
+         "origin": "https://example.com",
          "clicks": []
        }
      }
@@ -119,13 +119,7 @@
 
 7. **Delete a link by ID**
 
-   - Endpoint: `DELETE /api/links/:id`
-   - Payload: None
-   - Headers: `X-Api-Key`
-   - Response Example:
-     ```json
-     {
-       "message": "Link deleted"
-     }
-     ```
-
+  - Endpoint: `DELETE /api/links/:id`
+  - Payload: None
+  - Headers: `X-Api-Key`
+  - Response: 204

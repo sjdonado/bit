@@ -3,7 +3,7 @@ require "../lib/controller.cr"
 module App::Controllers::Ping
   class Get < App::Lib::BaseController
     def call(env)
-      response = {"pong" => "ok"}
+      response = {"data" => "pong"}
       response.to_json
     end
   end
