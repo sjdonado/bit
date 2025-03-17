@@ -2,9 +2,9 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/r/sjdonado/bit)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/r/sjdonado/bit)
 
-Lightweight URL shortener service with minimal resource requirements. Average memory consumption is under **20MiB RAM** and single CPU core consumption under 30%.
+Lightweight URL shortener service with minimal resource requirements. Average memory consumption is under **20MiB** and single CPU core consumption under 30%.
 
-bit is highly performant, achieving maximum **15.3K RPS** with a minimum latency of 48.89ms with 100K requests using 100 connections. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
+bit is highly performant, achieving maximum **15.3K RPS** with a minimum latency of 48.89ms for 100K requests using 100 connections. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
 
 Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 

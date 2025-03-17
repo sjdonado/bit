@@ -1,6 +1,6 @@
 require "sqlite3"
 require "crecto"
-require"micrate"
+require "micrate"
 
 module App::Lib
   class Database
@@ -9,7 +9,17 @@ module App::Lib
     Query = Crecto::Repo::Query
 
     config do |conf|
-      conf.uri = ENV["DATABASE_URL"]
+      base_url = ENV["DATABASE_URL"]
+      separator = base_url.includes?("?") ? "&" : "?"
+
+      db_url = base_url + separator +
+        "pool_size=20" +
+        "&max_idle_pool_size=10" +  # Keep connections ready
+        "&journal_mode=WAL" +   # Write-Ahead Logging for concurrent reads
+        "&synchronous=NORMAL" + # Better performance with reasonable safety
+        "&foreign_keys=true"
+
+      conf.uri = db_url
     end
 
     if ENV["ENV"] == "development"

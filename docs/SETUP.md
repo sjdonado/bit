@@ -27,7 +27,7 @@ docker run \
     --name bit \
     -p 4000:4000 \
     -e ENV="production" \
-    -e DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" \
+    -e DATABASE_URL="sqlite3://./sqlite/data.db" \
     -e APP_URL="http://localhost:4000" \
     -e ADMIN_NAME="Admin" \
     -e ADMIN_API_KEY=$(openssl rand -base64 32) \
@@ -52,7 +52,7 @@ dokku letsencrypt:enable bit
 dokku storage:ensure-directory bit-sqlite
 dokku storage:mount bit /var/lib/dokku/data/storage/bit-sqlite:/usr/src/app/sqlite/
 
-dokku config:set bit DATABASE_URL="sqlite3://./sqlite/data.db?journal_mode=wal&synchronous=normal&foreign_keys=true" APP_URL=https://bit.donado.co ADMIN_NAME=Admin ADMIN_API_KEY=$(openssl rand -base64 32)
+dokku config:set bit DATABASE_URL="sqlite3://./sqlite/data.db" APP_URL=https://bit.donado.co ADMIN_NAME=Admin ADMIN_API_KEY=$(openssl rand -base64 32)
 
 dokku ports:add bit http:80:4000
 dokku ports:add bit https:443:4000
