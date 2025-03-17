@@ -3,9 +3,10 @@
 ```
 Usage: ./cli [options]
 Options:
-  --create-user=NAME    Create a new user with the given name
-  --list-users          List all users
-  --delete-user=USER_ID Delete a user by ID
+  --create-user=NAME     Create a new user with the given name
+  --list-users           List all users
+  --delete-user=USER_ID  Delete a user by ID
+  --update-data          Download all required data files
 ```
 
 ## Run It Anywhere
@@ -112,42 +113,43 @@ INFO[0077] done
 
 > ./benchmark.sh
 Setting up...
-[+] Running 2/2
- ✔ Network bit_default  Created                                                                                                                                                                     0.0s
- ✔ Container bit        Started                                                                                                                                                                     0.1s
-Captured API Key: v-8gljT0WjMhQECito3e5g
+[+] Running 3/3
+ ✔ Network bit_default       Created                                                                                                                                                                0.0s
+ ✔ Volume "bit_sqlite_data"  Created                                                                                                                                                                0.0s
+ ✔ Container bit             Started                                                                                                                                                                0.1s
+Captured API Key: ZG0GBlQJxcpgPxbb62kDCw
 Waiting for the application to be ready...
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Type: application/json
-Date: Sun, 16 Mar 2025 10:51:22 GMT
+Date: Mon, 17 Mar 2025 06:43:23 GMT
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
 Content-Length: 13
 
 Starting resource usage monitoring...
-Creating 10000 short links with 100 conrurrent requests...
-Link creation complete: 10000 links created.
+Creating 10000 short links with 100 concurrent requests...
+Link creation complete: 10000 links created using httpbin's anything endpoint.
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/pKtTjA
+Selected link for benchmarking: http://localhost:4000/MQ1Xeg
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/pKtTjA with 10000 request(s) using 100 connection(s)
- 10000 / 10000 [======================================================================================================================================================================] 100.00% 1424/s 7s
+Bombarding http://localhost:4000/MQ1Xeg with 100000 request(s) using 100 connection(s)
+ 100000 / 100000 [=================================================================================================================================================================] 100.00% 1423/s 1m10s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1885.24    7686.34  140641.16
-  Latency       68.00ms     6.43ms    89.56ms
+  Reqs/sec      1443.47    1805.42   15309.79
+  Latency       70.15ms    21.26ms   731.29ms
   HTTP codes:
-    1xx - 0, 2xx - 0, 3xx - 10000, 4xx - 0, 5xx - 0
+    1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:   625.54KB/s
+  Throughput:   612.41KB/s
 Benchmark completed.
 Analyzing resource usage...
 **** Results ****
-Average CPU Usage: 42.98%
-Average Memory Usage: 33.25 MiB
-./benchmark.sh: line 135:  1500 Terminated: 15          monitor_resource_usage
+Average CPU Usage: 40.05%
+Average Memory Usage: 40.76 MiB
+./benchmark.sh: line 135: 64821 Terminated: 15          monitor_resource_usage
 [+] Running 2/2
  ✔ Container bit        Removed                                                                                                                                                                    10.1s
  ✔ Network bit_default  Removed                                                                                                                                                                     0.0s

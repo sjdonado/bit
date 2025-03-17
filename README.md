@@ -2,13 +2,13 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/r/sjdonado/bit)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/r/sjdonado/bit)
 
-Lightweight URL shortener service with minimal resource requirements. Average memory consumption is **20MB RAM** with container disk space under **50MB**.
+Lightweight URL shortener service with minimal resource requirements. Average memory consumption is under **20MiB RAM** and single CPU core consumption under 30%.
 
-Bit is highly performant, achieving over 1.8K requests per second with an average latency of 68ms. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
+bit is highly performant, achieving maximum **15.3K RPS** with a minimum latency of 48.89ms with 100K requests using 100 connections. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
 
 Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 
-## Why Bit?
+## Why bit?
 It is feature-complete by design. Its strength lies in simplicity, a reliable URL shortener without unnecessary bloat. Bug fixes will continue, but new features aren't planned.
 
 - Minimal tracking setup: Country, browser, os, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
@@ -22,7 +22,7 @@ It is feature-complete by design. Its strength lies in simplicity, a reliable UR
 
 ## Documentation
 - [API Reference](docs/API.md)
-- [Advanced Setup](docs/SETUP.md)
+- [Setup](docs/SETUP.md)
 
 ## Contributing
 Found an issue or have a suggestion? Please follow our [contribution guidelines](CONTRIBUTING.md).
