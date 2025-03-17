@@ -3,9 +3,12 @@
 # Configuration variables
 server_url="http://localhost:4000"
 api_url="${server_url}/api/links"
+
 num_links=10000
-num_requests=10000
+num_requests=100000
 concurrency=100
+create_links_concurrency=100
+
 resource_usage_interval=1
 container_name="bit"
 
@@ -60,11 +63,10 @@ monitor_resource_usage() {
 create_links() {
     local temp_file=$(mktemp)
 
-    echo "Creating $num_links short links with $concurrency conrurrent requests..."
-
-    # Populate URLs into a file to feed into curl
+    echo "Creating $num_links short links with $create_links_concurrency concurrent requests..."
     for ((i=1; i<=num_links; i++)); do
-        url="https://example.com/${i}-${num_links}"
+        url="https://httpbin.org/anything/$i"
+
         echo "--next" >> "$temp_file"
         echo "--request POST" >> "$temp_file"
         echo "--url \"$api_url\"" >> "$temp_file"
@@ -73,11 +75,9 @@ create_links() {
         echo "--data \"{ \\\"url\\\": \\\"$url\\\" }\"" >> "$temp_file"
     done
 
-    curl --parallel --parallel-immediate --parallel-max $concurrency --config "$temp_file" --silent --write-out "%{http_code}\n" > /dev/null
+    curl --parallel --parallel-immediate --parallel-max $create_links_concurrency --config "$temp_file" --silent --write-out "%{http_code}\n" > /dev/null
 
-    echo "Link creation complete: $num_links links created."
-
-    # Clean up
+    echo "Link creation complete: $num_links links created using httpbin's anything endpoint."
     rm -f "$temp_file"
 }
 
