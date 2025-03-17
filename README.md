@@ -4,7 +4,7 @@
 
 Lightweight URL shortener service with minimal resource requirements. Average memory consumption is under **20MiB** and single CPU core consumption under 30%.
 
-bit is highly performant, achieving maximum **15.3K RPS** with a minimum latency of 48.89ms for 100K requests using 100 connections. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
+bit is highly performant, achieving maximum **25K RPS** with a minimum latency of 64ms for 100K requests using 100 connections. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
 
 Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 
