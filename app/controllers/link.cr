@@ -50,7 +50,15 @@ module App::Controllers::Link
     def call(env)
       slug = env.params.url["slug"]
 
-      link = Database.get_by(Link, slug: slug)
+      link = nil
+      Database.raw_query("SELECT id, url FROM links WHERE slug = (?) LIMIT 1", slug) do |result|
+        if result.move_next
+          link = {
+            id: result.read(String),
+            url: result.read(String),
+          }
+        end
+      end
       raise App::NotFoundException.new(env) if !link
 
       remote_address = env.request.headers["Cf-Connecting-Ip"]?.try(&.presence) || env.request.remote_address.try &.to_s
@@ -59,7 +67,7 @@ module App::Controllers::Link
       client_ip = IpLookup.extract_ip(remote_address) || "Unknown"
 
       env.response.status_code = 301
-      env.response.headers["Location"] = link.url!
+      env.response.headers["Location"] = link.not_nil![:url]
 
       env.response.headers["X-Forwarded-For"] = client_ip
       env.response.headers["User-Agent"] = user_agent_str
@@ -75,7 +83,7 @@ module App::Controllers::Link
 
         click = Click.new
         click.id = UUID.v4.to_s
-        click.link = link
+        click.link_id = link.not_nil![:id]
         click.country = country
         click.user_agent = user_agent_str
         click.browser = user_agent.try &.family
@@ -239,7 +247,7 @@ module App::Controllers::Link
         raise App::ForbiddenException.new(env)
       end
 
-      result = Database.raw_exec("DELETE FROM links WHERE id = (?)", link.id) # tempfix: Database.delete does not work
+      result = Database.raw_exec("DELETE FROM links WHERE id = (?)", link.id)
       if result.rows_affected == 0
         raise App::UnprocessableEntityException.new(env, { "id" => ["Row delete failed"] })
       end
