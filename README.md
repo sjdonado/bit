@@ -4,7 +4,7 @@
 
 Lightweight URL shortener API service with minimal resource requirements. Average memory consumption is under **20MiB** and single CPU core consumption under 20%.
 
-bit is highly performant, achieving maximum **3K RPS** with a minimum latency of 56ms (100K requests using 100 connections, [benchmark](docs/SETUP.md#benchmark)).
+bit is highly performant, achieving in average **3K RPS** with a minimum latency of 56ms (100K requests using 100 connections, [benchmark](docs/SETUP.md#benchmark)).
 
 Self-hosted with [Dokku](docs/SETUP.md#dokku) and [Docker Compose](docs/SETUP.md#docker-compose).
 
