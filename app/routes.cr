@@ -1,45 +1,53 @@
 require "./controllers/**"
 
 module App
+  # CORS handling middleware
   before_all do |env|
-    env.response.headers["Access-Control-Allow-Origin"] = "*"
-    env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    env.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Accept, Origin, X-Api-Key"
+    if env.request.path.starts_with?("/api/")
+      env.response.headers["Access-Control-Allow-Origin"] = "*"
+      env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+      env.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Accept, Origin, X-Api-Key"
+    end
   end
 
-  after_all do |env|
-    env.response.content_type = "application/json"
+  # Error handling middleware
+  error 404 do |env|
+    {error: "Not Found"}.to_json
   end
-
-  get "/api/ping" do |env|
-    Controllers::Ping::Get.new.call(env)
+  error 500 do |env|
+    {error: "Internal Server Error"}.to_json
   end
 
   get "/:slug" do |env|
-    Controllers::Link::Index.new.call(env)
+    Controllers::LinkController.new(env).redirect
+  end
+
+  # namespace /api
+  get "/api/ping" do |env|
+    Controllers::PingController.new(env).ping
   end
 
   get "/api/links" do |env|
-    Controllers::Link::All.new.call(env)
+    Controllers::LinkController.new(env).list_all
   end
 
   get "/api/links/:id" do |env|
-    Controllers::Link::Get.new.call(env)
+    Controllers::LinkController.new(env).get
   end
 
   get "/api/links/:id/clicks" do |env|
-    Controllers::Link::Clicks.new.call(env)
+    Controllers::LinkController.new(env).list_clicks
   end
 
   post "/api/links" do |env|
-    Controllers::Link::Create.new.call(env)
+    Controllers::LinkController.new(env).create
   end
 
   put "/api/links/:id" do |env|
-    Controllers::Link::Update.new.call(env)
+    Controllers::LinkController.new(env).update
   end
 
   delete "/api/links/:id" do |env|
-    Controllers::Link::Delete.new.call(env)
+    Controllers::LinkController.new(env).delete
   end
 end
