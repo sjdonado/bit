@@ -1,8 +1,5 @@
 require "user_agent_parser"
 
-require "../lib/*"
-require "../models/*"
-
 UserAgent.load_regexes(File.read("data/uap_core_regexes.yaml"))
 IpLookup.load_mmdb("data/GeoLite2-Country.mmdb")
 

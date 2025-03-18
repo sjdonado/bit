@@ -13,7 +13,7 @@ module App::Services::Cli
     user.api_key = api_key || Random::Secure.urlsafe_base64()
 
     changeset = App::Lib::Database.insert(user)
-    return changeset.errors if !changeset.valid?
+    return changeset.errors unless changeset.valid?
 
     "New user created: Name: #{user.name}, X-Api-Key: #{user.api_key}"
   end

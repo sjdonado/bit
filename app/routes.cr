@@ -22,7 +22,7 @@ module App
     Controllers::LinkController.new(env).redirect
   end
 
-  # namespace /api
+  # Namespace /api
   get "/api/ping" do |env|
     Controllers::PingController.new(env).ping
   end
