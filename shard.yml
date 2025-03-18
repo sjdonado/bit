@@ -24,8 +24,6 @@ dependencies:
     github: busyloop/user_agent_parser
   maxminddb:
     github: delef/maxminddb.cr
-  async:
-    github: protoncr/async
 
 development_dependencies:
   dotenv:
