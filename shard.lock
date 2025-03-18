@@ -1,5 +1,9 @@
 version: 2.0
 shards:
+  async:
+    git: https://github.com/protoncr/async.git
+    version: 0.2.0
+
   backtracer:
     git: https://github.com/sija/backtracer.cr.git
     version: 1.2.2

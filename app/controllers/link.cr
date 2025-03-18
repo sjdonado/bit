@@ -1,11 +1,17 @@
 require "uuid"
 require "user_agent_parser"
+require "async"
 
 require "../lib/controller.cr"
 require "../lib/ip_lookup"
 
 UserAgent.load_regexes(File.read("data/uap_core_regexes.yaml"))
 IpLookup.load_mmdb("data/GeoLite2-Country.mmdb")
+
+Async.configure do |config|
+  config.max_threads = 20
+  config.queue_size = 1000 # Set max queue size for pending operations
+end
 
 module App::Controllers::Link
   class Create < App::Lib::BaseController
@@ -51,7 +57,7 @@ module App::Controllers::Link
       slug = env.params.url["slug"]
 
       link = nil
-      Database.raw_query("SELECT id, url FROM links WHERE slug = (?) LIMIT 1", slug) do |result|
+      Database.raw_query("SELECT id, slug, url FROM links WHERE slug = (?) LIMIT 1", slug) do |result|
         if result.move_next
           link = {
             id: result.read(String),
@@ -61,6 +67,7 @@ module App::Controllers::Link
       end
       raise App::NotFoundException.new(env) if !link
 
+      link_id = link.not_nil![:id]
       remote_address = env.request.headers["Cf-Connecting-Ip"]?.try(&.presence) || env.request.remote_address.try &.to_s
       user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
 
@@ -72,7 +79,8 @@ module App::Controllers::Link
       env.response.headers["X-Forwarded-For"] = client_ip
       env.response.headers["User-Agent"] = user_agent_str
 
-      spawn do
+      # The Future.execute is auto-queued
+      Async::Future.execute do
         ip_lookup = client_ip != "Unknown" ? IpLookup.new(client_ip) : nil
         country = ip_lookup.try &.country.try &.code
 
@@ -83,7 +91,7 @@ module App::Controllers::Link
 
         click = Click.new
         click.id = UUID.v4.to_s
-        click.link_id = link.not_nil![:id]
+        click.link_id = link_id
         click.country = country
         click.user_agent = user_agent_str
         click.browser = user_agent.try &.family
