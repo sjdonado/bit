@@ -3,13 +3,15 @@ require "user_agent_parser"
 
 require "../lib/controller.cr"
 
-module App::Controllers::Link
-  class Create < App::Lib::BaseController
+module App::Controllers
+  class LinkController < App::Lib::BaseController
     include App::Models
     include App::Lib
     include App::Services
 
-    def call(env)
+    ClickTracker.init
+
+    def create(env)
       user = env.get("user").as(User)
       body = parse_body(env, ["url"])
       url = body["url"].to_s
@@ -17,8 +19,7 @@ module App::Controllers::Link
       query = Database::Query.where(url: url, user_id: user.id.as(String)).limit(1)
       existing_link = Database.all(Link, query, preload: [:clicks]).first?
       if existing_link
-        response = {"data" => App::Serializers::Link.new(existing_link)}
-        return response.to_json
+        return link_response(existing_link)
       end
 
       link = Link.new
@@ -33,20 +34,10 @@ module App::Controllers::Link
       end
 
       link.clicks = [] of App::Models::Click
-      response = {"data" => App::Serializers::Link.new(link)}
-
-      response.to_json
+      link_response(link)
     end
-  end
 
-  class Index < App::Lib::BaseController
-    include App::Models
-    include App::Lib
-    include App::Services
-
-    ClickTracker.init
-
-    def call(env)
+    def redirect(env)
       slug = env.params.url["slug"]
 
       link = nil
@@ -62,72 +53,29 @@ module App::Controllers::Link
 
       remote_address = env.request.headers["Cf-Connecting-Ip"]?.try(&.presence) || env.request.remote_address.try &.to_s
       user_agent_str = env.request.headers["User-Agent"]? || "Unknown"
-
       client_ip = IpLookup.extract_ip(remote_address) || "Unknown"
 
       env.response.status_code = 301
       env.response.headers["Location"] = link.not_nil![:url]
-
       env.response.headers["X-Forwarded-For"] = client_ip
       env.response.headers["User-Agent"] = user_agent_str
 
-      spawn do
-        link_id = link.not_nil![:id]
-
-        source = env.params.query["utm_source"]? || "Direct"
-        referer = env.request.headers["Referer"]?.try { |r| begin URI.parse(r).host rescue r end } || source
-
-        ClickTracker.track(
-          link_id: link.not_nil![:id],
-          client_ip: client_ip,
-          user_agent: user_agent_str,
-          source: source,
-          referer: referer
-        )
-      end
+      spawn track_click(env, link.not_nil![:id], client_ip, user_agent_str)
     end
-  end
 
-  class All < App::Lib::BaseController
-    include App::Models
-    include App::Lib
-
-    def call(env)
+    def list_all(env)
       user = env.get("user").as(User)
-
-      limit = (env.params.query["limit"]? || "100").to_i
-      cursor = env.params.query["cursor"]?
+      limit, cursor = pagination_params(env)
 
       query = Database::Query.where(user_id: user.id.as(String))
-      if cursor
-        query = query.where("id < ?", cursor)
-      end
-
+      query = query.where("id < ?", cursor) if cursor
       query = query.order_by("id DESC").limit(limit + 1)
+
       links = Database.all(Link, query)
-
-      has_more = links.size > limit
-      links = links[0...limit] if has_more
-
-      next_cursor = has_more ? links.last.id : nil
-
-      response = {
-        "data" => links.map { |link| App::Serializers::Link.new(link) },
-        "pagination" => {
-          "has_more" => has_more,
-          "next" => next_cursor
-        }
-      }
-
-      response.to_json
+      return paginated_response(links, limit) { |link| App::Serializers::Link.new(link) }
     end
-  end
 
-  class Get < App::Lib::BaseController
-    include App::Models
-    include App::Lib
-
-    def call(env)
+    def get(env)
       user = env.get("user").as(User)
       link_id = env.params.url["id"]
 
@@ -136,63 +84,37 @@ module App::Controllers::Link
       raise App::NotFoundException.new(env) if link.nil?
 
       clicks_query = Database::Query.where(link_id: link_id.as(String))
-                                    .order_by("id DESC")
-                                    .limit(100)
+                                   .order_by("id DESC")
+                                   .limit(100)
       link.clicks = Database.all(Click, clicks_query)
 
-      response = {"data" => App::Serializers::Link.new(link)}
-      response.to_json
+      link_response(link)
     end
-  end
 
-  class Clicks < App::Lib::BaseController
-    include App::Models
-    include App::Lib
-
-    def call(env)
+    def list_clicks(env)
       user = env.get("user").as(User)
       link_id = env.params.url["id"]
 
+      # Verify link exists and belongs to user
       link_query = Database::Query.where(id: link_id.as(String), user_id: user.id.as(String)).limit(1)
       link = Database.all(Link, link_query).first?
       raise App::NotFoundException.new(env) if link.nil?
 
-      limit = (env.params.query["limit"]? || "100").to_i
-      cursor = env.params.query["cursor"]?
+      limit, cursor = pagination_params(env)
 
       query = Database::Query.where(link_id: link_id.as(String))
-      if cursor
-        query = query.where("id < ?", cursor)
-      end
-
+      query = query.where("id < ?", cursor) if cursor
       query = query.order_by("id DESC").limit(limit + 1)
+
       clicks = Database.all(Click, query)
-
-      has_more = clicks.size > limit
-      clicks = clicks[0...limit] if has_more
-      next_cursor = has_more ? clicks.last.id : nil
-
-      response = {
-        "data" => clicks.map { |click| App::Serializers::Click.new(click) },
-        "pagination" => {
-          "has_more" => has_more,
-          "next" => next_cursor
-        }
-      }
-
-      response.to_json
+      return paginated_response(clicks, limit) { |click| App::Serializers::Click.new(click) }
     end
-  end
 
-  class Update < App::Lib::BaseController
-    include App::Models
-    include App::Lib
-    include App::Services
-
-    def call(env)
+    def update(env)
       user = env.get("user").as(User)
       id = env.params.url["id"]
       body = parse_body(env, ["url"])
+      new_url = body["url"].to_s
 
       query = Database::Query.where(id: id).limit(1)
       link = Database.all(Link, query, preload: [:clicks]).first?
@@ -200,12 +122,9 @@ module App::Controllers::Link
       raise App::NotFoundException.new(env) if link.nil?
       raise App::ForbiddenException.new(env) if link.user_id != user.id
 
-      new_url = body["url"].to_s
-
+      # Check for existing URL
       existing_query = Database::Query.where(url: new_url, user_id: user.id.to_s).limit(1)
-      existing_link = Database.all(Link, existing_query).first?
-
-      if existing_link
+      if Database.all(Link, existing_query).first?
         raise App::UnprocessableEntityException.new(env, { "url" => ["URL already exists"] })
       end
 
@@ -217,25 +136,16 @@ module App::Controllers::Link
         raise App::UnprocessableEntityException.new(env, map_changeset_errors(changeset.errors))
       end
 
-      response = {"data" => App::Serializers::Link.new(link)}
-      response.to_json
+      link_response(link)
     end
-  end
 
-  class Delete < App::Lib::BaseController
-    include App::Models
-    include App::Lib
-
-    def call(env)
+    def delete(env)
       user = env.get("user").as(User)
       id = env.params.url["id"]
 
       link = Database.get(Link, id)
       raise App::NotFoundException.new(env) if !link
-
-      if link.user_id != user.id
-        raise App::ForbiddenException.new(env)
-      end
+      raise App::ForbiddenException.new(env) if link.user_id != user.id
 
       result = Database.raw_exec("DELETE FROM links WHERE id = (?)", link.id)
       if result.rows_affected == 0
@@ -243,6 +153,43 @@ module App::Controllers::Link
       end
 
       env.response.status_code = 204
+    end
+
+    private def track_click(env, link_id, client_ip, user_agent_str)
+      source = env.params.query["utm_source"]? || "Direct"
+      referer = env.request.headers["Referer"]?.try { |r| begin URI.parse(r).host rescue r end } || source
+
+      ClickTracker.track(
+        link_id: link_id,
+        client_ip: client_ip,
+        user_agent: user_agent_str,
+        source: source,
+        referer: referer
+      )
+    end
+
+    private def pagination_params(env)
+      limit = (env.params.query["limit"]? || "100").to_i
+      cursor = env.params.query["cursor"]?
+      {limit, cursor}
+    end
+
+    private def link_response(link)
+      {"data" => App::Serializers::Link.new(link)}.to_json
+    end
+
+    private def paginated_response(items, limit)
+      has_more = items.size > limit
+      items = items[0...limit] if has_more
+      next_cursor = has_more ? items.last.id : nil
+
+      {
+        "data" => items.map { |item| yield item },
+        "pagination" => {
+          "has_more" => has_more,
+          "next" => next_cursor
+        }
+      }.to_json
     end
   end
 end

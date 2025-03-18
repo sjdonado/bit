@@ -1,3 +1,5 @@
+require "user_agent_parser"
+
 require "../lib/*"
 require "../models/*"
 
@@ -13,7 +15,7 @@ module App::Services
       return if @@initialized
       @@initialized = true
 
-      # Just use a single worker fiber to process the queue
+      # Single worker fiber to process the queue
       spawn do
         Log.info { "ClickTracker worker started" }
         loop do
@@ -40,7 +42,7 @@ module App::Services
             end
           rescue ex
             Log.error { "Error processing click: #{ex.message}" }
-            sleep 0.1
+            sleep 0.1.seconds
           end
         end
       end
