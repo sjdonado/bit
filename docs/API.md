@@ -4,6 +4,7 @@
 
    - Endpoint: `GET /api/ping`
    - Payload: None
+   - Response: 200
    - Response Example
      ```json
      {
@@ -23,6 +24,7 @@
    - Query Parameters:
      - `limit` (optional): Number of results per page (default: 100)
      - `cursor` (optional): Pagination cursor from previous response
+   - Response: 200
    - Response Example
      ```json
      {
@@ -45,6 +47,7 @@
    - Headers: `X-Api-Key`
    - Payload: None
    - Note: This endpoint returns up to 100 of the most recent clicks. For complete click history, use the `/api/links/:id/clicks` endpoint with pagination.
+   - Response: 200
    - Response Example
      ```json
      {
@@ -73,6 +76,7 @@
    - Query Parameters:
      - `limit` (optional): Number of results per page (default: 100)
      - `cursor` (optional): Pagination cursor from previous response
+   - Response: 200
    - Response Example
      ```json
      {
@@ -103,6 +107,7 @@
      }
      ```
    - Headers: `X-Api-Key`
+   - Response: 201
    - Response Example:
      ```json
      {
@@ -124,6 +129,7 @@
      }
      ```
    - Headers: `X-Api-Key`
+   - Response: 200
    - Response Example:
      ```json
      {

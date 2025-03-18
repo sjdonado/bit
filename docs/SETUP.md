@@ -11,7 +11,7 @@ Options:
 
 ## Run It Anywhere
 
-### docker-compose
+### Docker Compose
 
 ```bash
 docker-compose up
@@ -109,29 +109,35 @@ ENV=test crystal spec
 
 ## Benchmark
 
+RAM: 1GiB
 CPU: Apple M3 Pro
 
+**Summary**
+- Requests/secs average central tendency: (1328.47 + 1357.19 + 1407.03) / 3 + (1785.03 + 1789.06 + 1778.84) / 3 = 3148.54 reqs/sec
+- Latency average central tendency: (76.19 + 74.68 + 71.85) / 3 - (29.43 + 14.50 + 9.42) / 3 = 56.4ms
+- Latency for conservative capacity planning: (76.19 + 74.68 + 71.85) / 3 + (29.43 + 14.50 + 9.42) / 3 = 89.63ms
+- Best Single Run: 18041.44 reqs/sec
+
 ```
-> colima start --cpu 1 --memory 1
+~/p/bit> colima start --cpu 1 --memory 1
 INFO[0000] starting colima
 INFO[0000] runtime: docker
 INFO[0001] starting ...                                  context=vm
 INFO[0076] provisioning ...                              context=docker
 INFO[0077] starting ...                                  context=docker
 INFO[0077] done
-
-> ./benchmark.sh
+~/p/bit> ./benchmark.sh
 Setting up...
 [+] Running 3/3
  ✔ Network bit_default       Created                                                           0.0s
  ✔ Volume "bit_sqlite_data"  Created                                                           0.0s
  ✔ Container bit             Started                                                           0.1s
-Captured API Key: W-m-NkAqcMXQjdq9fNu3Ig
+Captured API Key: xFWMNJndUzuAC5sSRqgbSA
 Waiting for the application to be ready...
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Type: application/json
-Date: Tue, 18 Mar 2025 06:48:32 GMT
+Date: Tue, 18 Mar 2025 10:04:32 GMT
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
@@ -141,24 +147,106 @@ Starting resource usage monitoring...
 Creating 10000 short links with 100 concurrent requests...
 Link creation complete: 10000 links created using httpbin's anything endpoint.
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/xkCfyw
+Selected link for benchmarking: http://localhost:4000/4NRtcA
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/xkCfyw with 100000 request(s) using 100 connection(s)
- 100000 / 100000 [=============================================================] 100.00% 1466/s 1m8s
+Bombarding http://localhost:4000/4NRtcA with 100000 request(s) using 100 connection(s)
+ 100000 / 100000 [============================================================] 100.00% 1308/s 1m16s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1486.25    1813.58    5332.24
-  Latency       68.01ms     4.74ms    92.22ms
+  Reqs/sec      1328.47    1785.03   10390.15
+  Latency       76.19ms    29.43ms   702.17ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:   631.71KB/s
+  Throughput:   563.57KB/s
 Benchmark completed.
 Analyzing resource usage...
 **** Results ****
-Average CPU Usage: 39.77%
-Average Memory Usage: 35.90 MiB
-./benchmark.sh: line 135: 86037 Terminated: 15          monitor_resource_usage
+Average CPU Usage: 37.02%
+Average Memory Usage: 31.78 MiB
+./benchmark.sh: line 135: 44688 Terminated: 15          monitor_resource_usage
+[+] Running 2/2
+ ✔ Container bit        Removed                                                               10.1s
+ ✔ Network bit_default  Removed                                                                0.0s
+~/p/bit> ./benchmark.sh
+Setting up...
+[+] Running 2/2
+ ✔ Network bit_default  Created                                                                0.0s
+ ✔ Container bit        Started                                                                0.1s
+Captured API Key: zmEqrjCMbOGzdOXoCZPPsw
+Waiting for the application to be ready...
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 18 Mar 2025 10:07:11 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
+Content-Length: 13
+
+Starting resource usage monitoring...
+Creating 10000 short links with 100 concurrent requests...
+Link creation complete: 10000 links created using httpbin's anything endpoint.
+Fetching all created links from /api/links...
+Selected link for benchmarking: http://localhost:4000/kai6VA
+Starting benchmark with Bombardier...
+Bombarding http://localhost:4000/kai6VA with 100000 request(s) using 100 connection(s)
+ 100000 / 100000 [============================================================] 100.00% 1336/s 1m14s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec      1357.19    1789.06   18041.44
+  Latency       74.68ms    14.50ms   304.69ms
+  HTTP codes:
+    1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   575.03KB/s
+Benchmark completed.
+Analyzing resource usage...
+**** Results ****
+Average CPU Usage: 38.00%
+Average Memory Usage: 30.75 MiB
+./benchmark.sh: line 135: 64339 Terminated: 15          monitor_resource_usage
+[+] Running 2/2
+ ✔ Container bit        Removed                                                               10.1s
+ ✔ Network bit_default  Removed                                                                0.0s
+~/p/bit> ./benchmark.sh
+Setting up...
+[+] Running 2/2
+ ✔ Network bit_default  Created                                                                0.0s
+ ✔ Container bit        Started                                                                0.1s
+Captured API Key: fObPw7vIDCFBaxr8e9bI8g
+Waiting for the application to be ready...
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 18 Mar 2025 10:08:57 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
+Content-Length: 13
+
+Starting resource usage monitoring...
+Creating 10000 short links with 100 concurrent requests...
+Link creation complete: 10000 links created using httpbin's anything endpoint.
+Fetching all created links from /api/links...
+Selected link for benchmarking: http://localhost:4000/oxmHow
+Starting benchmark with Bombardier...
+Bombarding http://localhost:4000/oxmHow with 100000 request(s) using 100 connection(s)
+ 100000 / 100000 [============================================================] 100.00% 1388/s 1m12s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec      1407.03    1778.84    5866.74
+  Latency       71.85ms     9.42ms   175.45ms
+  HTTP codes:
+    1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   597.97KB/s
+Benchmark completed.
+Analyzing resource usage...
+**** Results ****
+Average CPU Usage: 38.49%
+Average Memory Usage: 36.48 MiB
+./benchmark.sh: line 135: 79562 Terminated: 15          monitor_resource_usage
 [+] Running 2/2
  ✔ Container bit        Removed                                                               10.1s
  ✔ Network bit_default  Removed                                                                0.0s
