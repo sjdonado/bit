@@ -2,23 +2,24 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/r/sjdonado/bit)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/r/sjdonado/bit)
 
-Lightweight URL shortener service with minimal resource requirements. Average memory consumption is under **20MiB** and single CPU core consumption under 30%.
+Lightweight URL shortener API service with minimal resource requirements. Average memory consumption is under **20MiB** and single CPU core consumption under 20%.
 
-bit is highly performant, achieving maximum **25K RPS** with a minimum latency of 64ms for 100K requests using 100 connections. For detailed benchmark results, see [benchmark](docs/SETUP.md#benchmark).
+bit is highly performant, achieving maximum **5K RPS** with a minimum latency of 64ms (100K requests using 100 connections, [benchmark](docs/SETUP.md#benchmark)).
 
+Self-hosted with [Dokku](docs/SETUP.md#dokku) and [Docker Compose](SETUP.md#docker-compose).
 Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 
 ## Why bit?
 It is feature-complete by design. Its strength lies in simplicity, a reliable URL shortener without unnecessary bloat. Bug fixes will continue, but new features aren't planned.
 
 - Minimal tracking setup: Country, browser, os, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
-- Flexible request forwarding system passes client context (IP, user-agent) to destinations via standard `X-Forwarded-For` and `User-Agent` headers, enabling advanced tracking and integration capabilities when needed.
+- Flexible request forwarding system passes client context to destinations via standard `X-Forwarded-For` and `User-Agent` headers, enabling advanced tracking and integration capabilities when needed.
 - Multiple users are supported via API key authentication. Create, list and delete via the [CLI](docs/SETUP.md#cli).
 
 ## Minimum Requirements
-- 50MB disk space
-- 50MB RAM (20MB avg usage)
-- x86_64 or ARM64 architecture
+- 100MB disk space
+- 50MiB RAM
+- x86_64 or ARM64
 
 ## Documentation
 - [API Reference](docs/API.md)

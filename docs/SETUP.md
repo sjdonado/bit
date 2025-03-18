@@ -11,7 +11,7 @@ Options:
 
 ## Run It Anywhere
 
-### Docker Compose
+### docker-compose
 
 ```bash
 docker-compose up
@@ -33,11 +33,11 @@ docker run \
     -e ADMIN_API_KEY=$(openssl rand -base64 32) \
     sjdonado/bit
 
-# Optional: Generate an api key
+# Create a new user
 # docker exec -it bit cli --create-user=Admin
 ```
 
-### Self-Hosted with Dokku
+### Dokku
 
 ```dockerfile
 FROM sjdonado/bit
@@ -57,8 +57,17 @@ dokku config:set bit DATABASE_URL="sqlite3://./sqlite/data.db" APP_URL=https://b
 dokku ports:add bit http:80:4000
 dokku ports:add bit https:443:4000
 
-# Optional: Generate an api key
+# Create a new user
 # dokku run bit cli --create-user=Admin
+```
+
+### Dokku (same network)
+Recommended for lower latency communication (no host network traversal)
+
+```bash
+  dokku network:create bit-net
+  dokku network:set bit attach-post-create bit-net
+  dokku network:set myapp attach-post-create bit-net
 ```
 
 ## Local Development
@@ -117,12 +126,12 @@ Setting up...
  ✔ Network bit_default       Created                                                           0.0s
  ✔ Volume "bit_sqlite_data"  Created                                                           0.0s
  ✔ Container bit             Started                                                           0.1s
-Captured API Key: Hs35FsYvUqF0dGf1IgkExA
+Captured API Key: W-m-NkAqcMXQjdq9fNu3Ig
 Waiting for the application to be ready...
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Type: application/json
-Date: Mon, 17 Mar 2025 08:40:58 GMT
+Date: Tue, 18 Mar 2025 06:48:32 GMT
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 Access-Control-Allow-Headers: Content-Type, Accept, Origin, X-Api-Key
@@ -132,25 +141,25 @@ Starting resource usage monitoring...
 Creating 10000 short links with 100 concurrent requests...
 Link creation complete: 10000 links created using httpbin's anything endpoint.
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/DYr5dA
+Selected link for benchmarking: http://localhost:4000/xkCfyw
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/DYr5dA with 100000 request(s) using 100 connection(s)
- 100000 / 100000 [=================================================================================================================================================================] 100.00% 1424/s 1m10s
+Bombarding http://localhost:4000/xkCfyw with 100000 request(s) using 100 connection(s)
+ 100000 / 100000 [=============================================================] 100.00% 1466/s 1m8s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1443.96    1831.82   25297.17
-  Latency       70.19ms     5.30ms   105.83ms
+  Reqs/sec      1486.25    1813.58    5332.24
+  Latency       68.01ms     4.74ms    92.22ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:   612.06KB/s
+  Throughput:   631.71KB/s
 Benchmark completed.
 Analyzing resource usage...
 **** Results ****
-Average CPU Usage: 39.47%
-Average Memory Usage: 37.02 MiB
-./benchmark.sh: line 135: 44732 Terminated: 15          monitor_resource_usage
+Average CPU Usage: 39.77%
+Average Memory Usage: 35.90 MiB
+./benchmark.sh: line 135: 86037 Terminated: 15          monitor_resource_usage
 [+] Running 2/2
- ✔ Container bit        Removed                                                                                                                                                                    10.1s
- ✔ Network bit_default  Removed                                                                                                                                                                     0.0s
+ ✔ Container bit        Removed                                                               10.1s
+ ✔ Network bit_default  Removed                                                                0.0s
 ```
