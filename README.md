@@ -4,14 +4,14 @@
 
 Lightweight URL shortener API service with minimal resource requirements. Average memory consumption is under **20MiB** and single CPU core consumption under 20%.
 
-bit is highly performant, achieving in average **3K RPS** with a minimum latency of 56ms (100K requests using 100 connections, [benchmark](docs/SETUP.md#benchmark)).
+Performance: Avg **3K reqs/sec**, latency 56ms (100K requests using 100 connections, [benchmark](docs/SETUP.md#benchmark)).
 
 Self-hosted with [Dokku](docs/SETUP.md#dokku) and [Docker Compose](docs/SETUP.md#docker-compose).
 
 Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 
 ## Why bit?
-It is feature-complete by design. Its strength lies in simplicity, a reliable URL shortener without unnecessary bloat. Bug fixes will continue, but new features aren't planned.
+It is feature-complete by design. Its strength lies in simplicity, reliable without unnecessary bloat. Bug fixes will continue, but new features aren't planned.
 
 - Minimal tracking setup: Country, browser, os, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
 - Flexible request forwarding system passes client context to destinations via standard `X-Forwarded-For` and `User-Agent` headers, enabling advanced tracking and integration capabilities when needed.

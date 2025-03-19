@@ -113,9 +113,9 @@ RAM: 1GiB
 CPU: Apple M3 Pro
 
 **Summary**
-- Requests/secs average central tendency: (1328.47 + 1357.19 + 1407.03) / 3 + (1785.03 + 1789.06 + 1778.84) / 3 = 3148.54 reqs/sec
-- Latency average central tendency: (76.19 + 74.68 + 71.85) / 3 - (29.43 + 14.50 + 9.42) / 3 = 56.4ms
-- Latency for conservative capacity planning: (76.19 + 74.68 + 71.85) / 3 + (29.43 + 14.50 + 9.42) / 3 = 89.63ms
+- Reqs/sec (average central tendency): (1328.47 + 1357.19 + 1407.03) / 3 + (1785.03 + 1789.06 + 1778.84) / 3 = 3148.54 reqs/sec
+- Latency (average central tendency): (76.19 + 74.68 + 71.85) / 3 - (29.43 + 14.50 + 9.42) / 3 = 56.4ms
+- Latency (for conservative capacity planning): (76.19 + 74.68 + 71.85) / 3 + (29.43 + 14.50 + 9.42) / 3 = 89.63ms
 - Best single run: 18041.44 reqs/sec
 
 ```

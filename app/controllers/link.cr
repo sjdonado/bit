@@ -34,6 +34,7 @@ module App::Controllers
       end
 
       link.clicks = [] of App::Models::Click
+
       render_json({"data" => App::Serializers::Link.new(link)}, 201)
     end
 
@@ -71,7 +72,8 @@ module App::Controllers
       query = query.order_by("id DESC").limit(limit + 1)
 
       links = Database.all(Link, query)
-      return paginated_response(links, limit) { |link| App::Serializers::Link.new(link) }
+
+      paginated_response(links, limit) { |link| App::Serializers::Link.new(link) }
     end
 
     def get
@@ -106,7 +108,8 @@ module App::Controllers
       query = query.order_by("id DESC").limit(limit + 1)
 
       clicks = Database.all(Click, query)
-      return paginated_response(clicks, limit) { |click| App::Serializers::Click.new(click) }
+
+      paginated_response(clicks, limit) { |click| App::Serializers::Click.new(click) }
     end
 
     def update
