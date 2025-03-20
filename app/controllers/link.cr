@@ -42,7 +42,9 @@ module App::Controllers
       slug = @env.params.url["slug"]
 
       link_data = nil
-      Database.raw_query("SELECT id, url FROM links WHERE slug = (?) LIMIT 1", slug) do |result|
+      # LIMIT 1 degrades performance on unique field searches
+      # slug autoindex has better perormance than the covering index
+      Database.raw_query("SELECT id, url FROM links WHERE slug = (?)", slug) do |result|
         if result.move_next
           link_data = {result.read(String), result.read(String)}
         end
