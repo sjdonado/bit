@@ -5,7 +5,6 @@ module App::Controllers
     include App::Services
 
     def initialize(@env : HTTP::Server::Context)
-      ClickTracker.init
       super(@env)
     end
 
@@ -32,33 +31,6 @@ module App::Controllers
       inserted_link = Database.get!(Link, changeset.instance.id)
 
       render_json({"data" => App::Serializers::Link.new(inserted_link)}, 201)
-    end
-
-    def redirect
-      slug = @env.params.url["slug"]
-
-      link_data = nil
-      # LIMIT 1 degrades performance on unique field searches
-      # slug autoindex has better perormance than the covering index
-      Database.raw_query("SELECT id, url FROM links WHERE slug = (?)", slug) do |result|
-        if result.move_next
-          link_data = {result.read(Int64), result.read(String)}
-        end
-      end
-      raise App::NotFoundException.new(@env) unless link_data
-
-      remote_address = @env.request.headers["Cf-Connecting-Ip"]?.try(&.presence) || @env.request.remote_address.try &.to_s
-      user_agent_str = @env.request.headers["User-Agent"]? || "Unknown"
-      client_ip = IpLookup.extract_ip(remote_address) || "Unknown"
-
-      @env.response.status_code = 301
-      @env.response.headers["Connection"] = "close"
-
-      @env.response.headers["Location"] = link_data[1]
-      @env.response.headers["X-Forwarded-For"] = client_ip
-      @env.response.headers["User-Agent"] = user_agent_str
-
-      spawn track_click(link_data[0], client_ip, user_agent_str)
     end
 
     def list_all
@@ -156,19 +128,6 @@ module App::Controllers
 
     private def current_user_id : Int64
       current_user.id.as(Int64)
-    end
-
-    private def track_click(link_id, client_ip, user_agent_str)
-      source = @env.params.query["utm_source"]? || "Direct"
-      referer = @env.request.headers["Referer"]?.try { |r| begin URI.parse(r).host rescue r end } || source
-
-      ClickTracker.track(
-        link_id: link_id,
-        client_ip: client_ip,
-        user_agent: user_agent_str,
-        source: source,
-        referer: referer
-      )
     end
 
     private def pagination_params

@@ -36,7 +36,7 @@ class IpLookup
     end
   end
 
-  def self.extract_ip(address_string : String?) : String?
+  def self.ip_from_address(address_string : String?) : String?
     return nil if address_string.nil?
 
     if address_string.includes?('[') # IPv6 with port: [2001:db8::1]:8080

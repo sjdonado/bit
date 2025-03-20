@@ -8,17 +8,14 @@ require "file_utils"
 SERVER_URL = "http://localhost:4000"
 API_URL = "#{SERVER_URL}/api/links"
 API_KEY = "secure_api_key_1"
-
-NUM_LINKS = 10_000
-NUM_REQUESTS = 100_000
-CONCURRENCY = 100
+TIME = "60s"
 
 RESOURCE_USAGE_INTERVAL = 1
 CONTAINER_NAME = "bit"
 STATS_FILE = "resource_usage.txt"
 
 class ResourceMonitor
-  def initialize(@container_name : String, @interval : Int32)
+  def initialize(@container_name : String, @interval : Float64)
     @running = false
     @stats = [] of {timestamp: Time, cpu: Float64, memory: Float64}
   end
@@ -76,7 +73,10 @@ class ResourceMonitor
       parts = line.split(",")
       if parts.size == 2
         cpu_part = parts[0].gsub("%", "").to_f
-        mem_part = parts[1].split.first.to_f
+
+        # Extract the memory value properly by removing the "MiB" suffix
+        mem_string = parts[1].split.first
+        mem_part = mem_string.gsub(/[A-Za-z]+$/, "").to_f
 
         return {timestamp: Time.utc, cpu: cpu_part, memory: mem_part}
       end
@@ -124,7 +124,7 @@ def setup_containers
   puts "Checking seed results..."
   until begin
           HTTP::Client.get(
-            "#{API_URL}",
+            "#{API_URL}?limit=1",
             headers: HTTP::Headers{"X-Api-Key" => API_KEY}
           ).success?
         rescue
@@ -142,6 +142,7 @@ def run_benchmark
     headers: HTTP::Headers{"X-Api-Key" => API_KEY}
   )
 
+  sleep 2.seconds
   unless response.success?
     puts "Failed to fetch links. Status: #{response.status_code}"
     exit(1)
@@ -150,40 +151,27 @@ def run_benchmark
   data = JSON.parse(response.body)
   links = data["data"].as_a.map { |link| link["refer"].as_s }
 
-  if links.size != NUM_LINKS
-    puts "Error: Expected #{NUM_LINKS} links but found #{links.size}."
-    exit(1)
-  end
-
   random_link = links.sample
   puts "Selected link for benchmarking: #{random_link}"
 
   puts "Starting benchmark with Bombardier..."
 
-  # Run bombardier for benchmarking
-  stdout = IO::Memory.new
-  stderr = IO::Memory.new
-
-  process = Process.run(
+  sleep 2.seconds
+  process = Process.new(
     "bombardier",
-    ["-c", CONCURRENCY.to_s, "-n", NUM_REQUESTS.to_s, random_link],
-    output: stdout,
-    error: stderr
+    ["-d", TIME.to_s, "-l", "--fasthttp", random_link],
+    output: Process::Redirect::Inherit,
+    error: Process::Redirect::Inherit
   )
 
-  unless process.success?
-    puts "Bombardier failed with error:"
-    puts stderr.to_s
+  status = process.wait
+
+  if status.success?
+    puts "Benchmark completed successfully."
+  else
+    puts "Bombardier failed with error code: #{status.exit_code}"
     exit(1)
   end
-
-  # Display bombardier results
-  puts stdout.to_s
-  puts "Benchmark completed."
-
-  # Save bombardier results to file
-  File.write("bombardier_results.txt", stdout.to_s)
-  puts "Bombardier results saved to bombardier_results.txt"
 end
 
 def analyze_resource_usage
@@ -198,6 +186,8 @@ def analyze_resource_usage
     if lines.size > 0
       total_cpu = 0.0
       total_memory = 0.0
+      peak_cpu = 0.0
+      peak_memory = 0.0
 
       lines.each do |line|
         fields = line.split("\t")
@@ -208,6 +198,10 @@ def analyze_resource_usage
 
             total_cpu += cpu
             total_memory += memory
+
+            # Track peaks in a single pass
+            peak_cpu = cpu if cpu > peak_cpu
+            peak_memory = memory if memory > peak_memory
           rescue
             # Skip invalid lines
           end
@@ -219,12 +213,12 @@ def analyze_resource_usage
 
       # Format statistics summary
       stats_summary = <<-STATS
-        **** Resource Usage Statistics ****
+      **** Resource Usage Statistics ****
         Measurements: #{lines.size}
         Average CPU Usage: #{avg_cpu.round(2)}%
         Average Memory Usage: #{avg_memory.round(2)} MiB
-        Peak CPU Usage: #{lines.max_by { |l| l.split("\t")[1].to_f rescue 0.0 }.split("\t")[1].to_f rescue 0.0}%
-        Peak Memory Usage: #{lines.max_by { |l| l.split("\t")[2].to_f rescue 0.0 }.split("\t")[2].to_f rescue 0.0} MiB
+        Peak CPU Usage: #{peak_cpu.round(2)}%
+        Peak Memory Usage: #{peak_memory.round(2)} MiB
 
       STATS
 
@@ -245,7 +239,6 @@ end
 def cleanup
   Process.run("docker", ["compose", "down"])
   puts "Cleanup completed. Resource usage data saved in #{STATS_FILE}"
-  puts "Bombardier results saved in bombardier_results.txt"
 end
 
 def main

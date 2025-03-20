@@ -19,7 +19,7 @@ module App
   end
 
   get "/:slug" do |env|
-    Controllers::LinkController.new(env).redirect
+    Controllers::ClickController.new(env).redirect
   end
 
   # Namespace /api

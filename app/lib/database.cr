@@ -13,11 +13,11 @@ module App::Lib
       separator = base_url.includes?("?") ? "&" : "?"
 
       db_url = base_url + separator +
-        "pool_size=20" +
-        "&max_idle_pool_size=10" +  # Keep connections ready
-        "&journal_mode=WAL" +   # Write-Ahead Logging for concurrent reads
-        "&synchronous=NORMAL" + # Better performance with reasonable safety
-        "&foreign_keys=true"
+        "&journal_mode=WAL" +
+        "&synchronous=NORMAL" +      # Better performance with reasonable safety
+        "&foreign_keys=true" +
+        "&cache_size=10000" +        # Larger cache (10MB) for frequently accessed data
+        "&wal_autocheckpoint=10000"  # Less frequent checkpoints
 
       conf.uri = db_url
     end

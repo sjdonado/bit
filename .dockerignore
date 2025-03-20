@@ -3,3 +3,7 @@
 /.shards/
 /spec/
 /sqlite/
+
+/docs/
+benchmark.cr
+.env*
