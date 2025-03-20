@@ -1,32 +1,23 @@
--- Create 10 users
 INSERT INTO users (name, api_key)
 VALUES
 ('User 1', 'secure_api_key_1'),
-('User 2', 'secure_api_key_2'),
-('User 3', 'secure_api_key_3'),
-('User 4', 'secure_api_key_4'),
-('User 5', 'secure_api_key_5'),
-('User 6', 'secure_api_key_6'),
-('User 7', 'secure_api_key_7'),
-('User 8', 'secure_api_key_8'),
-('User 9', 'secure_api_key_9'),
-('User 10', 'secure_api_key_10');
+('User 2', 'secure_api_key_2');
 
--- Create 1,000 links (100 per user)
+-- Create 200,000 links (100,000 per user)
 WITH RECURSIVE link_numbers(n) AS (
     SELECT 1
     UNION ALL
     SELECT n+1 FROM link_numbers
-    LIMIT 1000
+    LIMIT 200000
 )
 INSERT INTO links (user_id, slug, url)
 SELECT
-    ((n-1) % 10) + 1, -- User ID (1-10)
+    ((n-1) % 2) + 1, -- User ID (1-2)
     'slug' || n,      -- Unique slug
     'https://sjdonado.com/page/' || n
 FROM link_numbers;
 
--- Create 1,000,000 clicks (1,000 per link)
+-- Create 200,000,000 clicks (1,000 per link)
 WITH RECURSIVE link_numbers(link_id) AS (
     SELECT id FROM links
 ),
