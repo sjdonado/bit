@@ -1,26 +1,40 @@
 require "./controllers/**"
 
-module App
-  # CORS handling middleware
-  before_all do |env|
-    if env.request.path.starts_with?("/api/")
-      env.response.headers["Access-Control-Allow-Origin"] = "*"
-      env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-      env.response.headers["Access-Control-Allow-Headers"] = "Content-Type, Accept, Origin, X-Api-Key"
+require "kemal"
+
+class CORSHandler < Kemal::Handler
+  exclude ["/:slug"]
+
+  def initialize(
+    @allow_origin = "*",
+    @allow_methods = "GET, POST, PUT, DELETE, OPTIONS",
+    @allow_headers = "Content-Type, Accept, Origin, X-Api-Key"
+  )
+  end
+
+  def call(context)
+    return call_next(context) if exclude_match?(context)
+
+    context.response.headers["Access-Control-Allow-Origin"] = @allow_origin
+    context.response.headers["Access-Control-Allow-Methods"] = @allow_methods
+    context.response.headers["Access-Control-Allow-Headers"] = @allow_headers
+
+    # If this is a preflight OPTIONS request, we return immediately with 200
+    if context.request.method == "OPTIONS"
+      context.response.status_code = 200
+      context.response.content_type = "text/plain"
+      context.response.print("")
+      return context
     end
-  end
 
-  # Error handling middleware
-  error 404 do |env|
-    {error: "Not Found"}.to_json
+    call_next(context)
   end
-  error 500 do |env|
-    {error: "Internal Server Error"}.to_json
-  end
+end
 
-  get "/:slug" do |env|
-    Controllers::ClickController.new(env).redirect
-  end
+add_handler CORSHandler.new
+
+module App
+  get "/:slug", &App::Controllers::ClickController.redirect_handler
 
   # Namespace /api
   get "/api/ping" do |env|
@@ -49,5 +63,10 @@ module App
 
   delete "/api/links/:id" do |env|
     Controllers::LinkController.new(env).delete
+  end
+
+  error 500 do |env|
+    App::InternalServerErrorException.new(env)
+    ""
   end
 end

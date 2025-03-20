@@ -10,12 +10,11 @@ API_URL = "#{SERVER_URL}/api/links"
 API_KEY = "secure_api_key_1"
 TIME = "59s"
 
-RESOURCE_USAGE_INTERVAL = 1
 CONTAINER_NAME = "bit"
 STATS_FILE = "resource_usage.txt"
 
 class ResourceMonitor
-  def initialize(@container_name : String, @interval : Float64)
+  def initialize(@container_name : String)
     @running = false
     @stats = [] of {timestamp: Time, cpu: Float64, memory: Float64}
   end
@@ -36,7 +35,6 @@ class ResourceMonitor
           end
           @stats << stat
         end
-        sleep @interval.seconds
       end
     end
   end
@@ -159,7 +157,7 @@ def run_benchmark
   sleep 2.seconds
   process = Process.new(
     "bombardier",
-    ["-d", TIME.to_s, "-c", "30", "-l", "--fasthttp", random_link],
+    ["-d", TIME.to_s, "-c", "30", "-l", "--disableKeepAlives", random_link],
     output: Process::Redirect::Inherit,
     error: Process::Redirect::Inherit
   )
@@ -245,7 +243,7 @@ def main
   check_dependencies
   setup_containers
 
-  monitor = ResourceMonitor.new(CONTAINER_NAME, RESOURCE_USAGE_INTERVAL)
+  monitor = ResourceMonitor.new(CONTAINER_NAME)
   monitor.start
 
   begin

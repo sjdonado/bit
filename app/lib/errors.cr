@@ -55,12 +55,3 @@ module App
     end
   end
 end
-
-error 500 do |env|
-  App::InternalServerErrorException.new(env)
-  ""
-end
-
-error 404 do |env|
-  ""
-end
