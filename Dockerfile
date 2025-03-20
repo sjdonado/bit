@@ -33,7 +33,7 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y \
     libssl3 \
     libyaml-0-2 \
-    libsqlite3-0 \
+    sqlite3 \
     libevent-2.1-7 \
     && rm -rf /var/lib/apt/lists/*
 

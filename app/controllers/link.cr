@@ -29,9 +29,9 @@ module App::Controllers
         raise App::UnprocessableEntityException.new(@env, map_changeset_errors(changeset.errors))
       end
 
-      link.clicks = [] of App::Models::Click
+      inserted_link = Database.get!(Link, changeset.instance.id)
 
-      render_json({"data" => App::Serializers::Link.new(link)}, 201)
+      render_json({"data" => App::Serializers::Link.new(inserted_link)}, 201)
     end
 
     def redirect
