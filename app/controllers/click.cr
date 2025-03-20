@@ -30,8 +30,6 @@ module App::Controllers
       @env.response.headers["X-Forwarded-For"] = client_ip.to_s
       @env.response.headers["Connection"] = "close"
 
-      @env.response.flush
-
       spawn do
         begin
           user_agent_str = @env.request.headers["User-Agent"]?

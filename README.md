@@ -2,9 +2,9 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/r/sjdonado/bit)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/r/sjdonado/bit)
 
-Lightweight URL shortener API service with minimal resource requirements. Average memory consumption is under **40MiB** and single CPU core consumption under 40%.
+Lightweight URL shortener API service with minimal resource requirements. Average memory consumption is under **30MiB** and single CPU core consumption around 20%.
 
-Performance: Avg **1K reqs/sec**, latency 8ms (100K requests using 100 connections, [benchmark](docs/SETUP.md#benchmark)).
+Performance: Avg **1K reqs/sec**, latency 33ms, [benchmark](docs/SETUP.md#benchmark).
 
 Self-hosted with [Dokku](docs/SETUP.md#dokku) and [Docker Compose](docs/SETUP.md#docker-compose).
 

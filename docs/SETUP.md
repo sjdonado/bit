@@ -109,14 +109,8 @@ ENV=test crystal spec
 
 ## Benchmark
 
-RAM: 1GiB
-CPU: Apple M3 Pro
-
-**Summary**
-- Reqs/sec (average central tendency): (1328.47 + 1357.19 + 1407.03) / 3 + (1785.03 + 1789.06 + 1778.84) / 3 = 3148.54 reqs/sec
-- Latency (average central tendency): (76.19 + 74.68 + 71.85) / 3 - (29.43 + 14.50 + 9.42) / 3 = 56.4ms
-- Latency (for conservative capacity planning): (76.19 + 74.68 + 71.85) / 3 + (29.43 + 14.50 + 9.42) / 3 = 89.63ms
-- Best single run: 18041.44 reqs/sec
+- Colima: cpu 1, mem 1
+- SoC: Apple M3 Pro
 
 ```
 ~/p/bit> colima start --cpu 1 --memory 1
@@ -132,25 +126,33 @@ Waiting for the application to be ready...
 Seeding the database...
 Checking seed results...
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/slug187082
+Selected link for benchmarking: http://localhost:4000/slug2202
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/slug187082 with 100000 request(s) using 100 connection(s)
- 100000 / 100000 [==============================================================] 100.00% 12180/s 8s
+Bombarding http://localhost:4000/slug2202 for 59s using 30 connection(s)
+[==============================================================================================] 59s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec     12335.45    3288.95   20393.16
-  Latency        8.11ms     1.89ms    35.42ms
+  Reqs/sec      1321.38     427.84    2067.24
+  Latency       33.19ms    51.13ms      2.00s
+  Latency Distribution
+     50%    30.01ms
+     75%    34.38ms
+     90%    40.59ms
+     95%    48.35ms
+     99%    65.21ms
   HTTP codes:
-    1xx - 0, 2xx - 0, 3xx - 0, 4xx - 0, 5xx - 100000
-    others - 0
-  Throughput:     2.93MB/s
+    1xx - 0, 2xx - 0, 3xx - 39618, 4xx - 0, 5xx - 0
+    others - 13712
+  Errors:
+    dial tcp [::1]:4000: connect: connection refused - 13712
+  Throughput:   180.24KB/s
 Benchmark completed successfully.
 Analyzing resource usage...
 **** Resource Usage Statistics ****
-  Measurements: 5
-  Average CPU Usage: 39.5%
-  Average Memory Usage: 35.25 MiB
-  Peak CPU Usage: 82.25%
-  Peak Memory Usage: 37.45 MiB
+  Measurements: 21
+  Average CPU Usage: 22.53%
+  Average Memory Usage: 28.62 MiB
+  Peak CPU Usage: 35.21%
+  Peak Memory Usage: 62.14 MiB
 Cleanup completed. Resource usage data saved in resource_usage.txt
 ```

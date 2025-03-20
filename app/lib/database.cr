@@ -15,9 +15,7 @@ module App::Lib
       db_url = base_url + separator +
         "&journal_mode=WAL" +
         "&synchronous=NORMAL" +      # Better performance with reasonable safety
-        "&foreign_keys=true" +
-        "&cache_size=10000" +        # Larger cache (10MB) for frequently accessed data
-        "&wal_autocheckpoint=10000"  # Less frequent checkpoints
+        "&foreign_keys=true"
 
       conf.uri = db_url
     end

@@ -3,12 +3,12 @@ VALUES
 ('User 1', 'secure_api_key_1'),
 ('User 2', 'secure_api_key_2');
 
--- Create 20,000 links (10,000 per user)
+-- Create 10,000 links (5,000 per user)
 WITH RECURSIVE link_numbers(n) AS (
     SELECT 1
     UNION ALL
     SELECT n+1 FROM link_numbers
-    LIMIT 20000
+    LIMIT 10000
 )
 INSERT INTO links (user_id, slug, url)
 SELECT
@@ -17,44 +17,35 @@ SELECT
     'https://sjdonado.com/page/' || n
 FROM link_numbers;
 
--- Create 1,000 clicks per link (20,000,000 total)
--- Using batched approach for better performance
-CREATE TEMP TABLE link_ids AS SELECT id FROM links;
-
-CREATE TEMP TABLE click_counts(link_id, count) AS
+-- Create 1,000 clicks per link (10 million total)
 WITH RECURSIVE counts(n) AS (
     SELECT 1
     UNION ALL
     SELECT n+1 FROM counts
     LIMIT 1000
 )
-SELECT l.id, c.n
-FROM link_ids l
-CROSS JOIN counts c;
-
--- Insert clicks from the count table
 INSERT INTO clicks (link_id, user_agent, browser, os, referer, country)
 SELECT
-    link_id,
-    CASE (count % 5)
+    l.id,
+    CASE (c.n % 5)
         WHEN 0 THEN 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
         WHEN 1 THEN 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)'
         WHEN 2 THEN 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0)'
         WHEN 3 THEN 'Mozilla/5.0 (X11; Linux x86_64)'
         ELSE 'Mozilla/5.0 (Android 11; Mobile)'
     END,
-    CASE (count % 3)
-        WHEN 0 THEN 'Chrome'
-        WHEN 1 THEN 'Firefox'
+    CASE (c.n % 3)
+        WHEN 0 THEN 'Firefox'
+        WHEN 1 THEN 'Chrome'
         ELSE 'Safari'
     END,
-    CASE (count % 4)
-        WHEN 0 THEN 'Windows'
-        WHEN 1 THEN 'macOS'
+    CASE (c.n % 4)
+        WHEN 0 THEN 'macOS'
+        WHEN 1 THEN 'Windows'
         WHEN 2 THEN 'iOS'
         ELSE 'Android'
     END,
-    CASE (count % 6)
+    CASE (c.n % 6)
         WHEN 0 THEN 'https://sjdonado.com'
         WHEN 1 THEN 'https://donado.co'
         WHEN 2 THEN 'https://idonthavespotify.donado.co'
@@ -62,9 +53,9 @@ SELECT
         WHEN 4 THEN 'https://github.com/sjdonado'
         ELSE NULL
     END,
-    CASE (count % 10)
-        WHEN 0 THEN 'US'
-        WHEN 1 THEN 'UK'
+    CASE (c.n % 10)
+        WHEN 0 THEN 'Colombia'
+        WHEN 1 THEN 'Brazil'
         WHEN 2 THEN 'Canada'
         WHEN 3 THEN 'Germany'
         WHEN 4 THEN 'France'
@@ -74,8 +65,5 @@ SELECT
         WHEN 8 THEN 'India'
         ELSE 'China'
     END
-FROM click_counts;
-
--- Clean up
-DROP TABLE link_ids;
-DROP TABLE click_counts;
+FROM links l
+CROSS JOIN counts c;
