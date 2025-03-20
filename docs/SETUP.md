@@ -126,33 +126,64 @@ Waiting for the application to be ready...
 Seeding the database...
 Checking seed results...
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/slug2202
+Selected link for benchmarking: http://localhost:4000/slug6268
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/slug2202 for 59s using 30 connection(s)
+Bombarding http://localhost:4000/slug6268 for 59s using 30 connection(s)
 [==============================================================================================] 59s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec      1321.38     427.84    2067.24
-  Latency       33.19ms    51.13ms      2.00s
+  Reqs/sec      1113.53     384.47    1642.40
+  Latency       27.13ms     6.87ms   246.27ms
   Latency Distribution
-     50%    30.01ms
-     75%    34.38ms
-     90%    40.59ms
-     95%    48.35ms
-     99%    65.21ms
+     50%    25.13ms
+     75%    27.60ms
+     90%    32.34ms
+     95%    36.06ms
+     99%    50.99ms
   HTTP codes:
-    1xx - 0, 2xx - 0, 3xx - 39618, 4xx - 0, 5xx - 0
-    others - 13712
-  Errors:
-    dial tcp [::1]:4000: connect: connection refused - 13712
-  Throughput:   180.24KB/s
+    1xx - 0, 2xx - 0, 3xx - 65268, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   308.80KB/s
 Benchmark completed successfully.
 Analyzing resource usage...
 **** Resource Usage Statistics ****
-  Measurements: 21
-  Average CPU Usage: 22.53%
-  Average Memory Usage: 28.62 MiB
-  Peak CPU Usage: 35.21%
-  Peak Memory Usage: 62.14 MiB
+  Measurements: 31
+  Average CPU Usage: 30.49%
+  Average Memory Usage: 64.82 MiB
+  Peak CPU Usage: 34.12%
+  Peak Memory Usage: 65.45 MiB
 Cleanup completed. Resource usage data saved in resource_usage.txt
+~/p/bit> cat resource_usage.txt
+Timestamp       CPU(%)  Memory(MiB)
+1742499555      0.0     61.76
+1742499557      0.01    61.76
+1742499559      26.73   65.13
+1742499561      32.59   65.16
+1742499563      32.66   65.42
+1742499565      33.32   65.45
+1742499567      31.84   65.2
+1742499569      33.01   65.4
+1742499571      32.56   65.23
+1742499573      32.86   65.23
+1742499575      33.31   65.24
+1742499577      33.0    65.06
+1742499579      32.98   65.07
+1742499581      33.42   64.93
+1742499583      32.98   64.91
+1742499585      32.85   64.93
+1742499587      33.39   64.94
+1742499589      32.88   64.95
+1742499591      31.9    64.95
+1742499593      34.12   65.21
+1742499595      32.85   64.94
+1742499597      32.95   64.89
+1742499599      33.88   64.9
+1742499601      31.93   64.89
+1742499603      33.67   64.89
+1742499605      32.62   64.89
+1742499607      31.12   65.01
+1742499609      31.04   64.77
+1742499611      33.95   64.77
+1742499613      32.3    64.68
+1742499615      32.52   64.94
 ```
