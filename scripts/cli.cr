@@ -1,4 +1,3 @@
-require "uuid"
 require "option_parser"
 
 require "../app/services/cli"

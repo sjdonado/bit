@@ -4,7 +4,7 @@ require "crecto"
 module App::Models
   class User < Crecto::Model
     schema :users do
-      field :id, String, primary_key: true
+      field :id, Int64, primary_key: true
       field :name, String
       field :api_key, String
     end

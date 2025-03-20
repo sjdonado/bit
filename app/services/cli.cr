@@ -8,7 +8,6 @@ require "../models/*"
 module App::Services::Cli
   def self.create_user(name, api_key = nil)
     user = App::Models::User.new
-    user.id = UUID.v4.to_s
     user.name = name
     user.api_key = api_key || Random::Secure.urlsafe_base64()
 

@@ -1,4 +1,3 @@
-require "uuid"
 require "file_utils"
 
 require "spec-kemal"
@@ -24,7 +23,6 @@ end
 
 def create_test_user
   user = App::Models::User.new
-  user.id = UUID.v4.to_s
   user.name = "Tester"
   user.api_key = Random::Secure.urlsafe_base64()
 
@@ -39,8 +37,7 @@ end
 
 def create_test_link(user, url)
   link = App::Models::Link.new
-  link.id = UUID.v4.to_s
-  link.slug = App::Services::SlugService.shorten_url(url, user.id.to_s)
+  link.slug = App::Services::SlugService.shorten_url(url, user.id)
   link.url = url
   link.user = user
 
@@ -57,7 +54,6 @@ end
 
 def create_test_click(link)
   click = App::Models::Click.new
-  click.id = UUID.v4.to_s
   click.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
   click.browser = "Firefox"
   click.os = "Mac OS X"
@@ -75,8 +71,8 @@ def create_test_click(link)
   click
 end
 
-def get_test_link(link_id)
-  query = App::Lib::Database::Query.where(id: link_id.as(String)).limit(1)
+def get_test_link(link_id: Int64)
+  query = App::Lib::Database::Query.where(id: link_id).limit(1)
   link = App::Lib::Database.all(App::Models::Link, query, preload: [:clicks]).first?
 
   raise "Link not found" if link.nil?
@@ -84,6 +80,6 @@ def get_test_link(link_id)
   link
 end
 
-def delete_test_link(link_id)
+def delete_test_link(link_id: Int64)
   App::Lib::Database.raw_exec("DELETE FROM links WHERE id = (?)", link_id) # tempfix: Database.delete does not work
 end

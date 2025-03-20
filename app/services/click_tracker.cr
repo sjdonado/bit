@@ -5,7 +5,7 @@ IpLookup.load_mmdb("data/GeoLite2-Country.mmdb")
 
 module App::Services
   class ClickTracker
-    @@queue = Channel(Tuple(String, String, String, String, String)).new(1000)
+    @@queue = Channel(Tuple(Int64, String, String, String, String)).new(1000)
     @@initialized = false
 
     def self.init
@@ -25,7 +25,6 @@ module App::Services
             user_agent = user_agent_str != "Unknown" ? UserAgent.new(user_agent_str) : nil
 
             click = App::Models::Click.new
-            click.id = UUID.v4.to_s
             click.link_id = link_id
             click.country = country
             click.user_agent = user_agent_str
@@ -45,7 +44,7 @@ module App::Services
       end
     end
 
-    def self.track(link_id : String, client_ip : String, user_agent : String, source : String, referer : String)
+    def self.track(link_id : Int64, client_ip : String, user_agent : String, source : String, referer : String)
       init if !@@initialized
 
       @@queue.send({link_id, client_ip, user_agent, source, referer})
