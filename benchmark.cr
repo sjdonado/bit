@@ -8,7 +8,7 @@ require "file_utils"
 SERVER_URL = "http://localhost:4000"
 API_URL = "#{SERVER_URL}/api/links"
 API_KEY = "secure_api_key_1"
-NUMBER_OF_REQUESTS = 1000
+NUMBER_OF_REQUESTS = 100000
 
 CONTAINER_NAME = "bit"
 STATS_FILE = "resource_usage.txt"
@@ -128,7 +128,7 @@ def setup_containers
         rescue
           false
         end
-    sleep 1.seconds
+    sleep 2.seconds
   end
 end
 
@@ -157,7 +157,7 @@ def run_benchmark
   sleep 2.seconds
   process = Process.new(
     "bombardier",
-    ["-n", NUMBER_OF_REQUESTS.to_s, "-c", "30", "-l", "--disableKeepAlives", random_link],
+    ["-n", NUMBER_OF_REQUESTS.to_s, "-l", "--disableKeepAlives", random_link],
     output: Process::Redirect::Inherit,
     error: Process::Redirect::Inherit
   )
@@ -175,6 +175,7 @@ end
 def analyze_resource_usage
   puts "Analyzing resource usage..."
 
+  sleep 2.seconds
   # Read stats directly from file for more accurate results
   if File.exists?(STATS_FILE)
     lines = File.read_lines(STATS_FILE)
@@ -209,7 +210,6 @@ def analyze_resource_usage
       avg_cpu = total_cpu / lines.size
       avg_memory = total_memory / lines.size
 
-      # Format statistics summary
       stats_summary = <<-STATS
       **** Resource Usage Statistics ****
         Measurements: #{lines.size}
@@ -220,12 +220,11 @@ def analyze_resource_usage
 
       STATS
 
-      puts stats_summary
-
-      # Append summary to stats file
       File.open(STATS_FILE, "a") do |file|
         file.puts "\n" + stats_summary
       end
+
+      puts File.read(STATS_FILE)
     else
       puts "No resource usage data collected."
     end
