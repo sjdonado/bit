@@ -2,9 +2,9 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/r/sjdonado/bit)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/r/sjdonado/bit)
 
-Lightweight URL shortener (API-only) with minimal resource requirements. Avg memory consumption under pressure is around **60MiB**, CPU single core consumption 60%.
+Lightweight URL shortener (API-only) with minimal resource requirements. Avg memory consumption under pressure is around **60MiB**, avg CPU load 60%.
 
-Highly performant: 6K+ reqs/sec, latency 20ms (100000 requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
+Highly performant: **6.6k req/sec**, latency 18.9ms (100k requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
 
 Self-hosted: [Dokku](docs/SETUP.md#dokku), [Docker Compose](docs/SETUP.md#docker-compose).
 
@@ -14,8 +14,9 @@ Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 It is feature-complete by design: simple and reliable without unnecessary bloat. Bug fixes will continue, but new features aren't planned.
 
 - Minimal tracking setup: Country, browser, OS, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
-- Provides standard `X-Forwarded-For` header support to enable extended capabilities.
+- Includes `X-Forwarded-For` header.
 - Multiple users are supported via API key authentication. Users can create, list and delete keys via the [CLI](docs/SETUP.md#cli).
+- Easy to extend, Ruby on Rails-inspired setup.
 
 ## Minimum Requirements
 - 100MB disk space
