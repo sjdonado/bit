@@ -14,7 +14,6 @@ module App::Controllers
 
     @@processor_started = begin
       spawn do
-        batch_size = 64
         batch = [] of NamedTuple(
           link_id: Int64,
           remote_address: String,
@@ -22,21 +21,30 @@ module App::Controllers
           referer: String
         )
 
+        batch_size = 32
+        min_batch = 32
+        max_batch = 512
+        scaling_factor = 1.5
+
         loop do
           select
           when click_data = @@click_channel.receive
             batch << click_data
 
-            # Collect clicks until we have a batch or a timeout
             if batch.size >= batch_size
               process_click_batch(batch)
               batch.clear
+              # Increase batch size when reaching capacity
+              batch_size = (batch_size * scaling_factor).to_i.clamp(min_batch, max_batch)
             end
-          when timeout(0.5.seconds)
-            # Process whatever we have after timeout
+          when timeout(1.seconds)
             unless batch.empty?
               process_click_batch(batch)
               batch.clear
+              batch_size = (batch_size / scaling_factor).to_i.clamp(min_batch, max_batch)
+            else
+              # Reset to default if idle
+              batch_size = min_batch unless batch_size == min_batch
             end
           end
         end

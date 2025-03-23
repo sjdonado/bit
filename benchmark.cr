@@ -176,7 +176,6 @@ def analyze_resource_usage
   puts "Analyzing resource usage..."
 
   sleep 2.seconds
-  # Read stats directly from file for more accurate results
   if File.exists?(STATS_FILE)
     lines = File.read_lines(STATS_FILE)
     # Skip header
