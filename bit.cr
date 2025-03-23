@@ -10,8 +10,6 @@ require "./app/services/*"
 require "./app/routes"
 
 add_context_storage_type(App::Models::User)
-add_handler(App::Middlewares::Auth.new)
-
 App::Services::Cli.setup_admin_user
 
 Kemal.run

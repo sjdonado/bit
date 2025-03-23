@@ -2,36 +2,8 @@ require "./controllers/**"
 
 require "kemal"
 
-class CORSHandler < Kemal::Handler
-  exclude ["/:slug"]
-
-  def initialize(
-    @allow_origin = "*",
-    @allow_methods = "GET, POST, PUT, DELETE, OPTIONS",
-    @allow_headers = "Content-Type, Accept, Origin, X-Api-Key"
-  )
-  end
-
-  def call(context)
-    return call_next(context) if exclude_match?(context)
-
-    context.response.headers["Access-Control-Allow-Origin"] = @allow_origin
-    context.response.headers["Access-Control-Allow-Methods"] = @allow_methods
-    context.response.headers["Access-Control-Allow-Headers"] = @allow_headers
-
-    # If this is a preflight OPTIONS request, we return immediately with 200
-    if context.request.method == "OPTIONS"
-      context.response.status_code = 200
-      context.response.content_type = "text/plain"
-      context.response.print("")
-      return context
-    end
-
-    call_next(context)
-  end
-end
-
-add_handler CORSHandler.new
+add_handler App::Middlewares::CORSHandler.new
+add_handler App::Middlewares::Auth.new
 
 module App
   get "/:slug", &App::Controllers::ClickController.redirect_handler
