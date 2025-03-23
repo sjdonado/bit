@@ -126,43 +126,43 @@ Waiting for the application to be ready...
 Seeding the database...
 Checking seed results...
 Fetching all created links from /api/links...
-Selected link for benchmarking: http://localhost:4000/slug8558
+Selected link for benchmarking: http://localhost:4000/slug4280
 Starting benchmark with Bombardier...
-Bombarding http://localhost:4000/slug8558 with 100000 request(s) using 125 connection(s)
- 100000 / 100000 [==============================================================] 100.00% 7126/s 14s
+Bombarding http://localhost:4000/slug4280 with 100000 request(s) using 125 connection(s)
+ 100000 / 100000 [==============================================================] 100.00% 6562/s 15s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec      7233.84    1873.69   13200.45
-  Latency       17.31ms     1.44ms    44.42ms
+  Reqs/sec      6609.73    1508.34   13145.76
+  Latency       18.92ms     2.34ms    74.58ms
   Latency Distribution
-     50%    17.11ms
-     75%    18.36ms
-     90%    19.75ms
-     95%    20.64ms
-     99%    22.72ms
+     50%    18.83ms
+     75%    20.19ms
+     90%    21.80ms
+     95%    23.10ms
+     99%    26.54ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:     1.97MB/s
+  Throughput:     1.80MB/s
 Benchmark completed successfully.
 Analyzing resource usage...
 Timestamp       CPU(%)  Memory(MiB)
-1742732558      0.04    50.07
-1742732560      0.03    50.07
-1742732562      88.02   79.78
-1742732564      86.57   79.02
-1742732566      89.27   79.3
-1742732568      87.5    79.09
-1742732570      88.88   79.12
-1742732572      88.35   79.41
-1742732574      88.88   79.44
-1742732576      0.02    78.53
+1742732843      0.02    44.71
+1742732845      0.02    44.71
+1742732847      85.34   69.55
+1742732849      83.5    69.93
+1742732851      84.26   69.97
+1742732853      83.64   70.01
+1742732855      84.23   70.04
+1742732857      86.41   69.17
+1742732859      85.77   69.2
+1742732861      59.67   68.55
 
 **** Resource Usage Statistics ****
   Measurements: 10
-  Average CPU Usage: 61.76%
-  Average Memory Usage: 73.38 MiB
-  Peak CPU Usage: 89.27%
-  Peak Memory Usage: 79.78 MiB
+  Average CPU Usage: 65.29%
+  Average Memory Usage: 64.58 MiB
+  Peak CPU Usage: 86.41%
+  Peak Memory Usage: 70.04 MiB
 Cleanup completed. Resource usage data saved in resource_usage.txt
 ```

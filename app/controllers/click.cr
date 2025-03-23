@@ -10,11 +10,11 @@ module App::Controllers
       remote_address: String,
       user_agent: String?,
       referer: String
-    )).new(10000) # Buffer size
+    )).new(1024)
 
     @@processor_started = begin
       spawn do
-        batch_size = 125
+        batch_size = 64
         batch = [] of NamedTuple(
           link_id: Int64,
           remote_address: String,

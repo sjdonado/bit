@@ -2,9 +2,9 @@
 [![Docker Stars](https://img.shields.io/docker/stars/sjdonado/bit.svg)](https://hub.docker.com/r/sjdonado/bit)
 [![Docker Image Size](https://img.shields.io/docker/image-size/sjdonado/bit/latest)](https://hub.docker.com/r/sjdonado/bit)
 
-Lightweight URL shortener (API-only) with minimal resource requirements. Avg memory consumption under pressure is **70MiB**, single CPU core consumption below 60%.
+Lightweight URL shortener (API-only) with minimal resource requirements. Avg memory consumption under pressure is around **60MiB**, CPU single core consumption 60%.
 
-Highly performant: 7K reqs/sec, latency 20ms (100000 request(s) using 125 connection(s), [benchmark](docs/SETUP.md#benchmark)).
+Highly performant: 6K+ reqs/sec, latency 20ms (100000 requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
 
 Self-hosted: [Dokku](docs/SETUP.md#dokku), [Docker Compose](docs/SETUP.md#docker-compose).
 
@@ -19,7 +19,7 @@ It is feature-complete by design: simple and reliable without unnecessary bloat.
 
 ## Minimum Requirements
 - 100MB disk space
-- 80MiB RAM
+- 70MiB RAM
 - x86_64 or ARM64
 
 ## Documentation
