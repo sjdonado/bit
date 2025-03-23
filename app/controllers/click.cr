@@ -30,7 +30,7 @@ module App::Controllers
 
             click = App::Models::Click.new
             click.link_id = link_id
-            click.country = client_ip ? IpLookup.country(client_ip).try(&.code) : nil
+            click.country = client_ip ? IpLookup.country(client_ip) : nil
             click.user_agent = user_agent_str
             click.browser = ua_parser.try(&.family)
             click.os = ua_parser.try(&.os.try(&.family))

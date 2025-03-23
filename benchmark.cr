@@ -8,7 +8,7 @@ require "file_utils"
 SERVER_URL = "http://localhost:4000"
 API_URL = "#{SERVER_URL}/api/links"
 API_KEY = "secure_api_key_1"
-TIME = "59s"
+NUMBER_OF_REQUESTS = 1000
 
 CONTAINER_NAME = "bit"
 STATS_FILE = "resource_usage.txt"
@@ -157,7 +157,7 @@ def run_benchmark
   sleep 2.seconds
   process = Process.new(
     "bombardier",
-    ["-d", TIME.to_s, "-c", "30", "-l", "--disableKeepAlives", random_link],
+    ["-n", NUMBER_OF_REQUESTS.to_s, "-c", "30", "-l", "--disableKeepAlives", random_link],
     output: Process::Redirect::Inherit,
     error: Process::Redirect::Inherit
   )
