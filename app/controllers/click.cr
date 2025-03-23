@@ -1,7 +1,3 @@
-require "user_agent_parser"
-
-UserAgent.load_regexes(File.read("data/uap_core_regexes.yaml"))
-
 module App::Controllers
   struct ClickController
     include App::Models
@@ -26,14 +22,14 @@ module App::Controllers
             user_agent_str = env.request.headers["User-Agent"]?
             referer = env.request.headers["Referer"]?.try { |r| URI.parse(r).host rescue r } || env.params.query["utm_source"]? || "Direct"
 
-            ua_parser = user_agent_str ? UserAgent.new(user_agent_str) : nil
+            family, _, _, os = user_agent_str ? UserAgent.parse(user_agent_str) : {nil, nil, nil, nil}
 
             click = App::Models::Click.new
             click.link_id = link_id
             click.country = client_ip ? IpLookup.country(client_ip) : nil
             click.user_agent = user_agent_str
-            click.browser = ua_parser.try(&.family)
-            click.os = ua_parser.try(&.os.try(&.family))
+            click.browser = family
+            click.os = os.try &.[0]  # Access the first element of the os tuple (the family)
             click.referer = referer
 
             Database.insert(click)

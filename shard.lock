@@ -1,9 +1,5 @@
 version: 2.0
 shards:
-  async:
-    git: https://github.com/protoncr/async.git
-    version: 0.2.0
-
   backtracer:
     git: https://github.com/sija/backtracer.cr.git
     version: 1.2.2
@@ -59,8 +55,4 @@ shards:
   sqlite3:
     git: https://github.com/crystal-lang/crystal-sqlite3.git
     version: 0.19.0
-
-  user_agent_parser:
-    git: https://github.com/busyloop/user_agent_parser.git
-    version: 2.0.1
 

@@ -20,8 +20,6 @@ dependencies:
   micrate:
     github: amberframework/micrate
     version: 0.15.1
-  user_agent_parser:
-    github: busyloop/user_agent_parser
   maxminddb:
     github: delef/maxminddb.cr
 
