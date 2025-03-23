@@ -1,7 +1,6 @@
 require "user_agent_parser"
 
 UserAgent.load_regexes(File.read("data/uap_core_regexes.yaml"))
-IpLookup.load_mmdb("data/GeoLite2-Country.mmdb")
 
 module App::Controllers
   struct ClickController
@@ -31,7 +30,7 @@ module App::Controllers
 
             click = App::Models::Click.new
             click.link_id = link_id
-            click.country = client_ip ? IpLookup.new(client_ip).try(&.country.try(&.code)) : nil
+            click.country = client_ip ? IpLookup.country(client_ip).try(&.code) : nil
             click.user_agent = user_agent_str
             click.browser = ua_parser.try(&.family)
             click.os = ua_parser.try(&.os.try(&.family))

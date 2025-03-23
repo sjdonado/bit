@@ -1,38 +1,32 @@
 require "maxminddb"
+require "log"
 
-class IpLookup
-  @@instance : MaxMindDB::Reader? = nil
+struct IpLookup
+  MMDB_PATH = "data/GeoLite2-Country.mmdb"
 
   record Country, code : String? = nil, name : String? = nil
 
-  getter ip : String
-  getter country : Country?
-
-  def self.load_mmdb(mmdb_file_path : String)
-    @@instance = MaxMindDB.open(mmdb_file_path)
-  end
-
-  def initialize(ip_address : String)
-    @ip = ip_address
-    @country = nil
-
-    return if @@instance.nil? || ip_address == "Unknown" || ip_address.empty?
+  def self.country(ip_address : String) : Country?
+    return nil if ip_address == "Unknown" || ip_address.empty?
 
     begin
-      lookup = @@instance.not_nil!.get(ip_address)
+      reader = MaxMindDB.open(MMDB_PATH)
+      lookup = reader.get(ip_address)
 
       country_code = lookup["country"]?.try &.["iso_code"]?.try &.as_s
       country_name = lookup["country"]?.try &.["names"]?.try &.["en"]?.try &.as_s
 
       if country_code || country_name
-        @country = Country.new(
+        Country.new(
           code: country_code,
           name: country_name
         )
+      else
+        nil
       end
     rescue ex
-      # Silently handle lookup errors
       Log.error { "IP lookup failed: #{ex.message}" }
+      nil
     end
   end
 
