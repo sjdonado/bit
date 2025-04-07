@@ -6,7 +6,7 @@ Options:
   --create-user=NAME     Create a new user with the given name
   --list-users           List all users
   --delete-user=USER_ID  Delete a user by ID
-  --update-data          Download all required data files
+  --update-parsers       Download all required data files
 ```
 
 ## Run It Anywhere
