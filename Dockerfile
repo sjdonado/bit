@@ -12,8 +12,9 @@ RUN apt-get update && apt-get install -y \
     && curl -fsSL https://packagecloud.io/84codes/crystal/gpgkey | gpg --dearmor > /etc/apt/trusted.gpg.d/84codes_crystal.gpg \
     && echo "deb [signed-by=/etc/apt/trusted.gpg.d/84codes_crystal.gpg] https://packagecloud.io/84codes/crystal/debian/ bookworm main" > /etc/apt/sources.list.d/84codes_crystal.list
 
+# 👇 pin Crystal to 1.12.x (works with Kemal 1.5.0)
 RUN apt-get update && apt-get install -y \
-    crystal \
+    crystal=1.12.2-1 \
     libssl-dev \
     libyaml-dev \
     libsqlite3-dev \
