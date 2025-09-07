@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # 👇 pin Crystal to 1.12.x (works with Kemal 1.5.0)
 RUN apt-get update && apt-get install -y \
-    crystal=1.12.2-1 \
+    crystal=1.12.2-139 \
     libssl-dev \
     libyaml-dev \
     libsqlite3-dev \
