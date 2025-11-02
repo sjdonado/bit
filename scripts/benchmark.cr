@@ -3,15 +3,19 @@
 require "http/client"
 require "json"
 
-SERVER_URL = "http://localhost:4000"
-API_URL = "#{SERVER_URL}/api/links"
-API_KEY = "secure_api_key_1"
+PORT               = "4001"
+APP_URL            = "http://localhost:#{PORT}"
+API_URL            = "#{APP_URL}/api/links"
+API_KEY            = "secure_api_key_1"
 NUMBER_OF_REQUESTS = 100000
 
-APP_COMMAND = "./bit"
-APP_ARGS = [] of String  # Add any arguments if needed
-STATS_FILE = "resource_usage.log"
+APP_COMMAND  = "./bit"
+APP_ARGS     = [] of String
+STATS_FILE   = "resource_usage.log"
 APP_LOG_FILE = "app_output.log"
+
+DATABASE_URL  = "sqlite3://./sqlite/data.benchmark.db?journal_mode=wal&synchronous=normal&foreign_keys=true"
+DATABASE_FILE = "./sqlite/data.benchmark.db"
 
 class ResourceMonitor
   def initialize(@pid : Int32)
@@ -107,17 +111,22 @@ def start_application : Process
   puts "Starting application: #{APP_COMMAND}..."
   puts "Application output will be saved to: #{APP_LOG_FILE}"
 
-  # Open log file for writing
   log_file = File.open(APP_LOG_FILE, "w")
 
   process = Process.new(
     APP_COMMAND,
     APP_ARGS,
     output: log_file,
-    error: log_file
+    error: log_file,
+    env: {
+      "DATABASE_URL" => DATABASE_URL,
+      "APP_URL"      => APP_URL,
+      "PORT"         => PORT,
+    }
   )
 
   puts "Application started with PID: #{process.pid}"
+  puts "Using database: #{DATABASE_FILE}"
   process
 end
 
@@ -139,7 +148,7 @@ def stop_application(process : Process)
 end
 
 def check_dependencies
-  {"bombardier", "sqlite3"}.each do |cmd|
+  {"bombardier", "sqlite3", "micrate"}.each do |cmd|
     process = Process.run("which", [cmd], output: Process::Redirect::Close)
     unless process.success?
       puts "Error: #{cmd} is not installed. Please install it to proceed."
@@ -148,6 +157,8 @@ def check_dependencies
         puts "  brew install bombardier"
       when "sqlite3"
         puts "  brew install sqlite3"
+      when "micrate"
+        puts "  shards install"
       end
       exit(1)
     end
@@ -155,11 +166,11 @@ def check_dependencies
 end
 
 def wait_for_server
-  puts "Checking if server is ready at #{SERVER_URL}..."
+  puts "Checking if server is ready at #{APP_URL}..."
 
   30.times do
     begin
-      if HTTP::Client.get("#{SERVER_URL}/api/ping").success?
+      if HTTP::Client.get("#{APP_URL}/api/ping").success?
         puts "Server is ready!"
         return
       end
@@ -219,21 +230,68 @@ def run_benchmark
   end
 end
 
+def cleanup_database
+  puts "Cleaning up benchmark database..."
+
+  if File.exists?(DATABASE_FILE)
+    File.delete(DATABASE_FILE)
+    puts "Deleted existing database: #{DATABASE_FILE}"
+  end
+
+  # Also remove WAL and SHM files if they exist
+  ["#{DATABASE_FILE}-wal", "#{DATABASE_FILE}-shm"].each do |file|
+    if File.exists?(file)
+      File.delete(file)
+      puts "Deleted: #{file}"
+    end
+  end
+
+  # Ensure sqlite directory exists
+  Dir.mkdir_p("./sqlite")
+  puts "Database cleanup completed."
+end
+
+def run_migrations
+  puts "Running database migrations..."
+
+  process = Process.run("which", ["micrate"], output: Process::Redirect::Close)
+  unless process.success?
+    puts "Error: micrate is not installed. Please install it to proceed."
+    puts "  shards install"
+    exit(1)
+  end
+
+  process = Process.run(
+    "micrate",
+    ["up"],
+    env: {"DATABASE_URL" => DATABASE_URL},
+    output: Process::Redirect::Inherit,
+    error: Process::Redirect::Inherit
+  )
+
+  if process.success?
+    puts "Migrations completed successfully."
+  else
+    puts "Error: Migrations failed."
+    exit(1)
+  end
+end
+
 def seed_database
-  puts "Seeding database..."
+  puts "Seeding benchmark database..."
 
   unless File.exists?("./db/seed.sql")
     puts "Warning: ./db/seed.sql not found. Skipping database seeding."
     return
   end
 
-  unless File.exists?("./sqlite/data.db")
-    puts "Warning: ./sqlite/data.db not found. Database may not be initialized."
+  unless File.exists?(DATABASE_FILE)
+    puts "Warning: #{DATABASE_FILE} not found. Database may not be initialized."
   end
 
   process = Process.run(
     "sqlite3",
-    ["./sqlite/data.db"],
+    [DATABASE_FILE],
     input: File.open("./db/seed.sql"),
     output: Process::Redirect::Inherit,
     error: Process::Redirect::Inherit
@@ -249,12 +307,15 @@ end
 def main
   check_dependencies
 
+  # Setup benchmark database
+  cleanup_database
+  run_migrations
+  seed_database
+
   app_process = start_application
 
   begin
     wait_for_server
-
-    seed_database
 
     # Give it a moment to settle
     sleep 2.seconds
@@ -270,6 +331,7 @@ def main
     puts "\n**** Files Generated ****"
     puts "  Resource stats: #{STATS_FILE}"
     puts "  Application log: #{APP_LOG_FILE}"
+    puts "  Database: #{DATABASE_FILE}"
   ensure
     # Always stop the application
     stop_application(app_process)

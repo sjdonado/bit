@@ -120,213 +120,128 @@ shards run benchmark
 
 Chip: Apple M4 Pro. Memory: 24GB
 
-- Dry run
-
 ```
-1762068811 ~/p/bit> shards build --release --no-debug --progress --stats
+1762075350 ~/p/bit> shards build --release --no-debug --progress --stats
+                    shards run benchmark
 Dependencies are satisfied
 Building: bit
-Parse:                             00:00:00.000041417 (   1.17MB)
-Semantic (top level):              00:00:00.407816208 ( 163.45MB)
-Semantic (new):                    00:00:00.001814125 ( 163.45MB)
-Semantic (type declarations):      00:00:00.019943333 ( 179.45MB)
-Semantic (abstract def check):     00:00:00.007606542 ( 195.45MB)
-Semantic (restrictions augmenter): 00:00:00.006390917 ( 195.45MB)
-Semantic (ivars initializers):     00:00:00.012892709 ( 211.45MB)
-Semantic (cvars initializers):     00:00:00.101427125 ( 211.50MB)
-Semantic (main):                   00:00:00.639027292 ( 499.88MB)
-Semantic (cleanup):                00:00:00.000513000 ( 499.88MB)
-Semantic (recursive struct check): 00:00:00.000625542 ( 499.88MB)
-Codegen (crystal):                 00:00:00.514694833 ( 532.38MB)
-Codegen (bc+obj):                  00:00:14.734378459 ( 532.38MB)
-Codegen (linking):                 00:00:00.308837000 ( 532.38MB)
+Parse:                             00:00:00.000652375 (   1.17MB)
+Semantic (top level):              00:00:00.419246250 ( 163.45MB)
+Semantic (new):                    00:00:00.001636125 ( 163.45MB)
+Semantic (type declarations):      00:00:00.019569792 ( 179.45MB)
+Semantic (abstract def check):     00:00:00.009145125 ( 195.45MB)
+Semantic (restrictions augmenter): 00:00:00.008421709 ( 195.45MB)
+Semantic (ivars initializers):     00:00:00.019696584 ( 211.45MB)
+Semantic (cvars initializers):     00:00:00.106829666 ( 211.50MB)
+Semantic (main):                   00:00:00.649298375 ( 499.88MB)
+Semantic (cleanup):                00:00:00.000765250 ( 499.88MB)
+Semantic (recursive struct check): 00:00:00.000752250 ( 499.88MB)
+Codegen (crystal):                 00:00:00.521307417 ( 532.38MB)
+Codegen (bc+obj):                  00:00:00.143842542 ( 532.38MB)
+Codegen (linking):                 00:00:00.236228750 ( 532.38MB)
 
 Macro runs:
- - /opt/homebrew/Cellar/crystal/1.18.2/share/crystal/src/ecr/process.cr: reused previous compilation (00:00:00.003361958)
+ - /opt/homebrew/Cellar/crystal/1.18.2/share/crystal/src/ecr/process.cr: reused previous compilation (00:00:00.003593375)
 
 Codegen (bc+obj):
- - no previous .o files were reused
+ - all previous .o files were reused
 Building: cli
-Parse:                             00:00:00.000057625 (   1.17MB)
-Semantic (top level):              00:00:00.378950750 ( 163.45MB)
-Semantic (new):                    00:00:00.001392542 ( 163.45MB)
-Semantic (type declarations):      00:00:00.017725458 ( 179.45MB)
-Semantic (abstract def check):     00:00:00.007331291 ( 195.45MB)
-Semantic (restrictions augmenter): 00:00:00.006174250 ( 195.45MB)
-Semantic (ivars initializers):     00:00:00.012456209 ( 211.45MB)
-Semantic (cvars initializers):     00:00:00.101925250 ( 211.50MB)
-Semantic (main):                   00:00:00.283259791 ( 371.62MB)
-Semantic (cleanup):                00:00:00.000385375 ( 371.62MB)
-Semantic (recursive struct check): 00:00:00.000574250 ( 371.62MB)
-Codegen (crystal):                 00:00:00.318639083 ( 387.88MB)
-Codegen (bc+obj):                  00:00:00.090703209 ( 387.88MB)
-Codegen (linking):                 00:00:00.100725000 ( 387.88MB)
+Parse:                             00:00:00.000053291 (   1.17MB)
+Semantic (top level):              00:00:00.323534167 ( 163.45MB)
+Semantic (new):                    00:00:00.001705500 ( 163.45MB)
+Semantic (type declarations):      00:00:00.018311958 ( 179.45MB)
+Semantic (abstract def check):     00:00:00.007766750 ( 195.45MB)
+Semantic (restrictions augmenter): 00:00:00.005686667 ( 195.45MB)
+Semantic (ivars initializers):     00:00:00.011239792 ( 211.45MB)
+Semantic (cvars initializers):     00:00:00.100870833 ( 211.50MB)
+Semantic (main):                   00:00:00.285426750 ( 371.62MB)
+Semantic (cleanup):                00:00:00.000369875 ( 371.62MB)
+Semantic (recursive struct check): 00:00:00.000570917 ( 371.62MB)
+Codegen (crystal):                 00:00:00.317534875 ( 387.88MB)
+Codegen (bc+obj):                  00:00:00.097321417 ( 387.88MB)
+Codegen (linking):                 00:00:00.095931000 ( 387.88MB)
 
 Codegen (bc+obj):
  - all previous .o files were reused
 Building: benchmark
-Parse:                             00:00:00.000210708 (   1.17MB)
-Semantic (top level):              00:00:00.259058375 ( 147.78MB)
-Semantic (new):                    00:00:00.000878709 ( 147.78MB)
-Semantic (type declarations):      00:00:00.012123625 ( 147.78MB)
-Semantic (abstract def check):     00:00:00.032016792 ( 147.78MB)
-Semantic (restrictions augmenter): 00:00:00.004018334 ( 147.78MB)
-Semantic (ivars initializers):     00:00:00.006835041 ( 147.78MB)
-Semantic (cvars initializers):     00:00:00.031038959 ( 195.78MB)
-Semantic (main):                   00:00:00.157428625 ( 243.83MB)
-Semantic (cleanup):                00:00:00.000264416 ( 243.83MB)
-Semantic (recursive struct check): 00:00:00.000380166 ( 243.83MB)
-Codegen (crystal):                 00:00:00.079188459 ( 259.83MB)
-Codegen (bc+obj):                  00:00:04.807389083 ( 259.83MB)
-Codegen (linking):                 00:00:00.098161042 ( 259.83MB)
+Parse:                             00:00:00.000228500 (   1.17MB)
+Semantic (top level):              00:00:00.242174458 ( 147.78MB)
+Semantic (new):                    00:00:00.000863333 ( 147.78MB)
+Semantic (type declarations):      00:00:00.011527792 ( 147.78MB)
+Semantic (abstract def check):     00:00:00.031242333 ( 147.78MB)
+Semantic (restrictions augmenter): 00:00:00.003593583 ( 147.78MB)
+Semantic (ivars initializers):     00:00:00.006753667 ( 147.78MB)
+Semantic (cvars initializers):     00:00:00.028373834 ( 195.78MB)
+Semantic (main):                   00:00:00.152039542 ( 243.83MB)
+Semantic (cleanup):                00:00:00.000249084 ( 243.83MB)
+Semantic (recursive struct check): 00:00:00.000460417 ( 243.83MB)
+Codegen (crystal):                 00:00:00.075461000 ( 259.83MB)
+Codegen (bc+obj):                  00:00:04.834914333 ( 259.83MB)
+Codegen (linking):                 00:00:00.119920416 ( 259.83MB)
 
 Codegen (bc+obj):
  - no previous .o files were reused
-1762068874 ~/p/bit> shards run benchmark
 Dependencies are satisfied
 Building: benchmark
 Executing: benchmark
-Starting application: ./bit...
-Application output will be saved to: app_output.log
-Application started with PID: 12693
-Checking if server is ready at http://localhost:4000...
-.Server is ready!
-Seeding database...
+Cleaning up benchmark database...
+Deleted existing database: ./sqlite/data.benchmark.db
+Database cleanup completed.
+Running database migrations...
+Migrating db, current version: 0, target: 20250319192003
+OK   20240512214223_create_links.sql
+OK   20240512225208_add_slug_index_to_links.sql
+OK   20240513115731_create_users.sql
+OK   20240513130054_add_api_key_index_to_users.sql
+OK   20240711224103_create_clicks.sql
+OK   20240714215409_update_slug_size_links.sql
+OK   20250316102350_add_country_to_clicks.sql
+OK   20250316111734_replace_unkwown_with_null.sql
+OK   20250318072657_replace_slug_index_with_covering_index.sql
+OK   20250319192003_convert_all_tables_text_ids_to_integer.sql
+Migrations completed successfully.
+Seeding benchmark database...
 Database seeded successfully.
-Fetching links from API...
-Selected link: http://localhost:4000/slug9623
-
-Starting benchmark with 100000 requests...
-Bombarding http://localhost:4000/slug9623 with 100000 request(s) using 125 connection(s)
- 100000 / 100000 [===============================================================================================================================================================================================] 100.00% 11079/s 9s
-Done!
-Statistics        Avg      Stdev        Max
-  Reqs/sec     11361.35    8907.62   28610.94
-  Latency       11.09ms     6.66ms    52.76ms
-  Latency Distribution
-     50%     1.93ms
-     75%     3.12ms
-     90%    39.47ms
-     95%    40.07ms
-     99%    42.60ms
-  HTTP codes:
-    1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
-    others - 0
-  Throughput:     3.06MB/s
-
-Benchmark completed successfully.
-
-**** Resource Usage Statistics ****
-  Measurements: 12
-  Average CPU Usage: 73.94%
-  Average Memory Usage: 42.45 MiB
-  Peak CPU Usage: 100.0%
-  Peak Memory Usage: 56.02 MiB
-
-**** Files Generated ****
-  Resource stats: resource_usage.log
-  Application log: app_output.log
-
-Stopping application...
-Application stopped.
-```
-
-- Second run
-
-```
-1762068874 ~/p/bit> shards run benchmark
-Dependencies are satisfied
-Building: benchmark
-Executing: benchmark
 Starting application: ./bit...
 Application output will be saved to: app_output.log
-Application started with PID: 12693
-Checking if server is ready at http://localhost:4000...
+Application started with PID: 11638
+Using database: ./sqlite/data.benchmark.db
+Checking if server is ready at http://localhost:4001...
 .Server is ready!
-Seeding database...
-Database seeded successfully.
 Fetching links from API...
-Selected link: http://localhost:4000/slug9623
+Selected link: http://localhost:4001/slug9391
 
 Starting benchmark with 100000 requests...
-Bombarding http://localhost:4000/slug9623 with 100000 request(s) using 125 connection(s)
- 100000 / 100000 [===============================================================================================================================================================================================] 100.00% 11079/s 9s
+Bombarding http://localhost:4001/slug9391 with 100000 request(s) using 125 connection(s)
+ 100000 / 100000 [============================================================================] 100.00% 11078/s 9s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec     11361.35    8907.62   28610.94
-  Latency       11.09ms     6.66ms    52.76ms
+  Reqs/sec     11427.28    8889.68   30270.91
+  Latency       11.02ms     6.55ms    53.91ms
   Latency Distribution
-     50%     1.93ms
-     75%     3.12ms
-     90%    39.47ms
-     95%    40.07ms
-     99%    42.60ms
+     50%     1.85ms
+     75%     5.37ms
+     90%    39.36ms
+     95%    39.87ms
+     99%    42.66ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:     3.06MB/s
+  Throughput:     3.08MB/s
 
 Benchmark completed successfully.
 
 **** Resource Usage Statistics ****
   Measurements: 12
-  Average CPU Usage: 73.94%
-  Average Memory Usage: 42.45 MiB
+  Average CPU Usage: 71.5%
+  Average Memory Usage: 39.8 MiB
   Peak CPU Usage: 100.0%
-  Peak Memory Usage: 56.02 MiB
+  Peak Memory Usage: 53.41 MiB
 
 **** Files Generated ****
   Resource stats: resource_usage.log
   Application log: app_output.log
-
-Stopping application...
-Application stopped.
-1762068900 ~/p/bit> shards run benchmark
-Dependencies are satisfied
-Building: benchmark
-Executing: benchmark
-Starting application: ./bit...
-Application output will be saved to: app_output.log
-Application started with PID: 18421
-Checking if server is ready at http://localhost:4000...
-.Server is ready!
-Seeding database...
-Runtime error near line 1: UNIQUE constraint failed: users.api_key (19)
-Runtime error near line 7: UNIQUE constraint failed: links.slug (19)
-Warning: Database seeding failed. Continuing anyway...
-Fetching links from API...
-Selected link: http://localhost:4000/slug5911
-
-Starting benchmark with 100000 requests...
-Bombarding http://localhost:4000/slug5911 with 100000 request(s) using 125 connection(s)
- 100000 / 100000 [===============================================================================================================================================================================================] 100.00% 11080/s 9s
-Done!
-Statistics        Avg      Stdev        Max
-  Reqs/sec     11213.27    8842.12   29594.78
-  Latency       11.24ms     6.87ms    43.66ms
-  Latency Distribution
-     50%     1.96ms
-     75%     3.01ms
-     90%    40.02ms
-     95%    41.06ms
-     99%    42.58ms
-  HTTP codes:
-    1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
-    others - 0
-  Throughput:     3.02MB/s
-
-Benchmark completed successfully.
-
-**** Resource Usage Statistics ****
-  Measurements: 12
-  Average CPU Usage: 74.28%
-  Average Memory Usage: 32.18 MiB
-  Peak CPU Usage: 100.0%
-  Peak Memory Usage: 40.88 MiB
-
-**** Files Generated ****
-  Resource stats: resource_usage.log
-  Application log: app_output.log
+  Database: ./sqlite/data.benchmark.db
 
 Stopping application...
 Application stopped.
