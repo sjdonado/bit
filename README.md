@@ -8,7 +8,7 @@
 - Includes `X-Forwarded-For` header.
 - Multiple users are supported via API key authentication. Create, list and delete keys via the [CLI](docs/SETUP.md#cli).
 - Easy to extend, Ruby on Rails inspired setup.
-- Auto update UA regexes and GeoLite2 database
+- Auto update UA regexes and GeoLite2 database.
 
 ## Why bit?
 
@@ -22,7 +22,7 @@
 
 ## Run It Anywhere
 
-Images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
+All images available on [Docker Hub](https://hub.docker.com/r/sjdonado/bit/tags).
 
 ### Docker
 

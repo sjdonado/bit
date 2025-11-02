@@ -1,9 +1,44 @@
 .git
-/bin/
-/.shards/
-/spec/
-/sqlite/
+.gitignore
+.github
 
+/bin/
+/bit
+/cli
+/benchmark
+*.dwarf
+*.o
+*.a
+
+# Dependencies cache
+/.shards/
+/lib/.shards/
+
+/spec/
+
+# Database files (should be mounted as volumes)
+/sqlite/
+*.db
+*.db-shm
+*.db-wal
+
+# Logs and temporary files
+*.log
+
+# Documentation
 /docs/
-benchmark.cr
+*.md
+README.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+DOCKER_MIGRATION.md
+
+# Development environment
 .env*
+.editorconfig
+
+# Docker files (not needed inside image)
+Dockerfile
+docker-compose.yml
+.dockerignore
