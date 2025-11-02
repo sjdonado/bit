@@ -11,16 +11,14 @@ info:
     ## Authentication
     
     Multiple users are supported via `X-Api-Key` headers. Create, list and delete keys via the [CLI](https://github.com/sjdonado/bit/blob/master/SETUP.md#cli).
-  version: 1.0.0
+  version: 1.6.0
   contact:
-    name: API Support
-    url: https://github.com/sjdonado/bit
+    name: Juan Rodriguez Donado
+    url: https://sjdonado.com
 
 servers:
   - url: http://localhost:4000
     description: Development server
-  - url: http://localhost:4001
-    description: Benchmark server
 
 security:
   - ApiKeyAuth: []
