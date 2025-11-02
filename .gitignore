@@ -7,4 +7,5 @@
 /sqlite/
 .env.production
 
-resource_usage.*
+*.log
+bit
