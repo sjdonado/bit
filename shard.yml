@@ -2,7 +2,7 @@ name: bit
 version: 1.6.0
 
 authors:
-  - Juan Rodriguez Ronado <@sjdonado>
+  - Juan Rodriguez Donado <@sjdonado>
 
 targets:
   bit:

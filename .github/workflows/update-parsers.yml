@@ -1,0 +1,63 @@
+name: Update Parsers
+
+on:
+  schedule:
+    # Run every two weeks on Sunday at 00:00 UTC (1st and 3rd Sunday of each month)
+    - cron: '0 0 1-7,15-21 * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-parsers:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+
+      - name: Install dependencies
+        run: shards install
+
+      - name: Build CLI
+        run: crystal build scripts/cli.cr -o cli
+
+      - name: Update parsers
+        run: ./cli --update-parsers
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update parsers'
+          title: 'chore: Update UA regexes and GeoLite2 database'
+          body: |
+            ## Automated Parser Update
+
+            This PR updates the following data files:
+            - User Agent parsing regexes
+            - GeoLite2 database
+
+            **Triggered by**: Scheduled workflow (runs every 2 weeks)
+            **Date**: ${{ github.event.repository.updated_at }}
+
+            Please review the changes and merge if everything looks good.
+          branch: automated/update-parsers
+          delete-branch: true
+          labels: |
+            dependencies
+            automated

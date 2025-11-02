@@ -73,7 +73,7 @@ module App::Services::Cli
     end
   end
 
-  def self.download_geolite_db
+  def self.update_geolite_db
     puts "Downloading GeoLite2 Country database..."
 
     FileUtils.mkdir_p("data")
