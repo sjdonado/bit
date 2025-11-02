@@ -15,7 +15,7 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
-      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String | Int64)))).from_json(response.body)
       parsed_response["data"]["origin"].should eq(payload["url"])
     end
 
@@ -87,11 +87,10 @@ describe "App::Controllers::Link" do
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
-      serialized_link = App::Serializers::Link.new(test_link)
 
       user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
 
-      get(serialized_link.refer, headers: HTTP::Headers{
+      get("/#{test_link.slug}", headers: HTTP::Headers{
         "X-Api-Key" => test_user.api_key.to_s,
         "User-Agent" => user_agent
       })
@@ -106,12 +105,11 @@ describe "App::Controllers::Link" do
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
-      serialized_link = App::Serializers::Link.new(test_link)
 
       user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
       referer = "https://example.com/page"
 
-      get(serialized_link.refer, headers: HTTP::Headers{
+      get("/#{test_link.slug}", headers: HTTP::Headers{
         "User-Agent" => user_agent,
         "Referer" => referer
       })
@@ -121,7 +119,7 @@ describe "App::Controllers::Link" do
       response.headers["Location"].should eq(link)
 
       # Verify that the click was recorded
-      updated_test_link = get_test_link(test_link.id)
+      updated_test_link = get_test_link(test_link.id.not_nil!)
       updated_test_link.clicks.size.should eq(test_link.clicks.size + 1)
 
       # Verify click details
@@ -137,14 +135,16 @@ describe "App::Controllers::Link" do
       test_user = create_test_user()
 
       test_link = create_test_link(test_user, link)
-      serialized_link = App::Serializers::Link.new(test_link)
 
       # Add utm_source parameter
-      get("#{serialized_link.refer}?utm_source=email_campaign")
+      user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0"
+      get("/#{test_link.slug}?utm_source=email_campaign", headers: HTTP::Headers{
+        "User-Agent" => user_agent
+      })
 
-      Fiber.yield
+      sleep 0.2.seconds # Wait for async click creation
 
-      updated_test_link = get_test_link(test_link.id)
+      updated_test_link = get_test_link(test_link.id.not_nil!)
       latest_click = updated_test_link.clicks.last
       latest_click.referer.should eq("email_campaign")
     end
@@ -152,7 +152,7 @@ describe "App::Controllers::Link" do
     it "should return 404 - link does not exist" do
       test_user = create_test_user()
 
-      get("https://localhost:4001/R4kj2")
+      get("/R4kj2")
 
       expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
@@ -171,7 +171,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String?)).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
 
       # Check that each link is in the response data
       origins = parsed_response["data"].as(Array).map { |link| link["origin"] }
@@ -191,7 +191,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links?limit=2", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String?)).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
       parsed_response["data"].as(Array).size.should eq(2)
       parsed_response["pagination"].as(Hash)["has_more"].should be_true
       parsed_response["pagination"].as(Hash)["next"].should_not be_nil
@@ -206,12 +206,12 @@ describe "App::Controllers::Link" do
 
       # Get first page
       get("/api/links?limit=2", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-      first_page = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String?)).from_json(response.body)
+      first_page = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
       cursor = first_page["pagination"].as(Hash)["next"]
 
       # Get second page using cursor
       get("/api/links?limit=2&cursor=#{cursor}", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-      second_page = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String?)).from_json(response.body)
+      second_page = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
 
       # Ensure different links are returned
       first_page_ids = first_page["data"].as(Array).map { |link| link["id"] }
@@ -234,7 +234,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String?)).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
       parsed_response["data"].as(Array).size.should eq(3)
 
       origins = parsed_response["data"].as(Array).map { |link| link["origin"] }
@@ -265,7 +265,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links/#{test_link.id}", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String | Int64)))).from_json(response.body)
       parsed_response["data"]["origin"].should eq(link)
       parsed_response["data"]["clicks"].as(Array).size.should eq(100)
     end
@@ -273,7 +273,7 @@ describe "App::Controllers::Link" do
     it "should return 404 - link does not exist" do
       test_user = create_test_user()
 
-      get("/api/links/1", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+      get("/api/links/999999", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
       expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
@@ -301,7 +301,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links/#{test_link.id}/clicks", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String)) | Hash(String, Bool | String?)).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
       parsed_response["data"].as(Array).size.should eq(5)
       parsed_response["pagination"].as(Hash)["has_more"].should be_false
     end
@@ -317,7 +317,7 @@ describe "App::Controllers::Link" do
 
       get("/api/links/#{test_link.id}/clicks?limit=3", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
-      parsed_response = Hash(String, Array(Hash(String, String)) | Hash(String, Bool | String?)).from_json(response.body)
+      parsed_response = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
       parsed_response["data"].as(Array).size.should eq(3)
       parsed_response["pagination"].as(Hash)["has_more"].should be_true
       parsed_response["pagination"].as(Hash)["next"].should_not be_nil
@@ -334,12 +334,12 @@ describe "App::Controllers::Link" do
 
       # Get first page
       get("/api/links/#{test_link.id}/clicks?limit=3", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-      first_page = Hash(String, Array(Hash(String, String)) | Hash(String, Bool | String?)).from_json(response.body)
+      first_page = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
       cursor = first_page["pagination"].as(Hash)["next"]
 
       # Get second page using cursor
       get("/api/links/#{test_link.id}/clicks?limit=3&cursor=#{cursor}", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
-      second_page = Hash(String, Array(Hash(String, String)) | Hash(String, Bool | String?)).from_json(response.body)
+      second_page = Hash(String, Array(Hash(String, String | Int64)) | Hash(String, Bool | String? | Int64?)).from_json(response.body)
 
       # Ensure different clicks are returned
       first_page_ids = first_page["data"].as(Array).map { |click| click["id"] }
@@ -352,7 +352,7 @@ describe "App::Controllers::Link" do
     it "should return 404 - link does not exist" do
       test_user = create_test_user()
 
-      get("/api/links/nonexistent_id/clicks", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+      get("/api/links/999999/clicks", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
       expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
@@ -381,7 +381,7 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
-      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String | Int64)))).from_json(response.body)
       parsed_response["data"]["origin"].should eq(payload["url"])
     end
 
@@ -390,7 +390,7 @@ describe "App::Controllers::Link" do
 
       payload = {"url" => "https://kagi.com.co"}
       put(
-        "/api/links/1",
+        "/api/links/999999",
         headers: HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => test_user.api_key.to_s},
         body: payload.to_json
       )
@@ -428,7 +428,7 @@ describe "App::Controllers::Link" do
     it "should return 404 - link does not exist" do
       test_user = create_test_user()
 
-      delete("/api/links/1", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+      delete("/api/links/999999", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
 
       expected = {"error" => "Resource not found"}.to_json
       response.status_code.should eq(404)
