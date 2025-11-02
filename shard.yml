@@ -1,5 +1,5 @@
 name: bit
-version: 1.5.3
+version: 1.6.0
 
 authors:
   - Juan Rodriguez Ronado <@sjdonado>
@@ -32,6 +32,6 @@ development_dependencies:
   spec-kemal:
     github: kemalcr/spec-kemal
 
-crystal: ">= 1.12.1"
+crystal: ">= 1.18.2"
 
 license: MIT
