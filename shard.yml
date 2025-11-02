@@ -1,18 +1,21 @@
 name: bit
-version: 1.5.3
+version: 1.6.0
 
 authors:
-  - Juan Rodriguez <sjdonado@icloud.com>
+  - Juan Rodriguez Donado <@sjdonado>
 
 targets:
   bit:
     main: bit.cr
   cli:
     main: scripts/cli.cr
+  benchmark:
+    main: scripts/benchmark.cr
 
 dependencies:
   kemal:
     github: kemalcr/kemal
+    version: 1.7.3
   sqlite3:
     github: crystal-lang/crystal-sqlite3
   crecto:
@@ -29,6 +32,6 @@ development_dependencies:
   spec-kemal:
     github: kemalcr/spec-kemal
 
-crystal: ">= 1.12.1"
+crystal: ">= 1.18.2"
 
 license: MIT

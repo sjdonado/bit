@@ -1,0 +1,496 @@
+openapi: 3.1.0
+info:
+  title: Bit - URL Shortener API
+  description: A high-performance URL shortener service with click tracking and analytics
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://github.com/sjdonado/bit
+
+servers:
+  - url: http://localhost:4000
+    description: Development server
+  - url: http://localhost:4001
+    description: Benchmark server
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /api/ping:
+    get:
+      summary: Ping the API
+      description: Health check endpoint to verify the API is running
+      operationId: ping
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    example: pong
+
+  /{slug}:
+    get:
+      summary: Redirect by slug
+      description: Redirects to the original URL and tracks the click asynchronously
+      operationId: redirectBySlug
+      tags:
+        - Redirects
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: The short URL slug
+          schema:
+            type: string
+            example: 3wP4BQ
+        - name: utm_source
+          in: query
+          required: false
+          description: UTM source parameter for tracking
+          schema:
+            type: string
+            example: email_campaign
+      responses:
+        '301':
+          description: Redirect to original URL
+          headers:
+            Location:
+              description: The original URL
+              schema:
+                type: string
+                example: https://example.com
+            X-Forwarded-For:
+              description: Client IP address
+              schema:
+                type: string
+            User-Agent:
+              description: User agent string
+              schema:
+                type: string
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/links:
+    get:
+      summary: List all links
+      description: Retrieve all links for the authenticated user with pagination support
+      operationId: listLinks
+      tags:
+        - Links
+      parameters:
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+        - name: cursor
+          in: query
+          description: Pagination cursor from previous response
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of links
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LinkSummary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create new link
+      description: Create a new shortened link
+      operationId: createLink
+      tags:
+        - Links
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The URL to shorten
+                  example: https://example.com
+      responses:
+        '201':
+          description: Link created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Link'
+        '400':
+          description: Bad request - invalid URL or missing field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingField:
+                  value:
+                    error: "url: Required field"
+                invalidUrl:
+                  value:
+                    errors:
+                      url:
+                        - is invalid
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/links/{id}:
+    get:
+      summary: Get link by ID
+      description: Retrieve a specific link with up to 100 most recent clicks. For complete click history, use /api/links/{id}/clicks
+      operationId: getLink
+      tags:
+        - Links
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Link ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Link details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Link'
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update link
+      description: Update the URL of an existing link
+      operationId: updateLink
+      tags:
+        - Links
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Link ID
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The new URL
+                  example: https://newexample.com
+      responses:
+        '200':
+          description: Link updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Link'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - link belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete link
+      description: Delete a link and all its associated clicks
+      operationId: deleteLink
+      tags:
+        - Links
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Link ID
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Link deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - link belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/links/{id}/clicks:
+    get:
+      summary: List clicks for a link
+      description: Retrieve all clicks for a specific link with pagination support
+      operationId: listClicks
+      tags:
+        - Clicks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Link ID
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+        - name: cursor
+          in: query
+          description: Pagination cursor from previous response
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of clicks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Click'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: API key for authentication
+
+  schemas:
+    LinkSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique link identifier
+          example: 1
+        refer:
+          type: string
+          format: uri
+          description: The shortened URL
+          example: http://localhost:4000/3wP4BQ
+        origin:
+          type: string
+          format: uri
+          description: The original URL
+          example: https://monocuco.donado.co
+
+    Link:
+      allOf:
+        - $ref: '#/components/schemas/LinkSummary'
+        - type: object
+          properties:
+            clicks:
+              type: array
+              description: Array of click records (up to 100 most recent)
+              items:
+                $ref: '#/components/schemas/Click'
+
+    Click:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique click identifier
+          example: 1
+        user_agent:
+          type: string
+          description: User agent string
+          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0
+        country:
+          type: string
+          nullable: true
+          description: Country code (ISO 3166-1 alpha-2)
+          example: US
+        browser:
+          type: string
+          nullable: true
+          description: Browser name
+          example: Firefox
+        os:
+          type: string
+          nullable: true
+          description: Operating system
+          example: Mac OS X
+        referer:
+          type: string
+          nullable: true
+          description: Referer domain or utm_source
+          example: Direct
+        created_at:
+          type: string
+          format: date-time
+          description: Click timestamp
+          example: 2024-07-12T19:25:22Z
+
+    Pagination:
+      type: object
+      properties:
+        has_more:
+          type: boolean
+          description: Whether there are more results
+          example: true
+        next:
+          type: integer
+          format: int64
+          nullable: true
+          description: Cursor for next page (link/click ID)
+          example: 12
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: Resource not found
+      required:
+        - error
+
+    ValidationErrors:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Field-level validation errors
+          example:
+            url:
+              - is invalid
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Redirects
+    description: URL redirection and click tracking
+  - name: Links
+    description: Link management operations
+  - name: Clicks
+    description: Click analytics and tracking

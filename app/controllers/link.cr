@@ -145,7 +145,7 @@ module App::Controllers
         "data" => items.map { |item| yield item },
         "pagination" => {
           "has_more" => has_more,
-          "next_cursor" => next_cursor
+          "next" => next_cursor
         }
       })
     end

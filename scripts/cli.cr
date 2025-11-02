@@ -21,7 +21,7 @@ OptionParser.parse do |parser|
   parser.on("--update-parsers", "Download UA regexes and/or GeoLite2 database") do
     puts "=== Starting data files update ==="
     App::Services::Cli.update_uap_regexes
-    App::Services::Cli.download_geolite_db
+    App::Services::Cli.update_geolite_db
     puts "=== Data files updated successfully ==="
     exit
   end

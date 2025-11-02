@@ -23,7 +23,7 @@ module App::Lib
       missing_fields = required_fields.reject { |field| json_params.has_key?(field) }
 
       unless missing_fields.empty?
-        error_message = missing_fields.join(", ") + " required"
+        error_message = "#{missing_fields.first}: Required field"
         raise App::BadRequestException.new(@env, error_message)
       end
 
