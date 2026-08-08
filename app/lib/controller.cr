@@ -17,7 +17,8 @@ module App::Lib
     end
 
     protected def parse_body(required_fields : Array(String) = [] of String)
-      json_params = @env.params.json.try(&.to_h) || {} of String => JSON::Any
+      raw_body = @env.params.raw_body
+      json_params = raw_body.empty? ? {} of String => JSON::Any : JSON.parse(raw_body).as_h
       json_params = json_params.transform_values(&.to_s) # Convert JSON::Any to String
 
       missing_fields = required_fields.reject { |field| json_params.has_key?(field) }
@@ -28,6 +29,8 @@ module App::Lib
       end
 
       json_params
+    rescue JSON::ParseException | TypeCastError
+      raise App::BadRequestException.new(@env, "Invalid JSON body")
     end
 
     protected def render_json(data, status_code : Int32 = 200)

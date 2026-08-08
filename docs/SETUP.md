@@ -44,6 +44,9 @@ shards run cli -- --create-user=Admin
 
 ```bash
 ENV=test crystal spec
+
+ENV=production shards build bit --release --no-debug
+crystal spec e2e
 ```
 
 ## Benchmark
@@ -59,7 +62,7 @@ Optional environment variables: `BENCHMARK_REQUESTS`, `BENCHMARK_CONNECTIONS`, a
 
 ### Output
 
-Chip: Apple M4 Pro. Memory: 24GB. Crystal: 1.21.0.
+Machine: 10-core Apple M5 MacBook Pro. Memory: 32GB. macOS: 26.5.2. Crystal: 1.21.0.
 
 ```
 Starting benchmark with 100000 requests using 125 connections...

@@ -81,6 +81,16 @@ def get_test_link(link_id : Int64)
   link
 end
 
+def wait_for_clicks(link_id : Int64, expected : Int32)
+  20.times do
+    link = get_test_link(link_id)
+    return link if link.clicks.size >= expected
+    sleep 0.05.seconds
+  end
+
+  get_test_link(link_id)
+end
+
 def delete_test_link(link_id : Int64)
   App::Lib::Database.raw_exec("DELETE FROM links WHERE id = (?)", link_id) # tempfix: Database.delete does not work
 end

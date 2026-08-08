@@ -116,7 +116,9 @@ paths:
           in: query
           description: Pagination cursor from previous response
           schema:
-            type: string
+            type: integer
+            format: int64
+            minimum: 1
       responses:
         '200':
           description: List of links
@@ -131,6 +133,12 @@ paths:
                       $ref: '#/components/schemas/LinkSummary'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Invalid pagination parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized
           content:
@@ -159,6 +167,15 @@ paths:
                   description: The URL to shorten
                   example: https://example.com
       responses:
+        '200':
+          description: Existing link returned for a duplicate URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Link'
         '201':
           description: Link created successfully
           content:
@@ -169,7 +186,7 @@ paths:
                   data:
                     $ref: '#/components/schemas/Link'
         '400':
-          description: Bad request - invalid URL or missing field
+          description: Malformed JSON or missing URL
           content:
             application/json:
               schema:
@@ -178,11 +195,12 @@ paths:
                 missingField:
                   value:
                     error: "url: Required field"
-                invalidUrl:
-                  value:
-                    errors:
-                      url:
-                        - is invalid
+        '422':
+          description: Invalid or duplicate URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrors'
         '401':
           description: Unauthorized
           content:
@@ -215,6 +233,12 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Link'
+        '400':
+          description: Invalid link ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Link not found
           content:
@@ -284,6 +308,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '422':
+          description: Invalid or duplicate URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrors'
         '404':
           description: Link not found
           content:
@@ -308,6 +338,12 @@ paths:
       responses:
         '204':
           description: Link deleted successfully
+        '400':
+          description: Invalid link ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized
           content:
@@ -354,7 +390,9 @@ paths:
           in: query
           description: Pagination cursor from previous response
           schema:
-            type: string
+            type: integer
+            format: int64
+            minimum: 1
       responses:
         '200':
           description: List of clicks
@@ -369,6 +407,12 @@ paths:
                       $ref: '#/components/schemas/Click'
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Invalid link ID or pagination parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized
           content:
@@ -433,6 +477,7 @@ components:
           type: string
           description: User agent string
           example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0
+          nullable: true
         country:
           type: string
           description: Country code (ISO 3166-1 alpha-2)
