@@ -11,7 +11,7 @@
 
 ## Why bit?
 
-**Fast:** **3.5k req/sec**, latency 36ms, 41MiB avg memory usage with all clicks recorded (100k requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
+**Fast:** **3.9k req/sec**, latency 32ms, 41MiB avg memory usage with all clicks recorded (100k requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
 
 **Lightweight:** Minimal dependencies, image size under 20 MiB, memory usage under 60 MiB at peak.
 

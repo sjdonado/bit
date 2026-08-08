@@ -4,9 +4,14 @@ require "semantic_version"
 module App::Lib
   struct UserAgent
     REGEXES_PATH = "data/uap_core_regexes.yaml"
+    CACHE_SIZE   = 1024
+    MAX_CACHE_KEY_SIZE = 512
+
+    alias ParseResult = Tuple(String?, SemanticVersion?, Nil, Tuple(String?, SemanticVersion)?)
 
     @@regexes_cache : YAML::Any? = nil
     @@compiled_regexes = {} of String => Array(Tuple(Regex, YAML::Any))
+    @@parse_cache = {} of String => ParseResult
     @@mutex = Mutex.new
 
     private def self.load_regexes
@@ -44,6 +49,10 @@ module App::Lib
 
     def self.parse(user_agent_string : String)
       return {nil, nil, nil, nil} if user_agent_string.empty?
+      cacheable = user_agent_string.bytesize <= MAX_CACHE_KEY_SIZE
+      if cacheable && (cached = @@mutex.synchronize { @@parse_cache[user_agent_string]? })
+        return cached
+      end
 
       # Load regexes only once and cache them
       load_regexes
@@ -90,7 +99,14 @@ module App::Lib
         break
       end
 
-      {family, version, nil, os}
+      result = {family, version, nil, os}
+      if cacheable
+        @@mutex.synchronize do
+          @@parse_cache.clear if @@parse_cache.size >= CACHE_SIZE
+          @@parse_cache[user_agent_string] = result
+        end
+      end
+      result
     end
   end
 end
