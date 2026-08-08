@@ -64,28 +64,28 @@ Chip: Apple M4 Pro. Memory: 24GB. Crystal: 1.21.0.
 ```
 Starting benchmark with 100000 requests using 125 connections...
 Statistics        Avg      Stdev        Max
-  Reqs/sec      3939.43    1358.64    6784.10
-  Latency       31.87ms      3.66ms      67.04ms
+  Reqs/sec      4059.44    1420.08    6791.75
+  Latency       30.94ms      3.95ms      92.38ms
   Latency Distribution
-     50%    32.07ms
-     75%    33.55ms
-     90%    35.06ms
-     95%    36.29ms
-     99%    45.38ms
+     50%    31.30ms
+     75%    32.39ms
+     90%    33.46ms
+     95%    34.25ms
+     99%    39.22ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:     1.27MB/s
+  Throughput:     1.31MB/s
 
 Click tracking drained: 100000/100000 clicks recorded.
 Benchmark completed successfully.
 
 **** Resource Usage Statistics ****
-  Measurements: 29
-  Average CPU Usage: 68.7%
-  Average Memory Usage: 40.77 MiB
-  Peak CPU Usage: 79.8%
-  Peak Memory Usage: 46.8 MiB
+  Measurements: 28
+  Average CPU Usage: 68.39%
+  Average Memory Usage: 40.65 MiB
+  Peak CPU Usage: 78.2%
+  Peak Memory Usage: 47.02 MiB
 ```
 
 The benchmark validates that every redirect's asynchronous click record reaches SQLite. Earlier results measured redirect responses without verifying click delivery and are not directly comparable.
