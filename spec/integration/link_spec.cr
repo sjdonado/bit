@@ -15,6 +15,7 @@ describe "App::Controllers::Link" do
         body: payload.to_json
       )
 
+      response.status_code.should eq(201)
       parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String | Int64)))).from_json(response.body)
       parsed_response["data"]["origin"].should eq(payload["url"])
     end
@@ -39,6 +40,7 @@ describe "App::Controllers::Link" do
       )
 
       second_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String)))).from_json(response.body)
+      response.status_code.should eq(200)
       second_response["data"]["origin"].should eq(payload["url"])
       second_response["data"]["id"].should eq(first_response["data"]["id"])
     end
@@ -54,6 +56,7 @@ describe "App::Controllers::Link" do
       )
 
       expected = {"error" => "url: Required field"}.to_json
+      response.status_code.should eq(400)
       response.body.should eq(expected)
     end
 
@@ -68,6 +71,7 @@ describe "App::Controllers::Link" do
       )
 
       expected = {"errors" => {"url" => ["is invalid"]}}.to_json
+      response.status_code.should eq(422)
       response.body.should eq(expected)
     end
 
@@ -82,7 +86,7 @@ describe "App::Controllers::Link" do
   end
 
   describe "Index" do
-    it "should redirect to origin domain with forwarded headers" do
+    it "should redirect with forwarded headers without caching" do
       link = "https://test.com"
       test_user = create_test_user()
 
@@ -96,6 +100,7 @@ describe "App::Controllers::Link" do
       })
 
       response.headers["Location"].should eq(link)
+      response.headers["Cache-Control"].should eq("private, no-store")
       response.headers["User-Agent"].should eq(user_agent)
       response.headers.has_key?("X-Forwarded-For").should be_true
     end
@@ -114,12 +119,10 @@ describe "App::Controllers::Link" do
         "Referer" => referer
       })
 
-      Fiber.yield # replace yield with sleep 5 to debug errors
-
       response.headers["Location"].should eq(link)
 
       # Verify that the click was recorded
-      updated_test_link = get_test_link(test_link.id.not_nil!)
+      updated_test_link = wait_for_clicks(test_link.id.not_nil!, test_link.clicks.size + 1)
       updated_test_link.clicks.size.should eq(test_link.clicks.size + 1)
 
       # Verify click details
@@ -142,9 +145,7 @@ describe "App::Controllers::Link" do
         "User-Agent" => user_agent
       })
 
-      sleep 0.2.seconds # Wait for async click creation
-
-      updated_test_link = get_test_link(test_link.id.not_nil!)
+      updated_test_link = wait_for_clicks(test_link.id.not_nil!, 1)
       latest_click = updated_test_link.clicks.last
       latest_click.referer.should eq("email_campaign")
     end
@@ -195,6 +196,15 @@ describe "App::Controllers::Link" do
       parsed_response["data"].as(Array).size.should eq(2)
       parsed_response["pagination"].as(Hash)["has_more"].should be_true
       parsed_response["pagination"].as(Hash)["next"].should_not be_nil
+    end
+
+    it "should reject invalid pagination limits" do
+      test_user = create_test_user()
+
+      get("/api/links?limit=1001", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+
+      response.status_code.should eq(400)
+      response.body.should eq({"error" => "limit must be between 1 and 1000"}.to_json)
     end
 
     it "should support cursor-based pagination" do
@@ -382,6 +392,7 @@ describe "App::Controllers::Link" do
       )
 
       parsed_response = Hash(String, Hash(String, String | Int64 | Array(Hash(String, String | Int64)))).from_json(response.body)
+      response.status_code.should eq(200)
       parsed_response["data"]["origin"].should eq(payload["url"])
     end
 

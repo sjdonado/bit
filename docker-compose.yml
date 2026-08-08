@@ -4,12 +4,12 @@ services:
     build: .
     environment:
       ENV: production
-      ADMIN_NAME: 'Tester'
-      ADMIN_API_KEY: '0p+mDvbpZGLPGVCXnV+EDduR9Blkv27Dhq9XSzSbdQY='
+      ADMIN_NAME: ${ADMIN_NAME:-Admin}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:?ADMIN_API_KEY must be set}
     ports:
       - 4000:4000
     volumes:
-      - sqlite_data:/app/sqlite
+      - sqlite_data:/usr/src/app/sqlite
 
 volumes:
   sqlite_data:

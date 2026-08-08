@@ -4,9 +4,14 @@ require "semantic_version"
 module App::Lib
   struct UserAgent
     REGEXES_PATH = "data/uap_core_regexes.yaml"
+    CACHE_SIZE   = 1024
+    MAX_CACHE_KEY_SIZE = 512
+
+    alias ParseResult = Tuple(String?, SemanticVersion?, Nil, Tuple(String?, SemanticVersion)?)
 
     @@regexes_cache : YAML::Any? = nil
     @@compiled_regexes = {} of String => Array(Tuple(Regex, YAML::Any))
+    @@parse_cache = {} of String => ParseResult
     @@mutex = Mutex.new
 
     private def self.load_regexes
@@ -17,7 +22,7 @@ module App::Lib
             @@regexes_cache = YAML.parse(regexes_yaml)
 
             # Pre-compile all regexes for better performance
-            ["user_agent_parsers", "os_parsers", "device_parsers"].each do |parser_type|
+            ["user_agent_parsers", "os_parsers"].each do |parser_type|
               @@compiled_regexes[parser_type] = [] of Tuple(Regex, YAML::Any)
 
               @@regexes_cache.not_nil![parser_type].as_a.each do |parser|
@@ -44,13 +49,16 @@ module App::Lib
 
     def self.parse(user_agent_string : String)
       return {nil, nil, nil, nil} if user_agent_string.empty?
+      cacheable = user_agent_string.bytesize <= MAX_CACHE_KEY_SIZE
+      if cacheable && (cached = @@mutex.synchronize { @@parse_cache[user_agent_string]? })
+        return cached
+      end
 
       # Load regexes only once and cache them
       load_regexes
 
       family = nil
       version = nil
-      device = nil
       os = nil
 
       @@compiled_regexes["user_agent_parsers"]?.try &.each do |regex_tuple|
@@ -91,33 +99,14 @@ module App::Lib
         break
       end
 
-      @@compiled_regexes["device_parsers"]?.try &.each do |regex_tuple|
-        regex, parser = regex_tuple
-        match = regex.match(user_agent_string)
-        next unless match
-
-        model = match[1]? || nil
-        device_name = model
-        brand = nil
-
-        # Apply replacements if defined
-        if device_replacement = parser["device_replacement"]?
-          device_name = device_replacement.as_s.gsub("$1", device_name.to_s)
+      result = {family, version, nil, os}
+      if cacheable
+        @@mutex.synchronize do
+          @@parse_cache.clear if @@parse_cache.size >= CACHE_SIZE
+          @@parse_cache[user_agent_string] = result
         end
-
-        if model_replacement = parser["model_replacement"]?
-          model = model_replacement.as_s.gsub("$1", model.to_s)
-        end
-
-        if brand_replacement = parser["brand_replacement"]?
-          brand = brand_replacement.as_s
-        end
-
-        device = {model, brand, device_name}
-        break
       end
-
-      {family, version, device, os}
+      result
     end
   end
 end

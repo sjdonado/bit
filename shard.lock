@@ -26,7 +26,7 @@ shards:
 
   kemal:
     git: https://github.com/kemalcr/kemal.git
-    version: 1.7.3
+    version: 1.12.0
 
   maxminddb:
     git: https://github.com/delef/maxminddb.cr.git
@@ -50,7 +50,7 @@ shards:
 
   spec-kemal:
     git: https://github.com/kemalcr/spec-kemal.git
-    version: 1.0.0
+    version: 1.3.0
 
   sqlite3:
     git: https://github.com/crystal-lang/crystal-sqlite3.git

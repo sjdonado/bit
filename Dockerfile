@@ -1,4 +1,4 @@
-FROM alpine:edge AS build
+FROM alpine:3.23 AS build
 
 ENV ENV=production
 WORKDIR /usr/src/app
@@ -17,7 +17,7 @@ COPY . .
 RUN shards install --production
 RUN shards build --release --no-debug --progress --stats
 
-FROM alpine:latest AS runtime
+FROM alpine:3.23 AS runtime
 
 ENV ENV=production
 WORKDIR /usr/src/app

@@ -2,8 +2,8 @@ require "./controllers/**"
 
 require "kemal"
 
-add_handler App::Middlewares::CORSHandler.new
-add_handler App::Middlewares::Auth.new
+use App::Middlewares::CORSHandler.new
+use App::Middlewares::Auth.new
 
 module App
   get "/:slug", &App::Controllers::ClickController.redirect_handler

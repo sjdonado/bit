@@ -46,7 +46,7 @@ module App::Controllers
     end
 
     def get
-      link_id = @env.params.url["id"].to_i64
+      link_id = link_id_param
 
       query = Database::Query.where(id: link_id, user_id: current_user_id).limit(1)
       link = Database.all(Link, query).first?
@@ -61,7 +61,7 @@ module App::Controllers
     end
 
     def list_clicks
-      link_id = @env.params.url["id"].to_i64
+      link_id = link_id_param
 
       # Verify link exists and belongs to user
       link_query = Database::Query.where(id: link_id, user_id: current_user_id).limit(1)
@@ -80,7 +80,7 @@ module App::Controllers
     end
 
     def update
-      id = @env.params.url["id"].to_i64
+      id = link_id_param
       body = parse_body(["url"])
       new_url = body["url"].to_s
 
@@ -89,6 +89,7 @@ module App::Controllers
 
       raise App::NotFoundException.new(@env) if link.nil?
       raise App::ForbiddenException.new(@env) if link.user_id != current_user_id
+      return render_json({"data" => App::Serializers::Link.new(link)}) if new_url == link.url
 
       # Check for existing URL
       existing_query = Database::Query.where(url: new_url, user_id: current_user_id).limit(1)
@@ -108,14 +109,18 @@ module App::Controllers
     end
 
     def delete
-      id = @env.params.url["id"].to_i64
+      id = link_id_param
 
       link = Database.get(Link, id)
       raise App::NotFoundException.new(@env) if !link
       raise App::ForbiddenException.new(@env) if link.user_id != current_user_id
 
-      result = Database.raw_exec("DELETE FROM links WHERE id = (?)", link.id)
-      if result.rows_affected == 0
+      rows_affected = 0_i64
+      Database.config.get_connection.transaction do |transaction|
+        transaction.connection.exec("DELETE FROM clicks WHERE link_id = (?)", link.id)
+        rows_affected = transaction.connection.exec("DELETE FROM links WHERE id = (?)", link.id).rows_affected
+      end
+      if rows_affected == 0
         raise App::UnprocessableEntityException.new(@env, { "id" => ["Row delete failed"] })
       end
 
@@ -131,9 +136,21 @@ module App::Controllers
     end
 
     private def pagination_params
-      limit = (@env.params.query["limit"]? || "100").to_i32
-      cursor = @env.params.query["cursor"]?
+      limit = (@env.params.query["limit"]? || "100").to_i32? || raise App::BadRequestException.new(@env, "limit must be an integer between 1 and 1000")
+      unless (1..1000).includes?(limit)
+        raise App::BadRequestException.new(@env, "limit must be between 1 and 1000")
+      end
+
+      cursor = @env.params.query["cursor"]?.try(&.to_i64?)
+      if @env.params.query.has_key?("cursor") && (cursor.nil? || cursor < 1)
+        raise App::BadRequestException.new(@env, "cursor must be a positive integer")
+      end
+
       {limit, cursor}
+    end
+
+    private def link_id_param : Int64
+      @env.params.url["id"].to_i64? || raise App::BadRequestException.new(@env, "id must be an integer")
     end
 
     private def paginated_response(items, limit)

@@ -12,10 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
       - name: Install dependencies
         run: shards install
+      - name: Build application
+        run: shards build bit --release --no-debug
+        env:
+          ENV: production
       - name: Run tests
         run: crystal spec
+      - name: Run end-to-end tests
+        run: crystal spec e2e
