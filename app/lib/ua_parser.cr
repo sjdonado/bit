@@ -17,7 +17,7 @@ module App::Lib
             @@regexes_cache = YAML.parse(regexes_yaml)
 
             # Pre-compile all regexes for better performance
-            ["user_agent_parsers", "os_parsers", "device_parsers"].each do |parser_type|
+            ["user_agent_parsers", "os_parsers"].each do |parser_type|
               @@compiled_regexes[parser_type] = [] of Tuple(Regex, YAML::Any)
 
               @@regexes_cache.not_nil![parser_type].as_a.each do |parser|
@@ -50,7 +50,6 @@ module App::Lib
 
       family = nil
       version = nil
-      device = nil
       os = nil
 
       @@compiled_regexes["user_agent_parsers"]?.try &.each do |regex_tuple|
@@ -91,33 +90,7 @@ module App::Lib
         break
       end
 
-      @@compiled_regexes["device_parsers"]?.try &.each do |regex_tuple|
-        regex, parser = regex_tuple
-        match = regex.match(user_agent_string)
-        next unless match
-
-        model = match[1]? || nil
-        device_name = model
-        brand = nil
-
-        # Apply replacements if defined
-        if device_replacement = parser["device_replacement"]?
-          device_name = device_replacement.as_s.gsub("$1", device_name.to_s)
-        end
-
-        if model_replacement = parser["model_replacement"]?
-          model = model_replacement.as_s.gsub("$1", model.to_s)
-        end
-
-        if brand_replacement = parser["brand_replacement"]?
-          brand = brand_replacement.as_s
-        end
-
-        device = {model, brand, device_name}
-        break
-      end
-
-      {family, version, device, os}
+      {family, version, nil, os}
     end
   end
 end

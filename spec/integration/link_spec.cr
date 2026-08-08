@@ -82,7 +82,7 @@ describe "App::Controllers::Link" do
   end
 
   describe "Index" do
-    it "should redirect without echoing client headers" do
+    it "should redirect with forwarded headers without caching" do
       link = "https://test.com"
       test_user = create_test_user()
 
@@ -96,8 +96,9 @@ describe "App::Controllers::Link" do
       })
 
       response.headers["Location"].should eq(link)
-      response.headers.has_key?("User-Agent").should be_false
-      response.headers.has_key?("X-Forwarded-For").should be_false
+      response.headers["Cache-Control"].should eq("private, no-store")
+      response.headers["User-Agent"].should eq(user_agent)
+      response.headers.has_key?("X-Forwarded-For").should be_true
     end
 
     it "should create a new click after redirect with proper information" do

@@ -4,13 +4,14 @@
 ## Features
 
 - Minimal tracking setup: Country, browser, OS, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
+- Includes `X-Forwarded-For` and `User-Agent` redirect response headers with caching disabled.
 - Multiple users are supported via API key authentication. Create, list and delete keys via the [CLI](docs/SETUP.md#cli).
 - Easy to extend, Ruby on Rails inspired setup.
 - Auto update UA regexes and GeoLite2 database.
 
 ## Why bit?
 
-**Fast:** **11k req/sec**, latency 11ms, 40MiB avg memory usage (100k requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
+**Fast:** **3.5k req/sec**, latency 36ms, 41MiB avg memory usage with all clicks recorded (100k requests using 125 connections, [benchmark](docs/SETUP.md#benchmark)).
 
 **Lightweight:** Minimal dependencies, image size under 20 MiB, memory usage under 60 MiB at peak.
 

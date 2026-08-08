@@ -76,6 +76,19 @@ paths:
               schema:
                 type: string
                 example: https://example.com
+            Cache-Control:
+              description: Prevents caching of visitor metadata in redirect responses
+              schema:
+                type: string
+                example: private, no-store
+            X-Forwarded-For:
+              description: Client IP address
+              schema:
+                type: string
+            User-Agent:
+              description: User agent string
+              schema:
+                type: string
         '404':
           description: Link not found
           content:

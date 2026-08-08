@@ -9,7 +9,7 @@ API_URL            = "#{APP_URL}/api/links"
 API_KEY            = "secure_api_key_1"
 NUMBER_OF_REQUESTS = ENV["BENCHMARK_REQUESTS"]?.try(&.to_i) || 100000
 CONNECTIONS        = ENV["BENCHMARK_CONNECTIONS"]?.try(&.to_i) || 125
-DISABLE_KEEP_ALIVES = ENV["BENCHMARK_DISABLE_KEEP_ALIVES"]? == "true"
+DISABLE_KEEP_ALIVES = ENV["BENCHMARK_DISABLE_KEEP_ALIVES"]? != "false"
 
 APP_COMMAND  = "./bin/bit"
 APP_ARGS     = [] of String
