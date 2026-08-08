@@ -131,7 +131,11 @@ module App::Controllers
     end
 
     private def pagination_params
-      limit = (@env.params.query["limit"]? || "100").to_i32
+      limit = (@env.params.query["limit"]? || "100").to_i32? || raise App::BadRequestException.new(@env, "limit must be an integer between 1 and 1000")
+      unless (1..1000).includes?(limit)
+        raise App::BadRequestException.new(@env, "limit must be between 1 and 1000")
+      end
+
       cursor = @env.params.query["cursor"]?
       {limit, cursor}
     end

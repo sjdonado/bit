@@ -15,10 +15,6 @@ module App::Controllers
         # Send redirect immediately
         env.response.status_code = 301
         env.response.headers.add("Location", url)
-        env.response.headers.add("X-Forwarded-For", remote_address)
-        if user_agent = env.request.headers["User-Agent"]?
-          env.response.headers.add("User-Agent", user_agent)
-        end
 
         # non-blocking click proccessing
         spawn do

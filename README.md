@@ -4,7 +4,6 @@
 ## Features
 
 - Minimal tracking setup: Country, browser, OS, referer. No cookies or persistent tracking mechanisms are used beyond what's available from a basic client's request.
-- Includes `X-Forwarded-For` header.
 - Multiple users are supported via API key authentication. Create, list and delete keys via the [CLI](docs/SETUP.md#cli).
 - Easy to extend, Ruby on Rails inspired setup.
 - Auto update UA regexes and GeoLite2 database.
@@ -43,7 +42,7 @@ docker run \
 ### Docker Compose
 
 ```bash
-docker-compose up
+ADMIN_API_KEY=$(openssl rand -base64 32) docker-compose up
 
 # Optional: Generate an api key
 # docker-compose exec -it app cli --create-user=Admin

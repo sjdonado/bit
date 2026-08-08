@@ -7,9 +7,11 @@ PORT               = "4001"
 APP_URL            = "http://localhost:#{PORT}"
 API_URL            = "#{APP_URL}/api/links"
 API_KEY            = "secure_api_key_1"
-NUMBER_OF_REQUESTS = 100000
+NUMBER_OF_REQUESTS = ENV["BENCHMARK_REQUESTS"]?.try(&.to_i) || 100000
+CONNECTIONS        = ENV["BENCHMARK_CONNECTIONS"]?.try(&.to_i) || 125
+DISABLE_KEEP_ALIVES = ENV["BENCHMARK_DISABLE_KEEP_ALIVES"]? == "true"
 
-APP_COMMAND  = "./bit"
+APP_COMMAND  = "./bin/bit"
 APP_ARGS     = [] of String
 STATS_FILE   = "resource_usage.log"
 APP_LOG_FILE = "app_output.log"
@@ -189,7 +191,7 @@ def run_benchmark
   puts "Fetching links from API..."
 
   response = HTTP::Client.get(
-    "#{API_URL}?limit=10000",
+    "#{API_URL}?limit=1",
     headers: HTTP::Headers{"X-Api-Key" => API_KEY}
   )
 
@@ -200,22 +202,38 @@ def run_benchmark
   end
 
   data = JSON.parse(response.body)
-  links = data["data"].as_a.map { |link| link["refer"].as_s }
+  links = data["data"].as_a
 
   if links.empty?
     puts "No links found. Please seed your database first."
     exit(1)
   end
 
-  random_link = links.sample
-  puts "Selected link: #{random_link}"
-  puts "\nStarting benchmark with #{NUMBER_OF_REQUESTS} requests..."
+  link = links.sample
+  url = link["refer"].as_s
+  link_id = link["id"].as_i64
+  puts "Selected link: #{url}"
+
+  initial_clicks = click_count(link_id)
+  warm_up(url)
+  expected_warm_up_clicks = initial_clicks + 1
+  initial_clicks = wait_for_clicks(link_id, expected_warm_up_clicks)
+  if initial_clicks < expected_warm_up_clicks
+    puts "Warm-up click was not recorded within 30 seconds."
+    exit(1)
+  end
+
+  puts "\nStarting benchmark with #{NUMBER_OF_REQUESTS} requests using #{CONNECTIONS} connections..."
 
   sleep 2.seconds
 
+  args = ["-n", NUMBER_OF_REQUESTS.to_s, "-c", CONNECTIONS.to_s, "-l"]
+  args << "--disableKeepAlives" if DISABLE_KEEP_ALIVES
+  args << url
+
   process = Process.new(
     "bombardier",
-    ["-n", NUMBER_OF_REQUESTS.to_s, "-l", "--disableKeepAlives", random_link],
+    args,
     output: Process::Redirect::Inherit,
     error: Process::Redirect::Inherit
   )
@@ -223,11 +241,51 @@ def run_benchmark
   status = process.wait
 
   if status.success?
+    recorded_clicks = wait_for_clicks(link_id, initial_clicks + NUMBER_OF_REQUESTS)
+    if recorded_clicks < initial_clicks + NUMBER_OF_REQUESTS
+      puts "Click tracking did not drain: #{recorded_clicks - initial_clicks}/#{NUMBER_OF_REQUESTS} clicks recorded."
+      exit(1)
+    end
+
+    puts "Click tracking drained: #{recorded_clicks - initial_clicks}/#{NUMBER_OF_REQUESTS} clicks recorded."
     puts "\nBenchmark completed successfully."
   else
     puts "\nBombardier failed with error code: #{status.exit_code}"
     exit(1)
   end
+end
+
+def warm_up(url : String)
+  response = HTTP::Client.get(url)
+  return if response.status_code == 301
+
+  puts "Warm-up request failed with status: #{response.status_code}"
+  exit(1)
+end
+
+def click_count(link_id : Int64) : Int64
+  output = IO::Memory.new
+  process = Process.run(
+    "sqlite3",
+    [DATABASE_FILE, "SELECT COUNT(*) FROM clicks WHERE link_id = #{link_id}"],
+    output: output
+  )
+  raise "Failed to count clicks" unless process.success?
+
+  output.to_s.strip.to_i64
+end
+
+def wait_for_clicks(link_id : Int64, expected : Int64) : Int64
+  deadline = Time.monotonic + 30.seconds
+
+  loop do
+    count = click_count(link_id)
+    return count if count >= expected
+    break if Time.monotonic >= deadline
+    sleep 0.5.seconds
+  end
+
+  click_count(link_id)
 end
 
 def cleanup_database

@@ -82,7 +82,7 @@ describe "App::Controllers::Link" do
   end
 
   describe "Index" do
-    it "should redirect to origin domain with forwarded headers" do
+    it "should redirect without echoing client headers" do
       link = "https://test.com"
       test_user = create_test_user()
 
@@ -96,8 +96,8 @@ describe "App::Controllers::Link" do
       })
 
       response.headers["Location"].should eq(link)
-      response.headers["User-Agent"].should eq(user_agent)
-      response.headers.has_key?("X-Forwarded-For").should be_true
+      response.headers.has_key?("User-Agent").should be_false
+      response.headers.has_key?("X-Forwarded-For").should be_false
     end
 
     it "should create a new click after redirect with proper information" do
@@ -195,6 +195,15 @@ describe "App::Controllers::Link" do
       parsed_response["data"].as(Array).size.should eq(2)
       parsed_response["pagination"].as(Hash)["has_more"].should be_true
       parsed_response["pagination"].as(Hash)["next"].should_not be_nil
+    end
+
+    it "should reject invalid pagination limits" do
+      test_user = create_test_user()
+
+      get("/api/links?limit=1001", headers: HTTP::Headers{"X-Api-Key" => test_user.api_key.to_s})
+
+      response.status_code.should eq(400)
+      response.body.should eq({"error" => "limit must be between 1 and 1000"}.to_json)
     end
 
     it "should support cursor-based pagination" do

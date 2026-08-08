@@ -51,8 +51,8 @@ ENV=test crystal spec
 ### Run
 
 ```
-shards build --release --no-debug --progress --stats
-shards run benchmark
+shards build --release --no-debug
+./bin/benchmark
 ```
 
 ### Output
