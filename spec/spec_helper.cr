@@ -14,7 +14,7 @@ Spec.before_suite do
     File.delete(db_file_path)
   end
 
-  App::Lib::Migrator.up(ENV["DATABASE_URL"])
+  App::Lib::Migrator.up(App::Lib::Database::URL)
 
   Kemal.config.logging = false
 end
