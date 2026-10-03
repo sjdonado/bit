@@ -1,6 +1,6 @@
 require "sqlite3"
 require "crecto"
-require "micrate"
+require "./migrator"
 
 module App::Lib
   class Database
@@ -24,11 +24,6 @@ module App::Lib
       Crecto::DbLogger.set_handler(STDOUT)
     end
 
-    def self.run_migrations
-      Micrate::DB.connection_url = ENV["DATABASE_URL"]
-      Micrate::Cli.run_up
-    end
-
-    run_migrations
+    Migrator.up(ENV["DATABASE_URL"])
   end
 end

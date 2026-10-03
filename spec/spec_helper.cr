@@ -1,7 +1,6 @@
 require "file_utils"
 
 require "spec-kemal"
-require "micrate"
 
 require "dotenv"
 Dotenv.load ".env.#{ENV["ENV"]}"
@@ -15,8 +14,7 @@ Spec.before_suite do
     File.delete(db_file_path)
   end
 
-  Micrate::DB.connection_url = ENV["DATABASE_URL"]
-  Micrate::Cli.run_up
+  App::Lib::Migrator.up(ENV["DATABASE_URL"])
 
   Kemal.config.logging = false
 end

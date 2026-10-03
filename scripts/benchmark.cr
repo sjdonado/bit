@@ -2,6 +2,8 @@
 
 require "http/client"
 require "json"
+require "sqlite3"
+require "../app/lib/migrator"
 
 PORT               = "4001"
 APP_URL            = "http://localhost:#{PORT}"
@@ -150,7 +152,7 @@ def stop_application(process : Process)
 end
 
 def check_dependencies
-  {"bombardier", "sqlite3", "micrate"}.each do |cmd|
+  {"bombardier", "sqlite3"}.each do |cmd|
     process = Process.run("which", [cmd], output: Process::Redirect::Close)
     unless process.success?
       puts "Error: #{cmd} is not installed. Please install it to proceed."
@@ -159,8 +161,6 @@ def check_dependencies
         puts "  brew install bombardier"
       when "sqlite3"
         puts "  brew install sqlite3"
-      when "micrate"
-        puts "  shards install"
       end
       exit(1)
     end
@@ -276,12 +276,12 @@ def click_count(link_id : Int64) : Int64
 end
 
 def wait_for_clicks(link_id : Int64, expected : Int64) : Int64
-  deadline = Time.monotonic + 30.seconds
+  deadline = Time.instant + 30.seconds
 
   loop do
     count = click_count(link_id)
     return count if count >= expected
-    break if Time.monotonic >= deadline
+    break if Time.instant >= deadline
     sleep 0.5.seconds
   end
 
@@ -311,28 +311,8 @@ end
 
 def run_migrations
   puts "Running database migrations..."
-
-  process = Process.run("which", ["micrate"], output: Process::Redirect::Close)
-  unless process.success?
-    puts "Error: micrate is not installed. Please install it to proceed."
-    puts "  shards install"
-    exit(1)
-  end
-
-  process = Process.run(
-    "micrate",
-    ["up"],
-    env: {"DATABASE_URL" => DATABASE_URL},
-    output: Process::Redirect::Inherit,
-    error: Process::Redirect::Inherit
-  )
-
-  if process.success?
-    puts "Migrations completed successfully."
-  else
-    puts "Error: Migrations failed."
-    exit(1)
-  end
+  App::Lib::Migrator.up(DATABASE_URL)
+  puts "Migrations completed successfully."
 end
 
 def seed_database

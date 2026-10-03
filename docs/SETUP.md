@@ -12,7 +12,7 @@ Options:
 ## Local Development
 
 ### Requirements
-- Crystal 1.18+
+- Crystal 1.21.1+
 - Shards package manager
 - SQLite3
 
@@ -20,12 +20,6 @@ Options:
 - linux
 ```bash
 sudo apt-get update && sudo apt-get install -y crystal libssl-dev libsqlite3-dev
-```
-
-- macos
-```bash
-brew tap amberframework/micrate
-brew install micrate
 ```
 
 ### Install Shards and Run

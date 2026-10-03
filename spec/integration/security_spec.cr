@@ -6,8 +6,24 @@ describe "API security and edge cases" do
       get("/api/links", headers: HTTP::Headers{"X-Api-Key" => api_key})
 
       response.status_code.should eq(401)
+      response.headers["Content-Type"].should eq("application/json")
       response.body.should eq({"error" => "Unauthorized access"}.to_json)
     end
+  end
+
+  it "answers unmatched routes and methods with JSON" do
+    headers = HTTP::Headers{"X-Api-Key" => create_test_user().api_key.to_s}
+
+    get("/a/b", headers: headers)
+    response.status_code.should eq(404)
+    response.headers["Content-Type"].should eq("application/json")
+    response.body.should eq({"error" => "Resource not found"}.to_json)
+
+    post("/api/ping", headers: headers)
+    response.status_code.should eq(405)
+    response.headers["Allow"].should eq("GET, HEAD")
+    response.headers["Content-Type"].should eq("application/json")
+    response.body.should eq({"error" => "Method Not Allowed"}.to_json)
   end
 
   it "rejects malformed IDs" do
