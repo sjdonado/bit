@@ -1,15 +1,10 @@
-FROM alpine:3.23 AS build
+FROM crystallang/crystal:1.21.1-alpine AS build
 
 ENV ENV=production
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache \
-    crystal \
-    shards \
-    openssl-dev \
-    yaml-dev \
     sqlite-dev \
-    libevent-dev \
     tzdata
 
 COPY . .
@@ -17,7 +12,7 @@ COPY . .
 RUN shards install --production
 RUN shards build --release --no-debug --progress --stats
 
-FROM alpine:3.23 AS runtime
+FROM alpine:3.22 AS runtime
 
 ENV ENV=production
 WORKDIR /usr/src/app
@@ -25,7 +20,6 @@ WORKDIR /usr/src/app
 RUN apk add --no-cache \
     gc-dev \
     pcre2 \
-    libevent \
     sqlite-libs \
     openssl \
     yaml \
