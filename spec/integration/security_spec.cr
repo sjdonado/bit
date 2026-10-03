@@ -26,6 +26,28 @@ describe "API security and edge cases" do
     response.body.should eq({"error" => "Method Not Allowed"}.to_json)
   end
 
+  it "answers Kemal's own 400 and 413 with JSON" do
+    headers = HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => create_test_user().api_key.to_s}
+
+    # Auth runs first, so only a valid key reaches Kemal's method check.
+    bad_method = SpecKemal.process_request(HTTP::Request.new("GET/admin", "/api/ping", headers))
+    bad_method.status_code.should eq(400)
+    bad_method.headers["Connection"].should eq("close")
+    bad_method.headers["Content-Type"].should eq("application/json")
+    bad_method.body.should eq({"error" => "Bad Request"}.to_json)
+
+    limit = Kemal.config.max_request_body_size
+    Kemal.config.max_request_body_size = 16
+    begin
+      post("/api/links", headers: headers, body: {"url" => "https://example.com/too-long"}.to_json)
+      response.status_code.should eq(413)
+      response.headers["Content-Type"].should eq("application/json")
+      response.body.should eq({"error" => "Payload Too Large"}.to_json)
+    ensure
+      Kemal.config.max_request_body_size = limit
+    end
+  end
+
   it "rejects malformed IDs" do
     user = create_test_user()
     headers = HTTP::Headers{"Content-Type" => "application/json", "X-Api-Key" => user.api_key.to_s}
