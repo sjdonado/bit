@@ -16,7 +16,8 @@ bit is a self-hosted URL shortener: Crystal, Kemal, SQLite. `docs/openapi.yaml` 
 ## Constraints that are easy to miss
 
 - `ENV` at compile time decides whether dotenv loads. Build the production binary with `ENV=production`. Any other build loads `.env.<ENV>` at runtime (default `.env.development`), and that file must exist.
-- Migrations: only the `-- +micrate Up` section runs, a statement ends at a line ending with `;`, and any other `-- +micrate` directive raises. A failing migration stops the app at boot.
+- Migrations: `bit.cr` and every `cli` command except `--migrate-down` apply pending `-- +micrate Up` sections first. `cli --migrate-down` runs the `-- +micrate Down` section of the newest applied version and refuses an empty one (`20250319192003` is irreversible). The current image re-applies a rolled-back file on its next start, so a rollback only sticks when an older image is deployed next. A statement ends at a line ending with `;`, and any other `-- +micrate` directive raises. Each file runs in `BEGIN IMMEDIATE` with foreign keys off, so a `DROP TABLE` on a parent table does not cascade, and it fails if it adds a foreign key violation. Orphan rows from before foreign keys were enforced are tolerated, except that `20250319192003` cannot convert orphan links or clicks. A failing migration stops the app at boot.
+- `App::Lib::Database::URL` appends `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=true`, and `busy_timeout=100` to `DATABASE_URL`; the app, the migrator, and the CLI all connect with it, and crystal-sqlite3 runs them as PRAGMAs on every connection. A key already present in `DATABASE_URL` wins, because crystal-sqlite3 reads the first value. WAL mode is what makes the redirect path fast. Foreign keys enforce the `ON DELETE CASCADE` rules. SQLite's busy wait blocks the single-threaded scheduler, so the timeout stays short.
 - Kemal 1.14 discards a response body written before an error. Raise an `App::*Exception` from `app/lib/errors.cr`; do not print a body and then raise.
 - Every API error is JSON. Auth runs before routing, so an unmatched route returns 401 without a key and `404 {"error":"Resource not found"}` with one. A wrong method returns 405 with an `Allow` header.
 - Updating a link's URL regenerates its slug; the old short URL stops working.
@@ -35,6 +36,8 @@ Run from the repository root, cheapest first:
 ## Manual verification
 
 The specs cover most status codes in-process. The steps below check the published image over a real network, GeoIP, headers, load, and memory. Use them when a change touches a route, the Dockerfile, a dependency, or the redirect path.
+
+The endpoint walkthrough repeats status codes the specs already assert, on purpose. The specs call the handler chain in memory through spec-kemal, with the development build, macOS SQLite, and no socket. The walkthrough sends the same requests to the production binary inside the Docker image, so it also catches what only exists there: the `alpine` runtime libraries, the GeoLite2 file and user-agent regexes packaged in the image, the compile-time `ENV=production` branch, the SQLite settings on a real file, and headers over HTTP. A status code that passes in the specs and fails in the walkthrough points at the image or the build, not the code.
 
 ### Run with Docker
 
