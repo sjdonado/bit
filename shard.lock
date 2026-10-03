@@ -10,7 +10,7 @@ shards:
 
   db:
     git: https://github.com/crystal-lang/crystal-db.git
-    version: 0.11.0
+    version: 0.14.0
 
   dotenv:
     git: https://github.com/gdotdesign/cr-dotenv.git
@@ -26,23 +26,11 @@ shards:
 
   kemal:
     git: https://github.com/kemalcr/kemal.git
-    version: 1.12.0
+    version: 1.14.0
 
   maxminddb:
     git: https://github.com/delef/maxminddb.cr.git
     version: 1.5.0
-
-  micrate:
-    git: https://github.com/amberframework/micrate.git
-    version: 0.15.1
-
-  mysql:
-    git: https://github.com/crystal-lang/crystal-mysql.git
-    version: 0.14.0
-
-  pg:
-    git: https://github.com/will/crystal-pg.git
-    version: 0.26.0
 
   radix:
     git: https://github.com/luislavena/radix.git
@@ -54,5 +42,5 @@ shards:
 
   sqlite3:
     git: https://github.com/crystal-lang/crystal-sqlite3.git
-    version: 0.19.0
+    version: 0.23.0
 

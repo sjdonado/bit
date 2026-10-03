@@ -37,8 +37,19 @@ module App
     Controllers::LinkController.new(env).delete
   end
 
+  {% for status in [400, 401, 403, 404, 405, 413, 422] %}
+    error {{status}} do |env, ex|
+      next ex.body if ex.is_a?(HttpException)
+      {% if status == 404 %}
+        NotFoundException.new(env).body
+      {% else %}
+        env.response.content_type = "application/json"
+        { "error" => HTTP::Status.new({{status}}).description }.to_json
+      {% end %}
+    end
+  {% end %}
+
   error 500 do |env|
-    App::InternalServerErrorException.new(env)
-    ""
+    App::InternalServerErrorException.new(env).body
   end
 end
