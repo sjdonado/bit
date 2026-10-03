@@ -48,7 +48,7 @@ crystal spec e2e
 ### Run
 
 ```
-shards build --release --no-debug
+ENV=production shards build --release --no-debug
 ./bin/benchmark
 ```
 
@@ -56,33 +56,33 @@ Optional environment variables: `BENCHMARK_REQUESTS`, `BENCHMARK_CONNECTIONS`, a
 
 ### Output
 
-Machine: 10-core Apple M5 MacBook Pro. Memory: 32GB. macOS: 26.5.2. Crystal: 1.21.0.
+Machine: 10-core Apple M5 MacBook Pro. Memory: 32GB. macOS: 27.0.1. Crystal: 1.21.1. The run with the median Reqs/sec out of three consecutive runs.
 
 ```
 Starting benchmark with 100000 requests using 125 connections...
 Statistics        Avg      Stdev        Max
-  Reqs/sec      4059.44    1420.08    6791.75
-  Latency       30.94ms      3.95ms      92.38ms
+  Reqs/sec     21141.19    3261.06   26113.29
+  Latency        5.91ms     1.41ms    25.77ms
   Latency Distribution
-     50%    31.30ms
-     75%    32.39ms
-     90%    33.46ms
-     95%    34.25ms
-     99%    39.22ms
+     50%     5.64ms
+     75%     6.96ms
+     90%     7.83ms
+     95%     8.50ms
+     99%    12.04ms
   HTTP codes:
     1xx - 0, 2xx - 0, 3xx - 100000, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:     1.31MB/s
+  Throughput:     6.87MB/s
 
 Click tracking drained: 100000/100000 clicks recorded.
 Benchmark completed successfully.
 
 **** Resource Usage Statistics ****
-  Measurements: 28
-  Average CPU Usage: 68.39%
-  Average Memory Usage: 40.65 MiB
-  Peak CPU Usage: 78.2%
-  Peak Memory Usage: 47.02 MiB
+  Measurements: 8
+  Average CPU Usage: 52.95%
+  Average Memory Usage: 32.14 MiB
+  Peak CPU Usage: 90.4%
+  Peak Memory Usage: 43.75 MiB
 ```
 
 The benchmark validates that every redirect's asynchronous click record reaches SQLite. Earlier results measured redirect responses without verifying click delivery and are not directly comparable.
