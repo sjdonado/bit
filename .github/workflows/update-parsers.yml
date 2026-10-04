@@ -32,6 +32,21 @@ jobs:
       - name: Update parsers
         run: ./cli --update-parsers
 
+      - name: Build application
+        run: shards build bit --release --no-debug
+        env:
+          ENV: production
+
+      - name: Run tests
+        run: crystal spec
+        env:
+          ENV: test
+
+      - name: Run end-to-end tests
+        run: crystal spec e2e
+        env:
+          ENV: test
+
       - name: Check for changes
         id: changes
         run: |
