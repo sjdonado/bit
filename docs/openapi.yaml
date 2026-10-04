@@ -11,7 +11,7 @@ info:
     ## Authentication
     
     Multiple users are supported via `X-Api-Key` headers. Create, list and delete keys via the [CLI](https://github.com/sjdonado/bit/blob/master/SETUP.md#cli).
-  version: 1.6.0
+  version: 1.7.0
   contact:
     name: sjdonado
     url: https://sjdonado.com
